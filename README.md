@@ -90,66 +90,68 @@ int DenisUniqueContactCount =
 
 ####Today:
 
-cast<T>()
-take(int)
-skip(int)
-concat(range)
-where(lambda)
-select(lambda)
-reverse()
-orderBy()
-orderBy(lambda)
-groupBy(lambda)
-distinct()
-distinct(lambda)
-for_each(lambda)
-all()
-all(lambda)
-any()
-any(lambda)
-sum()
-sum(lambda)
-avg()
-avg(lambda)
-min()
-min(lambda)
-max()
-max(lambda)
-count()
-count(lambda)
-contains(value)
-elementAt(int)
-toSet()
-toList()
-toDeque()
-toVector()
-toContainer<T>()
-Custom:
+- cast<T>()
+- take(int)
+- skip(int)
+- concat(range)
+- where(lambda)
+- select(lambda)
+- reverse()
+- orderBy()
+- orderBy(lambda)
+- groupBy(lambda)
+- distinct()
+- distinct(lambda)
+- for_each(lambda)
+- all()
+- all(lambda)
+- any()
+- any(lambda)
+- sum()
+- sum(lambda)
+- avg()
+- avg(lambda)
+- min()
+- min(lambda)
+- max()
+- max(lambda)
+- count()
+- count(lambda)
+- contains(value)
+- elementAt(int)
+- toSet()
+- toList()
+- toDeque()
+- toVector()
+- toContainer<T>()
 
-bytes()
-bytes<ByteOrder>()
-unbytes<T>()
-unbytes<T,ByteOrder>()
-bits()
-bits<BitOrder>()
-bits<BitOrder,ByteOrder>()
-unbits()
-unbits<BitOrder>()
-unbits<T>()
-unbits<T,BitOrder>()
-unbits<T,BitOrder,ByteOrder>()
-Coming soon:
+####Custom:
 
-selectMany(lambda)
+- bytes()
+- bytes<ByteOrder>()
+- unbytes<T>()
+- unbytes<T,ByteOrder>()
+- bits()
+- bits<BitOrder>()
+- bits<BitOrder,ByteOrder>()
+- unbits()
+- unbits<BitOrder>()
+- unbits<T>()
+- unbits<T,BitOrder>()
+- unbits<T,BitOrder,ByteOrder>()
+
+####Coming soon:
+
+- selectMany(lambda)
 
 ####May be will be:
 
-gz()
-ungz()
-leftJoin
-rightJoin
-crossJoin
-fullJoin
+- gz()
+- ungz()
+- leftJoin
+- rightJoin
+- crossJoin
+- fullJoin
 
 ###What are you waiting?
 
