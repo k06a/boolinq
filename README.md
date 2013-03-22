@@ -7,11 +7,11 @@ Just imagine LINQ support for STL/Qt collections :)
 
 Let's talk about library here: boolinq google group
 
-Get source code here: boolinq-all.h
+Get source code here: **boolinq-all.h**
 
 ###How it looks like?
 
-####Example with integers:
+####Example with integers
 
 ```
 int src[] = {1,2,3,4,5,6,7,8};
@@ -81,9 +81,7 @@ int DenisUniqueContactCount =
 ###Containers supported?
 
 - C++: Native arrays, pairs of pointers
-
 - STL: list, stack, queue, vector, deque, set, map, any compatible ....
-
 - Qt: QList, QVector, QSet, QMap.
 
 ###Operators supported?
