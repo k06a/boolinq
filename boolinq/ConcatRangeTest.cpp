@@ -2,8 +2,7 @@
 #include <gtest/gtest.h>
 #include "CommonTests.h"
 
-#include "IterRange.h"
-#include "ConcatRange.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -14,9 +13,9 @@ TEST(ConcatRange, ArrayArray)
 
     int ans[] = {1,2,3,4,5,6,7,8,9};
 
-    auto rng1 = range(src1);
-    auto rng2 = range(src2);
-    auto dst = unionAll(rng1,rng2);
+    auto rng1 = from(src1);
+    auto rng2 = from(src2);
+    auto dst = rng1.concat(rng2);
              
     CheckRangeEqArray(dst, ans);
 }
@@ -32,9 +31,9 @@ TEST(ConcatRange, ArrayVector)
 
     int ans[] = {1,2,3,4,5,6,7,8,9};
 
-    auto rng1 = range(src1);
-    auto rng2 = range(src2);
-    auto dst = unionAll(rng1,rng2);
+    auto rng1 = from(src1);
+    auto rng2 = from(src2);
+    auto dst = rng1.concat(rng2);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -51,10 +50,10 @@ TEST(ConcatRange, ArrayVectorArray)
 
     int ans[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
-    auto rng1 = range(src1);
-    auto rng2 = range(src2);
-    auto rng3 = range(src3);
-    auto dst = unionAll(unionAll(rng1,rng2),rng3);
+    auto rng1 = from(src1);
+    auto rng2 = from(src2);
+    auto rng3 = from(src3);
+    auto dst = rng1.concat(rng2).concat(rng3);
 
     CheckRangeEqArray(dst, ans);
 }

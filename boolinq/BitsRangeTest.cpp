@@ -5,8 +5,7 @@
 #include <gtest/gtest.h>
 #include "CommonTests.h"
 
-#include "IterRange.h"
-#include "BitsRange.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -17,8 +16,8 @@ TEST(BitsRange, OneByteDefault)
     unsigned char src[] = {0xAA};
     int ans[] = {1,0,1,0,1,0,1,0};
 
-    auto rng = range(src);
-    auto dst = bits(rng);
+    auto rng = from(src);
+    auto dst = rng.bits();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -28,8 +27,8 @@ TEST(BitsRange, OneByteHL)
     unsigned char src[] = {0xAA};
     int ans[] = {1,0,1,0,1,0,1,0};
 
-    auto rng = range(src);
-    auto dst = bits<HighToLow>(rng);
+    auto rng = from(src);
+    auto dst = rng.bits(HighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -39,8 +38,8 @@ TEST(BitsRange, OneByteLH)
     unsigned char src[] = {0xAA};
     int ans[] = {0,1,0,1,0,1,0,1};
 
-    auto rng = range(src);
-    auto dst = bits<LowToHigh>(rng);
+    auto rng = from(src);
+    auto dst = rng.bits(LowToHigh);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -58,8 +57,8 @@ TEST(BitsRange, OneIntDefault)
         0,0,0,1,0,0,1,0,
     };
 
-    auto rng = range(src);
-    auto dst = bits(rng);
+    auto rng = from(src);
+    auto dst = rng.bits();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -75,8 +74,8 @@ TEST(BitsRange, OneIntHL)
         0,0,0,1,0,0,1,0,
     };
 
-    auto rng = range(src);
-    auto dst = bits<HighToLow>(rng);
+    auto rng = from(src);
+    auto dst = rng.bits(HighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -92,8 +91,9 @@ TEST(BitsRange, OneIntLH)
         0,1,0,0,1,0,0,0,
     };
 
-    auto rng = range(src);
-    auto dst = bits<LowToHigh,FirstToLast>(rng);
+    auto rng = from(src);
+    auto dst = rng.bits(LowToHigh,FirstToLast);
+    auto vvv = dst.toVector();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -116,8 +116,8 @@ TEST(BitsRange, IntsDefault)
         1,0,1,0,1,0,1,0, // AA
     };
 
-    auto rng = range(src);
-    auto dst = bits(rng);
+    auto rng = from(src);
+    auto dst = rng.bits();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -138,8 +138,8 @@ TEST(BitsRange, IntsHL)
         1,0,1,0,1,0,1,0, // AA
     };
 
-    auto rng = range(src);
-    auto dst = bits<HighToLow>(rng);
+    auto rng = from(src);
+    auto dst = rng.bits(HighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -160,8 +160,8 @@ TEST(BitsRange, IntsLH)
         0,1,0,1,0,1,0,1, // -AA
     };
 
-    auto rng = range(src);
-    auto dst = bits<LowToHigh>(rng);
+    auto rng = from(src);
+    auto dst = rng.bits(LowToHigh);
 
     CheckRangeEqArray(dst, ans);
 }

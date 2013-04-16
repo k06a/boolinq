@@ -3,8 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "ToVector.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -15,8 +14,8 @@ TEST(ToVector, Vector2Vector)
     src.push_back(200);
     src.push_back(300);
 
-    auto rng = range(src);
-    auto dst = toVector(rng);
+    auto rng = from(src);
+    auto dst = rng.toVector();
 
     EXPECT_EQ(dst,src);
 }

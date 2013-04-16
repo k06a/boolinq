@@ -100,7 +100,6 @@
     <ClCompile Include="TakeRangeTest.cpp" />
     <ClCompile Include="BytesRangeTest.cpp" />
     <ClCompile Include="BitsRangeTest.cpp" />
-    <ClCompile Include="ToContainerTest.cpp" />
     <ClCompile Include="ToDequeTest.cpp" />
     <ClCompile Include="ToListTest.cpp" />
     <ClCompile Include="LinqTest.cpp" />
@@ -114,38 +113,8 @@
     <ClCompile Include="WhereRangeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="All.h" />
-    <ClInclude Include="Any.h" />
-    <ClInclude Include="Avg.h" />
     <ClInclude Include="boolinq.h" />
-    <ClInclude Include="CastRange.h" />
     <ClInclude Include="CommonTests.h" />
-    <ClInclude Include="Contains.h" />
-    <ClInclude Include="ElementAt.h" />
-    <ClInclude Include="ForEach.h" />
-    <ClInclude Include="Max.h" />
-    <ClInclude Include="Min.h" />
-    <ClInclude Include="SkipRange.h" />
-    <ClInclude Include="Sum.h" />
-    <ClInclude Include="TakeRange.h" />
-    <ClInclude Include="BytesRange.h" />
-    <ClInclude Include="BitsRange.h" />
-    <ClInclude Include="ToSet.h" />
-    <ClInclude Include="UnbitsRange.h" />
-    <ClInclude Include="UnbytesRange.h" />
-    <ClInclude Include="ConcatRange.h" />
-    <ClInclude Include="Count.h" />
-    <ClInclude Include="DistinctRange.h" />
-    <ClInclude Include="GroupByRange.h" />
-    <ClInclude Include="OrderByRange.h" />
-    <ClInclude Include="ToContainer.h" />
-    <ClInclude Include="ToDeque.h" />
-    <ClInclude Include="ToList.h" />
-    <ClInclude Include="IterRange.h" />
-    <ClInclude Include="ReverseRange.h" />
-    <ClInclude Include="SelectRange.h" />
-    <ClInclude Include="ToVector.h" />
-    <ClInclude Include="WhereRange.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

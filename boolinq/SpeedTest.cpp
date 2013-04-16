@@ -19,12 +19,11 @@ TEST(SpeedTest1, Init)
 TEST(SpeedTest1, BoolinqCode)
 {
     double avgValue = from(vec).where( [](int a){return a%2 == 1;})
-                                .cast<double>()
-                                .avg();
+                               .avg<double>();
 
     double disper = from(vec).where(  [](int a){return a%2 == 1;})
-                                .select([=](int a){return (double)((a-avgValue)*(a-avgValue));})
-                                .avg();
+                             .select([=](int a){return (double)((a-avgValue)*(a-avgValue));})
+                             .avg<double>();
 
     EXPECT_EQ(164004, (int)(avgValue*10));
     EXPECT_EQ(89512454, (int)disper);

@@ -5,8 +5,7 @@
 #include <gtest/gtest.h>
 #include "CommonTests.h"
 
-#include "IterRange.h"
-#include "UnbitsRange.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -17,8 +16,8 @@ TEST(UnbitsRange, OneByteDefault)
     int src[] = {1,0,1,0,1,0,1,0};
     int ans[] = {0xAA};
     
-    auto rng = range(src);
-    auto dst = unbits(rng);
+    auto rng = from(src);
+    auto dst = rng.unbits();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -28,8 +27,8 @@ TEST(UnbitsRange, OneByteHL)
     int src[] = {1,0,1,0,1,0,1,0};
     int ans[] = {0xAA};
     
-    auto rng = range(src);
-    auto dst = unbits<HighToLow>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbits(HighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -39,8 +38,8 @@ TEST(UnbitsRange, OneByteLH)
     int src[] = {0,1,0,1,0,1,0,1};
     int ans[] = {0xAA};
     
-    auto rng = range(src);
-    auto dst = unbits<LowToHigh>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbits(LowToHigh);
 
     CheckRangeEqArray(dst, ans);
 }

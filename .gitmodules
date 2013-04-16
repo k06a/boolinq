@@ -1,0 +1,3 @@
+[submodule "gmock"]
+	path = gmock
+	url = https://github.com/mgoral/googlemock

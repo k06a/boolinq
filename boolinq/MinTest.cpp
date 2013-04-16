@@ -4,8 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "Min.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -16,10 +15,10 @@ TEST(Min, ThreeInts)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_EQ(1, min(rng));
-    EXPECT_EQ(3, min(rng,[](int a){return -a;}));
+    EXPECT_EQ(1, rng.min());
+    EXPECT_EQ(3, rng.min([](int a){return -a;}));
 }
 
 TEST(Min, FiveStrings)
@@ -29,8 +28,8 @@ TEST(Min, FiveStrings)
     src.push_back("apple");
     src.push_back("zip");
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_EQ("apple",  min(rng));
-    EXPECT_EQ("zip",  min(rng,[](const std::string & s){return s.size();}));
+    EXPECT_EQ("apple",  rng.min());
+    EXPECT_EQ("zip",  rng.min([](const std::string & s){return s.size();}));
 }

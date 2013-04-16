@@ -4,9 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "WhereRange.h"
-#include "Sum.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -17,9 +15,9 @@ TEST(Sum, ThreeInts)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src).sum();
 
-    EXPECT_EQ(6, sum(rng));
+    EXPECT_EQ(6, rng);
 }
 
 TEST(Sum, FiveInts)
@@ -31,12 +29,12 @@ TEST(Sum, FiveInts)
     src.push_back(4);
     src.push_back(5);
 
-    auto rng = range(src);
-    auto dst0 = where(rng, [](int a){return a%2 == 0;});
-    auto dst1 = where(rng, [](int a){return a%2 == 1;});
+    auto rng = from(src);
+    auto dst0 = rng.where([](int a){return a%2 == 0;}).sum();
+    auto dst1 = rng.where([](int a){return a%2 == 1;}).sum();
 
-    EXPECT_EQ(6, sum(dst0));
-    EXPECT_EQ(9, sum(dst1));
+    EXPECT_EQ(6, dst0);
+    EXPECT_EQ(9, dst1);
 }
 
 TEST(Sum, BoolSum)
@@ -48,10 +46,11 @@ TEST(Sum, BoolSum)
     src.push_back(4);
     src.push_back(5);
 
-    auto rng = range(src);
+    auto rng1 = from(src).sum<int>([](int a){return a%2 == 0;});
+    auto rng2 = from(src).sum<int>([](int a){return a%2 == 1;});
 
-    EXPECT_EQ(2, sum(rng,[](int a){return a%2 == 0;}));
-    EXPECT_EQ(3, sum(rng,[](int a){return a%2 == 1;}));
+    EXPECT_EQ(2, rng1);
+    EXPECT_EQ(3, rng2);
 }
 
 TEST(Sum, FiveStringsLen)
@@ -63,9 +62,9 @@ TEST(Sum, FiveStringsLen)
     src.push_back("oracle");
     src.push_back("ponny");
 
-    auto rng = range(src);
+    auto rng = from(src).sum([](const std::string & str){return str.size();});
 
-    EXPECT_EQ(26, sum(rng,[](const std::string & str){return str.size();}));
+    EXPECT_EQ(26, rng);
 }
 
 TEST(Sum, FiveStringsData)
@@ -77,9 +76,9 @@ TEST(Sum, FiveStringsData)
     src.push_back("oracle");
     src.push_back("ponny");
 
-    auto rng = range(src);
+    auto rng = from(src).sum();
 
     std::string ans = "helloapplenokiaoracleponny";
 
-    EXPECT_EQ(ans, sum(rng));
+    EXPECT_EQ(ans, rng);
 }

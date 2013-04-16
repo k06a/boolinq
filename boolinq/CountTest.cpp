@@ -4,9 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "WhereRange.h"
-#include "Count.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -17,9 +15,9 @@ TEST(Count, ThreeIntsVector)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src);
     
-    EXPECT_EQ(3, count(rng));
+    EXPECT_EQ(3, rng.count());
 }
 
 TEST(Count, ThreeIntsList)
@@ -29,9 +27,9 @@ TEST(Count, ThreeIntsList)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_EQ(3, count(rng));
+    EXPECT_EQ(3, rng.count());
 }
 
 TEST(Count, FiveInts)
@@ -43,12 +41,12 @@ TEST(Count, FiveInts)
     src.push_back(4);
     src.push_back(5);
 
-    auto rng = range(src);
-    auto dst0 = where(rng, [](int a){return a%2 == 0;});
-    auto dst1 = where(rng, [](int a){return a%2 == 1;});
+    auto rng = from(src);
+    auto dst0 = rng.where([](int a){return a%2 == 0;});
+    auto dst1 = rng.where([](int a){return a%2 == 1;});
 
-    EXPECT_EQ(2, count(dst0));
-    EXPECT_EQ(3, count(dst1));
+    EXPECT_EQ(2, dst0.count());
+    EXPECT_EQ(3, dst1.count());
 }
 
 TEST(Count, OddCount)
@@ -60,8 +58,8 @@ TEST(Count, OddCount)
     src.push_back(0);
     src.push_back(1);
 
-    auto rng = range(src);
+    auto rng = from(src);
     
-    EXPECT_EQ(2, count(rng,0));
-    EXPECT_EQ(3, count(rng,1));
+    EXPECT_EQ(2, rng.count(0));
+    EXPECT_EQ(3, rng.count(1));
 }

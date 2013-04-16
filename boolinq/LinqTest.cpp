@@ -26,12 +26,10 @@ TEST(Linq, WhereOdd)
 
     for (int i = 1; i <= 5; i+=2)
     {
-        EXPECT_FALSE(rng.empty());
-        EXPECT_EQ(i, rng.front());
-        EXPECT_EQ(i, rng.popFront());
+        EXPECT_EQ(i, rng.nextObject());
     }
 
-    EXPECT_TRUE(rng.empty());
+    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
 }
 
 TEST(Linq, WhereOdd_WhereLess)
@@ -51,12 +49,10 @@ TEST(Linq, WhereOdd_WhereLess)
 
     for (int i = 1; i <= 3; i+=2)
     {
-        EXPECT_FALSE(rng.empty());
-        EXPECT_EQ(i, rng.front());
-        EXPECT_EQ(i, rng.popFront());
+        EXPECT_EQ(i, rng.nextObject());
     }
 
-    EXPECT_TRUE(rng.empty());
+    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
 }
 
 TEST(Linq, WhereLess_WhereOdd)
@@ -72,7 +68,8 @@ TEST(Linq, WhereLess_WhereOdd)
     src.push_back(8);
 
     auto rng = from(src).where([](int a){return a < 4;})
-                        .where([](int a){return a%2 == 1;});
+                        .where([](int a){return a%2 == 1;})
+                        .toVector();
 
     std::vector<int> ans;
     ans.push_back(1);
@@ -95,7 +92,8 @@ TEST(Linq, WhereLess_WhereOdd_OrderByDesc)
 
     auto rng = from(src).where([](int a){return a < 6;})
                         .where([](int a){return a%2 == 1;})
-                        .orderBy([](int a){return -a;});
+                        .orderBy([](int a){return -a;})
+                        .toVector();
 
     std::vector<int> ans;
     ans.push_back(5);
@@ -117,7 +115,8 @@ TEST(Linq, WhereOdd_ToVector)
     src.push_back(7);
     src.push_back(8);
 
-    auto dst = from(src).where([](int a){return a%2 == 1;});
+    auto dst = from(src).where([](int a){return a%2 == 1;})
+                        .toVector();
 
     std::vector<int> ans;
     ans.push_back(1);
@@ -210,34 +209,14 @@ TEST(Linq, Pointer_Front)
 {
     int src[] = {1,2,3,4,5};
 
-    auto dst = from((int*)src, (int*)src+5);
+    auto dst = from<int>((int*)src, (int*)src+5);
 
     for(int i = 1; i <= 5; i++)
     {
-        EXPECT_FALSE(dst.empty());
-        EXPECT_EQ(i, dst.front());
-        EXPECT_EQ(5, dst.back());
-        EXPECT_EQ(i, dst.popFront());
+        EXPECT_EQ(i, dst.nextObject());
     }
 
-    EXPECT_TRUE(dst.empty());
-}
-
-TEST(Linq, Pointer_Back)
-{
-    int src[] = {1,2,3,4,5};
-
-    auto dst = from((int*)src, (int*)src+5);
-
-    for(int i = 5; i >= 1; i--)
-    {
-        EXPECT_FALSE(dst.empty());
-        EXPECT_EQ(1, dst.front());
-        EXPECT_EQ(i, dst.back());
-        EXPECT_EQ(i, dst.popBack());
-    }
-
-    EXPECT_TRUE(dst.empty());
+    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
 }
 
 
@@ -251,30 +230,10 @@ TEST(Linq, Array_Front)
 
     for(int i = 1; i <= 5; i++)
     {
-        EXPECT_FALSE(dst.empty());
-        EXPECT_EQ(i, dst.front());
-        EXPECT_EQ(5, dst.back());
-        EXPECT_EQ(i, dst.popFront());
+        EXPECT_EQ(i, dst.nextObject());
     }
 
-    EXPECT_TRUE(dst.empty());
-}
-
-TEST(Linq, Array_Back)
-{
-    int src[] = {1,2,3,4,5};
-
-    auto dst = from(src);       
-
-    for(int i = 5; i >= 1; i--)
-    {
-        EXPECT_FALSE(dst.empty());
-        EXPECT_EQ(1, dst.front());
-        EXPECT_EQ(i, dst.back());
-        EXPECT_EQ(i, dst.popBack());
-    }
-
-    EXPECT_TRUE(dst.empty());
+    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -299,31 +258,18 @@ TEST(Linq, Creations)
     const int carr[] = {1,2,3,4,5};
     const int * cptr = (const int*)carr;
 
-    auto rng_vec = range(vec);
-    auto rng_cvec = range(cvec);
-    auto rng_arr = range(arr);
-    auto rng_carr = range(carr);
-    auto rng_ptr = range(ptr, ptr+5);
-    auto rng_cptr = range(cptr, cptr+5);
-    auto rng_ptr_length = range(ptr, 5);
-    auto rng_cptr_length = range(cptr, 5);
-    auto rng_vec_iter = range(vec.begin(), vec.end());
-    auto rng_vec_citer = range(vec.cbegin(), vec.cend());
-    auto rng_cvec_iter = range(cvec.begin(), cvec.end());
-    auto rng_cvec_citer = range(cvec.cbegin(), cvec.cend());
-
     auto dst_vec = from(vec);
     auto dst_cvec = from(cvec);
     auto dst_arr = from(arr);
     auto dst_carr = from(carr);
-    auto dst_ptr = from(ptr, ptr+5);
-    auto dst_cptr = from(cptr, cptr+5);
-    auto dst_ptr_length = from(ptr, 5);
-    auto dst_cptr_length = from(cptr, 5);
-    auto dst_vec_iter = from(vec.begin(), vec.end());
-    auto dst_vec_citer = from(vec.cbegin(), vec.cend());
-    auto dst_cvec_iter = from(cvec.begin(), cvec.end());
-    auto dst_cvec_citer = from(cvec.cbegin(), cvec.cend());
+    auto dst_ptr = from<int>(ptr, ptr+5);
+    auto dst_cptr = from<const int>(cptr, cptr+5);
+    auto dst_ptr_length = from<int>(ptr, 5);
+    auto dst_cptr_length = from<const int>(cptr, 5);
+    auto dst_vec_iter = from<int>(vec.begin(), vec.end());
+    auto dst_vec_citer = from<const int>(vec.cbegin(), vec.cend());
+    auto dst_cvec_iter = from<const int>(cvec.begin(), cvec.end());
+    auto dst_cvec_citer = from<const int>(cvec.cbegin(), cvec.cend());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -335,6 +281,13 @@ TEST(Linq, MessagesCountUniqueContacts)
         std::string PhoneA;
         std::string PhoneB;
         std::string Text;
+
+        bool operator < (const Message & rhs) const
+        {
+            return (PhoneA < rhs.PhoneA)
+                || (PhoneA == rhs.PhoneA) && (PhoneB < rhs.PhoneB)
+                || (PhoneA == rhs.PhoneA) && (PhoneB == rhs.PhoneB) && (Text < rhs.Text);
+        }
     };
 
     Message messages[] =
@@ -359,8 +312,8 @@ TEST(Linq, MessagesCountUniqueContacts)
 TEST(Linq, ForwardIterating)
 {
     std::stringstream stream("0123456789");
-    auto dst = from(std::istream_iterator<char>(stream),
-                    std::istream_iterator<char>())
+    auto dst = from<char>(std::istream_iterator<char>(stream),
+                          std::istream_iterator<char>())
                .where( [](char a){return a % 2 == 0;})
                .select([](char a){return std::string(1,a);})
                .sum();

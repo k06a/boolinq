@@ -7,7 +7,7 @@
 #include <gtest/gtest.h>
 #include "CommonTests.h"
 
-#include "IterRange.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -24,9 +24,9 @@ TEST(IterRange, ListInt)
 
     int ans[] = {1,2,3,4,5};
 
-    CheckRangeEqArray(range(lst), ans);
-    CheckRangeEqArray(range(lst.begin(), lst.end()), ans);
-    CheckRangeEqArray(range(lst.cbegin(), lst.cend()), ans);
+    CheckRangeEqArray(from(lst), ans);
+    CheckRangeEqArray(from<int>(lst.begin(), lst.end()), ans);
+    CheckRangeEqArray(from<int>(lst.cbegin(), lst.cend()), ans);
 }
 
 TEST(IterRange, DequeInt)
@@ -40,9 +40,9 @@ TEST(IterRange, DequeInt)
     
     int ans[] = {1,2,3,4,5};
 
-    CheckRangeEqArray(range(dck), ans);
-    CheckRangeEqArray(range(dck.begin(), dck.end()), ans);
-    CheckRangeEqArray(range(dck.cbegin(), dck.cend()), ans);
+    CheckRangeEqArray(from(dck), ans);
+    CheckRangeEqArray(from<int>(dck.begin(), dck.end()), ans);
+    CheckRangeEqArray(from<int>(dck.cbegin(), dck.cend()), ans);
 }
 
 TEST(IterRange, VectorInt)
@@ -56,9 +56,9 @@ TEST(IterRange, VectorInt)
     
     int ans[] = {1,2,3,4,5};
 
-    CheckRangeEqArray(range(vec), ans);
-    CheckRangeEqArray(range(vec.begin(), vec.end()), ans);
-    CheckRangeEqArray(range(vec.cbegin(), vec.cend()), ans);
+    CheckRangeEqArray(from(vec), ans);
+    CheckRangeEqArray(from<int>(vec.begin(), vec.end()), ans);
+    CheckRangeEqArray(from<int>(vec.cbegin(), vec.cend()), ans);
 }
 
 TEST(IterRange, ArrayInt)
@@ -68,9 +68,9 @@ TEST(IterRange, ArrayInt)
     
     int ans[] = {1,2,3,4,5};
 
-    CheckRangeEqArray(range(arr), ans);
-    CheckRangeEqArray(range(ptr, 5), ans);
-    CheckRangeEqArray(range(ptr, ptr+5), ans);
+    CheckRangeEqArray(from(arr), ans);
+    CheckRangeEqArray(from<int>(ptr, 5), ans);
+    CheckRangeEqArray(from<int>(ptr, ptr+5), ans);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ TEST(IterRange, OneElement)
     int src[] = {5};
     int ans[] = {5};
 
-    auto rng = range(src);
+    auto rng = from(src);
 
     CheckRangeEqArray(rng, ans);
 }
@@ -89,7 +89,7 @@ TEST(IterRange, EmptyVector)
 {
     std::vector<int> src;
     
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_TRUE(rng.empty());
+    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
 }

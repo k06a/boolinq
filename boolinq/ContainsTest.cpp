@@ -4,8 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "Contains.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -16,14 +15,14 @@ TEST(Contains, ThreeInts)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_TRUE(contains(rng,1));
-    EXPECT_TRUE(contains(rng,2));
-    EXPECT_TRUE(contains(rng,3));
+    EXPECT_TRUE(rng.contains(1));
+    EXPECT_TRUE(rng.contains(2));
+    EXPECT_TRUE(rng.contains(3));
 
-    EXPECT_FALSE(contains(rng,0));
-    EXPECT_FALSE(contains(rng,4));
+    EXPECT_FALSE(rng.contains(0));
+    EXPECT_FALSE(rng.contains(4));
 }
 
 TEST(Contains, FiveStrings)
@@ -35,14 +34,14 @@ TEST(Contains, FiveStrings)
     src.push_back("oracle");
     src.push_back("ponny");
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_TRUE(contains(rng,"hello"));
-    EXPECT_TRUE(contains(rng,"apple"));
-    EXPECT_TRUE(contains(rng,"nokia"));
-    EXPECT_TRUE(contains(rng,"oracle"));
-    EXPECT_TRUE(contains(rng,"ponny"));
+    EXPECT_TRUE(rng.contains("hello"));
+    EXPECT_TRUE(rng.contains("apple"));
+    EXPECT_TRUE(rng.contains("nokia"));
+    EXPECT_TRUE(rng.contains("oracle"));
+    EXPECT_TRUE(rng.contains("ponny"));
 
-    EXPECT_FALSE(contains(rng,"dino"));
-    EXPECT_FALSE(contains(rng,"lord"));
+    EXPECT_FALSE(rng.contains("dino"));
+    EXPECT_FALSE(rng.contains("lord"));
 }

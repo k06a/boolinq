@@ -4,8 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "Any.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -16,19 +15,19 @@ TEST(Any, ThreeInts)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_TRUE(any(rng));
+    EXPECT_TRUE(rng.any());
 
-    EXPECT_TRUE(any(rng,[](int a){return a==1;}));
-    EXPECT_TRUE(any(rng,[](int a){return a==2;}));
-    EXPECT_TRUE(any(rng,[](int a){return a==3;}));
-    EXPECT_TRUE(any(rng,[](int a){return a>1;}));
-    EXPECT_TRUE(any(rng,[](int a){return a<3;}));
-    EXPECT_TRUE(any(rng,[](int a){return a!=2;}));
+    EXPECT_TRUE(rng.any([](int a){return a==1;}));
+    EXPECT_TRUE(rng.any([](int a){return a==2;}));
+    EXPECT_TRUE(rng.any([](int a){return a==3;}));
+    EXPECT_TRUE(rng.any([](int a){return a>1;}));
+    EXPECT_TRUE(rng.any([](int a){return a<3;}));
+    EXPECT_TRUE(rng.any([](int a){return a!=2;}));
 
-    EXPECT_FALSE(any(rng,[](int a){return a==0;}));
-    EXPECT_FALSE(any(rng,[](int a){return a==4;}));
-    EXPECT_FALSE(any(rng,[](int a){return a<1;}));
-    EXPECT_FALSE(any(rng,[](int a){return a>3;}));
+    EXPECT_FALSE(rng.any([](int a){return a==0;}));
+    EXPECT_FALSE(rng.any([](int a){return a==4;}));
+    EXPECT_FALSE(rng.any([](int a){return a<1;}));
+    EXPECT_FALSE(rng.any([](int a){return a>3;}));
 }

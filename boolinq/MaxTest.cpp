@@ -4,8 +4,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "Max.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -16,10 +15,10 @@ TEST(Max, ThreeInts)
     src.push_back(2);
     src.push_back(3);
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_EQ(3, max(rng));
-    EXPECT_EQ(1, max(rng,[](int a){return -a;}));
+    EXPECT_EQ(3, rng.max());
+    EXPECT_EQ(1, rng.max([](int a){return -a;}));
 }
 
 TEST(Max, FiveStrings)
@@ -29,8 +28,8 @@ TEST(Max, FiveStrings)
     src.push_back("apple");
     src.push_back("zip");
 
-    auto rng = range(src);
+    auto rng = from(src);
 
-    EXPECT_EQ("zip",  max(rng));
-    EXPECT_EQ("apple", max(rng,[](const std::string s){return s.size();}));
+    EXPECT_EQ("zip",  rng.max());
+    EXPECT_EQ("apple", rng.max([](std::string s){return s.size();}));
 }

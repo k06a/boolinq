@@ -5,8 +5,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "IterRange.h"
-#include "ForEach.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -18,7 +17,7 @@ TEST(ForEach, ThreeCharsSum)
     src.push_back('c');
 
     std::string str = "";
-    for_each(range(src), [&](char a){str += a;});
+    from(src).foreach([&](char a){str += a;});
 
     EXPECT_EQ("abc", str);
 }
@@ -31,7 +30,7 @@ TEST(ForEach, ThreeCharsUpperSum)
     src.push_back('c');
 
     std::string str = "";
-    for_each(range(src), [&](char a){str += a + ('A' - 'a');});
+    from(src).foreach([&](char a){str += a + ('A' - 'a');});
 
     EXPECT_EQ("ABC", str);
 }
@@ -44,7 +43,7 @@ TEST(ForEach, ThreeIntsSum)
     src.push_back(30);
 
     int sum = 0;
-    for_each(range(src), [&](int a){sum += a;});
+    from(src).foreach([&](int a){sum += a;});
 
     EXPECT_EQ(60, sum);
 }

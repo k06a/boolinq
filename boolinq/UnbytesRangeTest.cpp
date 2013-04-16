@@ -5,8 +5,7 @@
 #include <gtest/gtest.h>
 #include "CommonTests.h"
 
-#include "IterRange.h"
-#include "UnbytesRange.h"
+#include "boolinq.h"
 
 using namespace boolinq;
 
@@ -17,8 +16,8 @@ TEST(UnbytesRange, OneIntDefault)
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     int ans[] = {0xDDCCBBAA};
 
-    auto rng = range(src);
-    auto dst = unbytes<int>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -28,8 +27,8 @@ TEST(UnbytesRange, OneIntFL)
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     int ans[] = {0xDDCCBBAA};
 
-    auto rng = range(src);
-    auto dst = unbytes<int,FirstToLast>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>(FirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -39,8 +38,8 @@ TEST(UnbytesRange, OneIntLF)
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     int ans[] = {0xAABBCCDD};
 
-    auto rng = range(src);
-    auto dst = unbytes<int,LastToFirst>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>(LastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -56,8 +55,8 @@ TEST(UnbytesRange, TwoIntsDefault)
     };
     int ans[] = {0x12345678,0xDDCCBBAA};
 
-    auto rng = range(src);
-    auto dst = unbytes<int>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -71,8 +70,8 @@ TEST(UnbytesRange, TwoIntsFL)
     };
     int ans[] = {0x12345678,0xDDCCBBAA};
 
-    auto rng = range(src);
-    auto dst = unbytes<int,FirstToLast>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>(FirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -86,8 +85,8 @@ TEST(UnbytesRange, TwoIntsLF)
     };
     int ans[] = {0x78563412,0xAABBCCDD};
 
-    auto rng = range(src);
-    auto dst = unbytes<int,LastToFirst>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>(LastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -98,8 +97,8 @@ TEST(UnbytesRange, EmptyDefault)
 {
     std::vector<unsigned char> src;
     
-    auto rng = range(src);
-    auto dst = unbytes<int>(rng);
+    auto rng = from(src);
+    auto dst = rng.unbytes<int>();
 
-    EXPECT_TRUE(dst.empty());
+    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
 }
