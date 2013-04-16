@@ -1,13 +1,11 @@
-boolinq
+boolinq 2.0
 =======
 
 C++ header-only Ranges and LINQ template library
 
 Just imagine LINQ support for STL/Qt collections :)
 
-Let's talk about library here: boolinq google group
-
-Get source code here: **boolinq-all.h**
+Get source code here: **boolinq.h**
 
 ###How it looks like?
 
@@ -150,17 +148,3 @@ int DenisUniqueContactCount =
 - rightJoin
 - crossJoin
 - fullJoin
-
-###What are you waiting?
-
-Would like to comment? - Let's go!
-
-Would like to discuss? - Let's go!
-
-Would like to participate? - Let's go!
-
---
-
-Bukov Anton (k06a)
-
-k06aaa@gmail.com
