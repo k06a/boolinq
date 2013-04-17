@@ -211,7 +211,9 @@ namespace boolinq
         template<typename TRet>
         LinqObj<Enumerator<T,std::pair<TE,std::set<TRet> > > > distinct(std::function<TRet(T)> transform) const
         {
-            return Enumerator<T,std::pair<TE,std::set<TRet> > >([=](std::pair<TE,std::set<TRet> > & pair)->T{
+            typedef std::pair<TE,std::set<TRet> > DataType;
+
+            return Enumerator<T,DataType>([=](DataType & pair)->T{
                 for (;;)
                 {
                     T object = pair.first.nextObject();
@@ -530,7 +532,9 @@ namespace boolinq
         template<typename TE2>
         LinqObj<Enumerator<T,std::pair<bool,std::pair<TE,TE2> > > > concat(LinqObj<TE2> rhs) const
         {
-            return Enumerator<T,std::pair<bool,std::pair<TE,TE2> > >([=](std::pair<bool,std::pair<TE,TE2> > & pair)->T{
+            typedef std::pair<bool,std::pair<TE,TE2> > DataType;
+
+            return Enumerator<T,DataType>([=](DataType & pair)->T{
                 if (pair.first)
                     return pair.second.second.nextObject();
                 try { return pair.second.first.nextObject(); }
@@ -600,10 +604,12 @@ namespace boolinq
 
         LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > > bytes(BytesDirection direction = FirstToLast) const
         {
+            typedef std::pair<int,std::pair<TE,T> > DataType;
+
             auto pair = std::make_pair(_enumerator, T());
             pair.second =  pair.first.nextObject();
 
-            return Enumerator<int,std::pair<int,std::pair<TE,T> > >([=](std::pair<int,std::pair<TE,T> > & pair)->int{
+            return Enumerator<int,DataType>([=](DataType & pair)->int{
                 if (direction == FirstToLast && pair.first == sizeof(T)
                     || direction == LastToFirst && pair.first == -1)
                 {
@@ -636,20 +642,21 @@ namespace boolinq
         LinqObj<Enumerator<int,std::pair<int,std::pair<LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > >,unsigned char> > > > 
         bits(BitsDirection direction = HighToLow, BytesDirection bytesDirection = FirstToLast) const
         {
+            typedef std::pair<int,std::pair<LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > >,unsigned char> > DataType;
+
             auto inner = bytes(bytesDirection);
-            return Enumerator<int,std::pair<int,std::pair<LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > >,unsigned char> > >(
-                [=](std::pair<int,std::pair<LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > >,unsigned char> > & pair)->int{
-                    if (direction == LowToHigh && pair.first == CHAR_BIT
-                        || direction == HighToLow && pair.first == -1)
-                    {
-                        pair.first = (direction == LowToHigh) ? 0 : CHAR_BIT-1;
-                        pair.second.second = pair.second.first.nextObject();
-                    }
-                    int value = 1 & (pair.second.second >> (pair.first % CHAR_BIT));
-                    pair.first += (direction == LowToHigh) ? 1 : -1;
-                    return value;
-                }, std::make_pair((direction == LowToHigh) ? 0 : CHAR_BIT-1,
-                                  std::make_pair(inner, inner.nextObject())));
+            return Enumerator<int,DataType>([=](DataType & pair)->int{
+                if (direction == LowToHigh && pair.first == CHAR_BIT
+                    || direction == HighToLow && pair.first == -1)
+                {
+                    pair.first = (direction == LowToHigh) ? 0 : CHAR_BIT-1;
+                    pair.second.second = (unsigned char)pair.second.first.nextObject();
+                }
+                int value = 1 & (pair.second.second >> (pair.first % CHAR_BIT));
+                pair.first += (direction == LowToHigh) ? 1 : -1;
+                return value;
+            }, std::make_pair((direction == LowToHigh) ? 0 : CHAR_BIT-1,
+                              std::make_pair(inner, inner.nextObject())));
         }
 
         LinqObj<Enumerator<unsigned char,TE> > unbits(BitsDirection direction = HighToLow) const
@@ -657,8 +664,8 @@ namespace boolinq
             return Enumerator<unsigned char,TE>([=](TE & en)->unsigned char{
                 unsigned char object = 0;
                 for (int i = (direction == LowToHigh) ? 0 : CHAR_BIT-1;
-                            i != ((direction == LowToHigh) ? CHAR_BIT : -1);
-                            i += (direction == LowToHigh) ? 1 : -1)
+                         i != ((direction == LowToHigh) ? CHAR_BIT : -1);
+                         i += (direction == LowToHigh) ? 1 : -1)
                 {
                     object |= (en.nextObject() << i);
                 }
