@@ -128,7 +128,7 @@
     <ClCompile Include="SpeedTest.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
-    <ClCompile Include="TakeWhileRange.cpp">
+    <ClCompile Include="TakeWhileRangeTest.cpp">
       <Filter>Test Files\Ranges</Filter>
     </ClCompile>
   </ItemGroup>

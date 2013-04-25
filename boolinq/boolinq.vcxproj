@@ -100,7 +100,7 @@
     <ClCompile Include="TakeRangeTest.cpp" />
     <ClCompile Include="BytesRangeTest.cpp" />
     <ClCompile Include="BitsRangeTest.cpp" />
-    <ClCompile Include="TakeWhileRange.cpp" />
+    <ClCompile Include="TakeWhileRangeTest.cpp" />
     <ClCompile Include="ToDequeTest.cpp" />
     <ClCompile Include="ToListTest.cpp" />
     <ClCompile Include="LinqTest.cpp" />
