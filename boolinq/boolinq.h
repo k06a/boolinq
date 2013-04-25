@@ -171,6 +171,20 @@ namespace boolinq
             return where_i([=](T, int i){return i < count;});
         }
 
+        LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile_i(std::function<bool(T,int)> predicate) const
+        {
+            return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
+                T object = pair.first.nextObject();
+                if(!predicate(object,pair.second++)) throw EnumeratorEndException();
+                return object;
+            }, std::make_pair(_enumerator,0));
+        }
+
+        LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile(std::function<bool(T)> predicate) const
+        {
+            return takeWhile_i([=](T a,int){return predicate(a);});
+        }
+
         LinqObj<Enumerator<T,std::pair<TE,int> > > skip(int count) const
         {
             return where_i([=](T, int i){return i >= count;});
