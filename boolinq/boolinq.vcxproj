@@ -95,6 +95,7 @@
     <ClCompile Include="ReverseRangeTest.cpp" />
     <ClCompile Include="SelectRangeTest.cpp" />
     <ClCompile Include="SkipRangeTest.cpp" />
+    <ClCompile Include="SkipWhileRangeTest.cpp" />
     <ClCompile Include="SpeedTest.cpp" />
     <ClCompile Include="SumTest.cpp" />
     <ClCompile Include="TakeRangeTest.cpp" />

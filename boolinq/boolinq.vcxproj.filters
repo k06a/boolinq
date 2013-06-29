@@ -131,6 +131,9 @@
     <ClCompile Include="TakeWhileRangeTest.cpp">
       <Filter>Test Files\Ranges</Filter>
     </ClCompile>
+    <ClCompile Include="SkipWhileRangeTest.cpp">
+      <Filter>Test Files\Ranges</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boolinq.h">
