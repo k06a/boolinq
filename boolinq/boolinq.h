@@ -182,7 +182,7 @@ namespace boolinq
 
         LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile(std::function<bool(T)> predicate) const
         {
-            return takeWhile_i([=](T a,int){return predicate(a);});
+            return takeWhile_i([=](T t,int){return predicate(t);});
         }
 
         LinqObj<Enumerator<T,std::pair<TE,int> > > skip(int count) const
@@ -190,19 +190,26 @@ namespace boolinq
             return where_i([=](T, int i){return i >= count;});
         }
 
-        LinqObj<Enumerator<T,std::pair<TE,int> > > skipWhile(std::function<bool(T)> predicate) const
+        LinqObj<Enumerator<T,std::pair<TE,int> > > skipWhile_i(std::function<bool(T,int)> predicate) const
         {
             auto enumerator = _enumerator;
 
             try
             {
-                while(predicate(TE(enumerator).nextObject()));
+                int i = 0;
+                while(predicate(TE(enumerator).nextObject(),i++))
+                    enumerator.nextObject();
             }
             catch(EnumeratorEndException &){}
 
             return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
                 return pair.first.nextObject();
             }, std::make_pair(enumerator,0));
+        }
+
+        LinqObj<Enumerator<T,std::pair<TE,int> > > skipWhile(std::function<bool(T)> predicate) const
+        {
+            return skipWhile_i([=](T t, int /*i*/){ return predicate(t);});
         }
 
         template<typename TRet>
