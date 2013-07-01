@@ -193,16 +193,15 @@ namespace boolinq
         LinqObj<Enumerator<T,std::pair<TE,int> > > skipWhile_i(std::function<bool(T,int)> predicate) const
         {
             return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
-                if( 0 == pair.second )
-                {
-                    T t;
-                    do
-                        t = pair.first.nextObject();
-                    while (predicate(t,pair.second++));
-                    return t;
-                }
+                if (pair.second != 0)
+                    return pair.first.nextObject();
 
-                return pair.first.nextObject();
+                T object;
+                do
+                    object = pair.first.nextObject();
+                while (predicate(object,pair.second++));
+
+                return object;
             }, std::make_pair(_enumerator,0));
         }
 
