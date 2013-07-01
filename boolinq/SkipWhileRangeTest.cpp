@@ -19,8 +19,6 @@ TEST(SkipWhileRange, ManyToMore)
     auto rng = from(src);
     auto dst = rng.skipWhile([](int it){return it < 0 || it > 10;});
 
-    auto vec = dst.toVector();
-
     CheckRangeEqArray(dst, ans);
 }
 
