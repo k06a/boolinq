@@ -713,8 +713,8 @@ namespace boolinq
             return unbits(direction).unbytes<TRet>(bytesDirection);
         }
 
-        template<typename TE>
-        friend std::ostream & operator << (std::ostream & stream, LinqObj<TE> linq);
+        template<typename TE_>
+        friend std::ostream & operator << (std::ostream & stream, LinqObj<TE_> linq);
     };
 
     template<typename TE>
