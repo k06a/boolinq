@@ -2,6 +2,10 @@
 
 #include <set>
 
+#include "boolinq.h"
+
+using namespace boolinq;
+
 //////////////////////////////////////////////////////////////////////////
 // Compare Range with array
 //////////////////////////////////////////////////////////////////////////
@@ -44,8 +48,8 @@ void CheckRangeEqSet(R dst, T (&ans)[N])
 
     EXPECT_EQ(expected.size(), actual.size());
 
-    std::set<T>::iterator it1 = expected.begin();
-    std::set<typename R::value_type>::iterator it2 = actual.begin();
+    typename std::set<T>::iterator it1 = expected.begin();
+    typename std::set<typename R::value_type>::iterator it2 = actual.begin();
     for(; it1 != expected.end() && it2 != actual.end(); it1++, it2++)
     {
         EXPECT_EQ(*it2, *it1);

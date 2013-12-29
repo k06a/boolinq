@@ -1,6 +1,5 @@
 #include <list>
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "boolinq.h"
