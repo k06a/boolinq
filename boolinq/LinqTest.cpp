@@ -249,27 +249,27 @@ TEST(Linq, Creations)
     int arr[] = {1,2,3,4,5};
     int * ptr = (int*)arr;
 
-    std::vector<const int> cvec;
-    cvec.push_back(1);
-    cvec.push_back(2);
-    cvec.push_back(3);
-    cvec.push_back(4);
-    cvec.push_back(5);
+    //std::vector<const int> cvec;
+    //cvec.push_back(1);
+    //cvec.push_back(2);
+    //cvec.push_back(3);
+    //cvec.push_back(4);
+    //cvec.push_back(5);
     const int carr[] = {1,2,3,4,5};
     const int * cptr = (const int*)carr;
 
     auto dst_vec = from(vec);
-    auto dst_cvec = from(cvec);
+    //auto dst_cvec = from(cvec);
     auto dst_arr = from(arr);
-    auto dst_carr = from(carr);
+    //auto dst_carr = from(carr);
     auto dst_ptr = from<int>(ptr, ptr+5);
-    auto dst_cptr = from<const int>(cptr, cptr+5);
+    //auto dst_cptr = from<const int>(cptr, cptr+5);
     auto dst_ptr_length = from<int>(ptr, 5);
-    auto dst_cptr_length = from<const int>(cptr, 5);
+    //auto dst_cptr_length = from<const int>(cptr, 5);
     auto dst_vec_iter = from<int>(vec.begin(), vec.end());
-    auto dst_vec_citer = from<const int>(vec.cbegin(), vec.cend());
-    auto dst_cvec_iter = from<const int>(cvec.begin(), cvec.end());
-    auto dst_cvec_citer = from<const int>(cvec.cbegin(), cvec.cend());
+    //auto dst_vec_citer = from<const int>(vec.cbegin(), vec.cend());
+    //auto dst_cvec_iter = from<const int>(cvec.begin(), cvec.end());
+    //auto dst_cvec_citer = from<const int>(cvec.cbegin(), cvec.cend());
 }
 
 //////////////////////////////////////////////////////////////////////////
