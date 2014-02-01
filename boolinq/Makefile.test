@@ -41,7 +41,6 @@ SRC                 = AllTest.cpp \
                       SelectRangeTest.cpp \
                       SkipRangeTest.cpp \
                       SkipWhileRangeTest.cpp \
-                      SpeedTest.cpp \
                       SumTest.cpp \
                       TakeRangeTest.cpp \
                       TakeWhileRangeTest.cpp \

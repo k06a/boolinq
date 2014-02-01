@@ -1,0 +1,32 @@
+OPTIMIZATION       ?= O0
+
+CXX                 = g++
+INCLUDES            = -I. -I../benchmark/include
+CXXFLAGS            = -c \
+                      -MD \
+                      -std=c++11 -march=native -mtune=native \
+                      -Wall -Wextra \
+                      -$(OPTIMIZATION)
+LDPATH              = -L../benchmark/lib
+LDADD               = -lbenchmark -lpthread -lgtest -lgtest_main
+SRC                 = SpeedTest.cpp
+
+OBJ                 = $(SRC:.cpp=.o)
+BENCHMARK           = boolinqbenchmakr
+
+TMP_DATA            = $(shell find . -type f -name '*~')
+
+
+all: $(BENCHMARK)
+
+
+$(BENCHMARK): $(OBJ)
+	$(CXX) $(OBJ) $(LDPATH) $(LDADD) -o $@
+
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+
+clean:
+	rm -rf $(OBJ) $(BENCHMARK) $(TMP_DATA) $(COV_DATA) $(PRO_DATA)
