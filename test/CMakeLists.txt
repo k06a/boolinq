@@ -12,44 +12,56 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 SET (CMAKE_SHARED_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 
 
+INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
+INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/externals/gtest/include)
+
+
 # Unit tests.
 SET (
     BoolinqTest_SOURCES
-    ${PROJECT_SOURCE_DIR}/boolinq/AllTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/AnyTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/AvgTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/BitsRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/BytesRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ConcatRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ContainsTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/CountTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/DistinctRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/DotCallTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ElementAtTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ForeachTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/GroupByRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/IterRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/LinqTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/MaxTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/MinTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/OrderByRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ReverseRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/SelectRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/SkipRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/SkipWhileRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/SumTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/TakeRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/TakeWhileRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ToDequeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ToListTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ToSetTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/ToVectorTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/UnbitsRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/UnbytesRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/boolinq/WhereRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/AllTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/AnyTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/AvgTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/BitsRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/BytesRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ConcatRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ContainsTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/CountTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/DistinctRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/DotCallTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ElementAtTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ForeachTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/GroupByRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/IterRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/LinqTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/MaxTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/MinTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/OrderByRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ReverseRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SelectRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SkipRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SkipWhileRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SumTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/TakeRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/TakeWhileRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToDequeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToListTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToSetTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToVectorTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/UnbitsRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/UnbytesRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/WhereRangeTest.cpp
 )
-ADD_EXECUTABLE (boolinqtest ${BoolinqTest_SOURCES})
-TARGET_LINK_LIBRARIES (boolinqtest gtest gtest_main gcov pthread)
+ADD_EXECUTABLE (
+    boolinqtest
+    ${BoolinqTest_SOURCES}
+)
+TARGET_LINK_LIBRARIES (
+    boolinqtest
+    gtest_main
+    gcov
+    pthread
+)
 ENABLE_TESTING ()
 ADD_TEST (BoolinqTest boolinqtest)
 
@@ -73,12 +85,3 @@ LIST (APPEND Coverage_DATA "${Coverage_DIR}")
 LIST (APPEND Coverage_DATA "${Coverage_GCNO}")
 LIST (APPEND Coverage_DATA "${Coverage_GCDA}")
 SET_DIRECTORY_PROPERTIES (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${Coverage_DATA}")
-
-
-# Benchmarks.
-SET (
-    BoolinqBenchmark_SOURCES
-    ${PROJECT_SOURCE_DIR}/boolinq/SpeedTest.cpp
-)
-ADD_EXECUTABLE (boolinqbenchmark ${BoolinqBenchmark_SOURCES})
-TARGET_LINK_LIBRARIES (boolinqbenchmark gtest pthread benchmark)
