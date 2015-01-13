@@ -8,8 +8,6 @@ SET (boolinq_VERSION_MINOR 0)
 SET (CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS} -O0 -ggdb3 -DDEBUG")
 SET (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
 
-INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR})
-INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/benchmark/include)
 
 # Boolinq source code.
 SET (
@@ -28,11 +26,11 @@ ADD_CUSTOM_TARGET  (cppcheck DEPENDS ${CppCheck_REPORT})
 SET_DIRECTORY_PROPERTIES (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CppCheck_REPORT})
 
 
-# Testing (available only if appropriate tools are exist).
-FIND_PACKAGE (GTest)
-# FIXME: I have no idea why this condition doesn't work!?
-#IF (GTest_FOUND)
-    ADD_SUBDIRECTORY (boolinq)
-    ADD_SUBDIRECTORY (benchmark)
-    ADD_DEPENDENCIES (boolinqbenchmark benchmark)
-#ENDIF ()
+# Testing.
+ADD_SUBDIRECTORY (externals/gtest)
+ADD_SUBDIRECTORY (externals/benchmark)
+ADD_SUBDIRECTORY (test)
+ADD_SUBDIRECTORY (benchmark)
+ADD_DEPENDENCIES (boolinqbenchmark gtest)
+ADD_DEPENDENCIES (boolinqbenchmark gtest_main)
+ADD_DEPENDENCIES (boolinqbenchmark benchmark)

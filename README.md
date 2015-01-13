@@ -5,7 +5,7 @@ C++ header-only Ranges and LINQ template library
 
 Just imagine LINQ support for STL/Qt collections :)
 
-Get source code here: **[boolinq.h](https://github.com/k06a/boolinq/blob/master/boolinq/boolinq.h)**
+Get source code here: **[boolinq.h](https://github.com/k06a/boolinq/blob/master/include/boolinq/boolinq.h)**
 
 ###How it looks like?
 
