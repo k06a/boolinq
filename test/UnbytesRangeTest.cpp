@@ -13,7 +13,7 @@ using namespace boolinq;
 TEST(UnbytesRange, OneIntDefault)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
-    int ans[] = {0xDDCCBBAA};
+    unsigned ans[] = {0xDDCCBBAA};
 
     auto rng = from(src);
     auto dst = rng.unbytes<int>();
@@ -24,10 +24,10 @@ TEST(UnbytesRange, OneIntDefault)
 TEST(UnbytesRange, OneIntFL)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
-    int ans[] = {0xDDCCBBAA};
+    unsigned ans[] = {0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<int>(FirstToLast);
+    auto dst = rng.unbytes<unsigned>(FirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -35,10 +35,10 @@ TEST(UnbytesRange, OneIntFL)
 TEST(UnbytesRange, OneIntLF)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
-    int ans[] = {0xAABBCCDD};
+    unsigned ans[] = {0xAABBCCDD};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<int>(LastToFirst);
+    auto dst = rng.unbytes<unsigned>(LastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -52,10 +52,10 @@ TEST(UnbytesRange, TwoIntsDefault)
         0x78,0x56,0x34,0x12,
         0xAA,0xBB,0xCC,0xDD,
     };
-    int ans[] = {0x12345678,0xDDCCBBAA};
+    unsigned ans[] = {0x12345678,0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<int>();
+    auto dst = rng.unbytes<unsigned>();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -67,10 +67,10 @@ TEST(UnbytesRange, TwoIntsFL)
         0x78,0x56,0x34,0x12,
         0xAA,0xBB,0xCC,0xDD,
     };
-    int ans[] = {0x12345678,0xDDCCBBAA};
+    unsigned ans[] = {0x12345678,0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<int>(FirstToLast);
+    auto dst = rng.unbytes<unsigned>(FirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -82,10 +82,10 @@ TEST(UnbytesRange, TwoIntsLF)
         0x78,0x56,0x34,0x12,
         0xAA,0xBB,0xCC,0xDD,
     };
-    int ans[] = {0x78563412,0xAABBCCDD};
+    unsigned ans[] = {0x78563412,0xAABBCCDD};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<int>(LastToFirst);
+    auto dst = rng.unbytes<unsigned>(LastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }

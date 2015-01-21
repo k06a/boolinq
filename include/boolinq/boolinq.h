@@ -73,8 +73,8 @@ namespace boolinq
         TC second;
         TI first;
         
-        IteratorContainerPair(const TC & tc, std::function<TI(const TC &)> get_ti)
-            : get_ti(get_ti)
+        IteratorContainerPair(const TC & tc, std::function<TI(const TC &)> get_ti_)
+            : get_ti(get_ti_)
             , second(tc)
             , first(get_ti(second))
         {
@@ -283,7 +283,7 @@ namespace boolinq
         {
         public:
             std::function<TRet(T)> func;
-            transform_comparer(std::function<TRet(T)> func) : func(func) {}
+            transform_comparer(std::function<TRet(T)> func_) : func(func_) {}
 
             bool operator()(const T & a, const T & b) const
             {
@@ -525,7 +525,7 @@ namespace boolinq
 
         T first() const
         {
-            return first([](T a){return true;});
+            return first([](T){return true;});
         }
 
         T firstOrDefault(std::function<bool(T)> predicate)
@@ -550,7 +550,7 @@ namespace boolinq
 
         T last() const
         {
-            return last([](T a){return true;});
+            return last([](T){return true;});
         }
 
         T lastOrDefault(std::function<bool(T)> predicate) const
@@ -561,7 +561,7 @@ namespace boolinq
 
         T lastOrDefault() const
         {
-            return lastOrDefault([](T a){return true;});
+            return lastOrDefault([](T){return true;});
         }
 
         // Set methods
@@ -646,16 +646,16 @@ namespace boolinq
             auto pair = std::make_pair(_enumerator, T());
             pair.second =  pair.first.nextObject();
 
-            return Enumerator<int,DataType>([=](DataType & pair)->int{
-                if (direction == FirstToLast && pair.first == sizeof(T)
-                    || direction == LastToFirst && pair.first == -1)
+            return Enumerator<int,DataType>([=](DataType & pair_)->int{
+                if ((direction == FirstToLast && pair_.first == sizeof(T))
+                    || (direction == LastToFirst && pair_.first == -1))
                 {
-                    pair.first = (direction == FirstToLast) ? 0 : sizeof(T)-1;
-                    pair.second.second = pair.second.first.nextObject();
+                    pair_.first = (direction == FirstToLast) ? 0 : sizeof(T)-1;
+                    pair_.second.second = pair_.second.first.nextObject();
                 }
-                unsigned char * ptr = (unsigned char *)&pair.second.second;
-                int value = ptr[pair.first];
-                pair.first += (direction == FirstToLast) ? 1 : -1;
+                unsigned char * ptr = reinterpret_cast<unsigned char *>(&pair_.second.second);
+                int value = ptr[pair_.first];
+                pair_.first += (direction == FirstToLast) ? 1 : -1;
                 return value;
             }, std::make_pair((direction == FirstToLast) ? 0 : sizeof(T)-1, pair));
         }
@@ -665,9 +665,9 @@ namespace boolinq
         {
             return Enumerator<TRet,TE>([=](TE & en)->TRet{
                 TRet object;
-                unsigned char * ptr = (unsigned char *)&object;
-                for (int i = (direction == FirstToLast) ? 0 : (int)sizeof(TRet)-1;
-                     i != ((direction == FirstToLast) ? (int)sizeof(TRet) : -1);
+                unsigned char * ptr = reinterpret_cast<unsigned char *>(&object);
+                for (int i = (direction == FirstToLast) ? 0 : int(sizeof(TRet)-1);
+                     i != ((direction == FirstToLast) ? int(sizeof(TRet)) : -1);
                      i += (direction == FirstToLast) ? 1 : -1)
                 {
                     ptr[i] = en.nextObject();
@@ -683,11 +683,11 @@ namespace boolinq
 
             auto inner = bytes(bytesDirection);
             return Enumerator<int,DataType>([=](DataType & pair)->int{
-                if (direction == LowToHigh && pair.first == CHAR_BIT
-                    || direction == HighToLow && pair.first == -1)
+                if ((direction == LowToHigh && pair.first == CHAR_BIT)
+                    || (direction == HighToLow && pair.first == -1))
                 {
                     pair.first = (direction == LowToHigh) ? 0 : CHAR_BIT-1;
-                    pair.second.second = (unsigned char)pair.second.first.nextObject();
+                    pair.second.second = static_cast<unsigned char>(pair.second.first.nextObject());
                 }
                 int value = 1 & (pair.second.second >> (pair.first % CHAR_BIT));
                 pair.first += (direction == LowToHigh) ? 1 : -1;
@@ -713,7 +713,7 @@ namespace boolinq
         template<typename TRet>
         LinqObj<Enumerator<TRet,Enumerator<unsigned char,TE> > > unbits(BitsDirection direction = HighToLow, BytesDirection bytesDirection = FirstToLast) const
         {
-            return unbits(direction).unbytes<TRet>(bytesDirection);
+            return unbits(direction).template unbytes<TRet>(bytesDirection);
         }
 
         template<typename TE_>
@@ -761,6 +761,16 @@ namespace boolinq
         return Enumerator<TT,DataType>([](DataType & pair){
             return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
         }, DataType(container, [](const TV<TT,TU> & cont){return cont.cbegin();}));
+    }
+
+    template<template<class,int> class TV, typename TT, int TL>
+    LinqObj<Enumerator<TT,IteratorContainerPair<typename TV<TT,TL>::const_iterator,TV<TT,TL> > > > from(TV<TT,TL> & container)
+    {
+        typedef IteratorContainerPair<typename TV<TT,TL>::const_iterator,TV<TT,TL> > DataType;
+
+        return Enumerator<TT,DataType>([](DataType & pair){
+            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
+        }, DataType(container, [](const TV<TT,TL> & cont){return cont.cbegin();}));
     }
 
     template<typename T>

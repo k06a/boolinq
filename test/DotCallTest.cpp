@@ -14,7 +14,7 @@ using namespace boolinq;
 
 TEST(DotCall, BytesRange)
 {
-    int src[] = {0x12345678,0xAABBCCDD};
+    unsigned src[] = {0x12345678,0xAABBCCDD};
     int ansFL[] = 
     {
         0x78,0x56,0x34,0x12,
@@ -44,8 +44,8 @@ TEST(DotCall, UnbytesRange)
         0x78,0x56,0x34,0x12,
         0xDD,0xCC,0xBB,0xAA,
     };
-    int ansFL[] = {0x12345678,0xAABBCCDD};
-    int ansLF[] = {0x78563412,0xDDCCBBAA};
+    unsigned ansFL[] = {0x12345678,0xAABBCCDD};
+    unsigned ansLF[] = {0x78563412,0xDDCCBBAA};
 
     auto dstFL1 = from(src).unbytes<int>();
     auto dstFL2 = from(src).unbytes<int>(FirstToLast);
@@ -60,7 +60,7 @@ TEST(DotCall, UnbytesRange)
 
 TEST(DotCall, BitsRangeHL)
 {
-    int src[] = {0xAABBCCDD};
+    unsigned src[] = {0xAABBCCDD};
     int ansFL[] = 
     {
         1,1,0,1,1,1,0,1,
@@ -89,7 +89,7 @@ TEST(DotCall, BitsRangeHL)
 
 TEST(DotCall, BitsRangeLH)
 {
-    int src[] = {0xAABBCCDD};
+    unsigned src[] = {0xAABBCCDD};
     int ansFL[] = 
     {
         1,0,1,1,1,0,1,1,
@@ -126,8 +126,8 @@ TEST(DotCall, UnbitsRangeHLFL)
         1,0,1,0,1,0,1,0
     };
     int ans_4b[] = {0xDD,0xCC,0xBB,0xAA};
-    int ans_1i[] = {0xAABBCCDD};
-    int ansLF_1i[] = {0xDDCCBBAA};
+    unsigned ans_1i[] = {0xAABBCCDD};
+    unsigned ansLF_1i[] = {0xDDCCBBAA};
 
     auto dst1_4b = from(src).unbits();
     auto dst2_4b = from(src).unbits(HighToLow);

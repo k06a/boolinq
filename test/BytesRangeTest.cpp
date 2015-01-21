@@ -82,7 +82,7 @@ TEST(BytesRange, OneIntLF)
 
 TEST(BytesRange, IntsDefault)
 {
-    int src[] = {0x12345678, 0xAABBCCDD};
+    unsigned src[] = {0x12345678, 0xAABBCCDD};
     int ans[] = 
     {
         0x78,0x56,0x34,0x12,
@@ -97,7 +97,7 @@ TEST(BytesRange, IntsDefault)
 
 TEST(BytesRange, IntsFL)
 {
-    int src[] = {0x12345678, 0xAABBCCDD};
+    unsigned src[] = {0x12345678, 0xAABBCCDD};
     int ans[] = 
     {
         0x78,0x56,0x34,0x12,
@@ -112,7 +112,7 @@ TEST(BytesRange, IntsFL)
 
 TEST(BytesRange, IntsLF)
 {
-    int src[] = {0x12345678, 0xAABBCCDD};
+    unsigned src[] = {0x12345678, 0xAABBCCDD};
     int ans[] = 
     {
         0x12,0x34,0x56,0x78,
