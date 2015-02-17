@@ -31,14 +31,14 @@ namespace boolinq
     class Enumerator
     {
         std::function<T(S&)> _nextObject;
-	    S _data;
+        S _data;
 
     public:
-	    typedef T value_type;
-	
+        typedef T value_type;
+    
         Enumerator(std::function<T(S&)> nextObject, S data)
             : _nextObject(nextObject)
-		    , _data(data)
+            , _data(data)
         {
         }
 
@@ -51,13 +51,13 @@ namespace boolinq
     template<typename T, typename S>
     std::ostream & operator << (std::ostream & stream, Enumerator<T,S> enumerator)
     {
-	    try
-	    {
-		    for (;;)
-			    stream << enumerator.nextObject() << ' ';
-	    }
-	    catch(EnumeratorEndException &) {}
-	    return stream;
+        try
+        {
+            for (;;)
+                stream << enumerator.nextObject() << ' ';
+        }
+        catch(EnumeratorEndException &) {}
+        return stream;
     }
 
     ////////////////////////////////////////////////////////////////
@@ -753,21 +753,45 @@ namespace boolinq
         return from<T>(array, array + N);
     }
 
+    // std::list, vector, dequeue
     template<template<class,class> class TV, typename TT, typename TU>
-    LinqObj<Enumerator<TT,IteratorContainerPair<typename TV<TT,TU>::const_iterator,TV<TT,TU> > > > from(TV<TT,TU> & container) 
+    auto from(const TV<TT,TU> & container) -> LinqObj<Enumerator<TT,IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TU> > > >
     {
-        typedef IteratorContainerPair<typename TV<TT,TU>::const_iterator,TV<TT,TU> > DataType;
-
+        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TU> > DataType;
+    
         return Enumerator<TT,DataType>([](DataType & pair){
             return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
         }, DataType(container, [](const TV<TT,TU> & cont){return cont.cbegin();}));
     }
 
-    template<template<class,int> class TV, typename TT, int TL>
-    LinqObj<Enumerator<TT,IteratorContainerPair<typename TV<TT,TL>::const_iterator,TV<TT,TL> > > > from(TV<TT,TL> & container)
+    // std::set
+    template<template<class,class,class> class TV, typename TT, typename TS, typename TU>
+    auto from(const TV<TT,TS,TU> & container) -> LinqObj<Enumerator<TT,IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TS,TU> > > >
     {
-        typedef IteratorContainerPair<typename TV<TT,TL>::const_iterator,TV<TT,TL> > DataType;
+        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TS,TU> > DataType;
+    
+        return Enumerator<TT,DataType>([](DataType & pair){
+            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
+        }, DataType(container, [](const TV<TT,TS,TU> & cont){return cont.cbegin();}));
+    }
 
+    // std::map
+    template<template<class,class,class,class> class TV, typename TK, typename TT, typename TS, typename TU>
+    auto from(const TV<TK,TT,TS,TU> & container) -> LinqObj<Enumerator<std::pair<TK,TT>,IteratorContainerPair<decltype(container.cbegin()),const TV<TK,TT,TS,TU> > > >
+    {
+        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TK,TT,TS,TU> > DataType;
+
+        return Enumerator<std::pair<TK,TT>,DataType>([](DataType & pair){
+            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
+        }, DataType(container, [](const TV<TK,TT,TS,TU> & cont){return cont.cbegin();}));
+    }
+
+    // std::array
+    template<template<class,unsigned> class TV, typename TT, unsigned TL>
+    auto from(const TV<TT,TL> & container) -> LinqObj<Enumerator<TT,IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TL> > > >
+    {
+        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TL> > DataType;
+    
         return Enumerator<TT,DataType>([](DataType & pair){
             return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
         }, DataType(container, [](const TV<TT,TL> & cont){return cont.cbegin();}));
