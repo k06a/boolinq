@@ -171,7 +171,16 @@ namespace boolinq
 
         LinqObj<Enumerator<T,std::pair<TE,int> > > take(int count) const
         {
-            return where_i([=](T, int i){return i < count;});
+            return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
+                if (pair.second >= count) {
+                    throw EnumeratorEndException();
+                }
+
+                T object = pair.first.nextObject();
+                ++pair.second;
+
+                return object;
+            }, std::make_pair(_enumerator,0));
         }
 
         LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile_i(std::function<bool(T,int)> predicate) const
