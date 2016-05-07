@@ -5,3 +5,5 @@ ipch
 *.sdf
 *.user
 *.suo
+[Bb]uild*
+nbproject
