@@ -1,0 +1,45 @@
+language: cpp
+sudo: false
+
+cache:
+  apt: true
+  directories:
+    - /tmp/tools
+
+env:
+  global:
+    - PATH="$HOME/bin:$PATH"
+    - CMAKE_VERSION_PREFIX=3.5
+    - CMAKE_VERSION_FULL=3.5.2
+
+matrix:
+  include:
+    - env: CXX=g++-5 CC=gcc-5
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+    - env: CXX=clang++-3.8 CC=clang-3.8
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+          sources: *sources
+
+install:
+  - mkdir -p /tmp/tools
+  - pushd /tmp/tools
+  - if [[ ! -f "cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh" ]]; then
+      curl -SOL "https://cmake.org/files/v$CMAKE_VERSION_PREFIX/cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh";
+      chmod +x "cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh";
+    fi
+  - ./"cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh" --prefix="$HOME" --exclude-subdir --skip-license
+  - popd
+
+script:
+  - mkdir build
+  - cd build
+  - cmake .. && make
