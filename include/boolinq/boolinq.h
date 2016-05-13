@@ -757,48 +757,43 @@ namespace boolinq
         return from<T>(array, array + N);
     }
 
-    // std::list, vector, dequeue
-    template<template<class,class> class TV, typename TT, typename TU>
-    auto from(const TV<TT,TU> & container) -> LinqObj<Enumerator<TT,IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TU> > > >
+    template<template<class> class TV, typename TT>
+    auto from(const TV<TT> & container)
+        -> decltype(from<TT>(std::begin(container), std::end(container)))
     {
-        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TU> > DataType;
-    
-        return Enumerator<TT,DataType>([](DataType & pair){
-            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
-        }, DataType(container, [](const TV<TT,TU> & cont){return cont.cbegin();}));
+        return from<TT>(std::begin(container), std::end(container));
+    }
+
+    // std::list, std::vector, std::dequeue
+    template<template<class,class> class TV, typename TT, typename TU>
+    auto from(const TV<TT,TU> & container)
+        -> decltype(from<TT>(std::begin(container), std::end(container)))
+    {
+        return from<TT>(std::begin(container), std::end(container));
     }
 
     // std::set
     template<template<class,class,class> class TV, typename TT, typename TS, typename TU>
-    auto from(const TV<TT,TS,TU> & container) -> LinqObj<Enumerator<TT,IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TS,TU> > > >
+    auto from(const TV<TT,TS,TU> & container)
+        -> decltype(from<TT>(std::begin(container), std::end(container)))
     {
-        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TS,TU> > DataType;
-    
-        return Enumerator<TT,DataType>([](DataType & pair){
-            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
-        }, DataType(container, [](const TV<TT,TS,TU> & cont){return cont.cbegin();}));
+        return from<TT>(std::begin(container), std::end(container));
     }
 
     // std::map
     template<template<class,class,class,class> class TV, typename TK, typename TT, typename TS, typename TU>
-    auto from(const TV<TK,TT,TS,TU> & container) -> LinqObj<Enumerator<std::pair<TK,TT>,IteratorContainerPair<decltype(container.cbegin()),const TV<TK,TT,TS,TU> > > >
+    auto from(const TV<TK,TT,TS,TU> & container)
+        -> decltype(from<std::pair<TK, TT> >(std::begin(container), std::end(container)))
     {
-        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TK,TT,TS,TU> > DataType;
-
-        return Enumerator<std::pair<TK,TT>,DataType>([](DataType & pair){
-            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
-        }, DataType(container, [](const TV<TK,TT,TS,TU> & cont){return cont.cbegin();}));
+        return from<std::pair<TK,TT> >(std::begin(container), std::end(container));
     }
 
     // std::array
-    template<template<class,unsigned> class TV, typename TT, unsigned TL>
-    auto from(const TV<TT,TL> & container) -> LinqObj<Enumerator<TT,IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TL> > > >
+    template<template<class,size_t> class TV, typename TT, size_t TL>
+    auto from(const TV<TT,TL> & container)
+        -> decltype(from<TT>(std::begin(container), std::end(container)))
     {
-        typedef IteratorContainerPair<decltype(container.cbegin()),const TV<TT,TL> > DataType;
-    
-        return Enumerator<TT,DataType>([](DataType & pair){
-            return (pair.first == pair.second.cend()) ? throw EnumeratorEndException() : *(pair.first++);
-        }, DataType(container, [](const TV<TT,TL> & cont){return cont.cbegin();}));
+        return from<TT>(std::begin(container), std::end(container));
     }
 
     template<typename T>

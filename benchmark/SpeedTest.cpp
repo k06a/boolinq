@@ -15,7 +15,7 @@ std::vector<int> vecCppIter (benchmarkVectorSize, 0);
 
 
 
-int main (int argc, const char ** argv)
+int main (int argc, char ** argv)
 {
     // Preparing input benchmark data (the same data sets for all tests).
     srand(0xDEADBEEF);

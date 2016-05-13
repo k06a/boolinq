@@ -2,6 +2,9 @@
 #include <deque>
 #include <vector>
 #include <string>
+#include <set>
+#include <map>
+#include <array>
 
 #include <gtest/gtest.h>
 #include "CommonTests.h"
@@ -58,6 +61,39 @@ TEST(IterRange, VectorInt)
     CheckRangeEqArray(from(vec), ans);
     CheckRangeEqArray(from<int>(vec.begin(), vec.end()), ans);
     CheckRangeEqArray(from<int>(vec.cbegin(), vec.cend()), ans);
+}
+
+TEST(IterRange, SetInt)
+{
+    std::set<int> set = {1,2,3,4,5};
+    int ans[] = {1,2,3,4,5};
+
+    CheckRangeEqSet(from(set), ans);
+    CheckRangeEqSet(from<int>(set.begin(), set.end()), ans);
+    CheckRangeEqSet(from<int>(set.cbegin(), set.cend()), ans);
+}
+
+TEST(IterRange, MapInt)
+{
+    std::map<int, int> map = {{5,1},{4,2},{3,3},{2,4},{1,5}};
+    std::pair<int, int> ans[] = {{5,1},{4,2},{3,3},{2,4},{1,5}};
+
+    CheckRangeEqArray(from(map)
+        .orderBy([](std::pair<int,int> p){ return p.second; }), ans);
+    CheckRangeEqArray(from<std::pair<int,int> >(map.begin(), map.end())
+        .orderBy([](std::pair<int,int> p){ return p.second; }), ans);
+    CheckRangeEqArray(from<std::pair<int,int> >(map.cbegin(), map.cend())
+        .orderBy([](std::pair<int,int> p){ return p.second; }), ans);
+}
+
+TEST(IterRange, StdArrayInt)
+{
+    std::array<int, 5> arr = {1,2,3,4,5};
+    int ans[] = {1,2,3,4,5};
+
+    CheckRangeEqArray(from(arr), ans);
+    CheckRangeEqArray(from<int>(arr.begin(), arr.end()), ans);
+    CheckRangeEqArray(from<int>(arr.cbegin(), arr.cend()), ans);
 }
 
 TEST(IterRange, ArrayInt)
