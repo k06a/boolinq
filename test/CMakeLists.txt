@@ -59,7 +59,7 @@ ADD_EXECUTABLE (
 TARGET_LINK_LIBRARIES (
     boolinqtest
     gtest_main
-    gcov
+    #gcov
     pthread
 )
 ENABLE_TESTING ()
