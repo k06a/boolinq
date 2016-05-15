@@ -589,17 +589,36 @@ namespace boolinq
 
         // Export methods
 
-        std::vector<T> toVector() const
-        {
-            std::vector<T> vec;
+    private:
+
+        template<typename C>
+        C pushBackToContainer() const {
+            C container;
             try
             {
                 auto en = _enumerator;
                 for (;;)
-                    vec.push_back(en.nextObject());
+                    container.push_back(en.nextObject());
             }
             catch(EnumeratorEndException &) {}
-            return vec;
+            return container;
+        }
+
+    public:
+
+        std::vector<T> toVector() const
+        {
+            return pushBackToContainer<std::vector<T> >();
+        }
+
+        std::list<T> toList() const
+        {
+            return pushBackToContainer<std::list<T> >();
+        }
+
+        std::deque<T> toDeque() const
+        {
+            return pushBackToContainer<std::deque<T> >();
         }
 
         std::set<T> toSet() const
@@ -610,32 +629,6 @@ namespace boolinq
                 auto en = _enumerator;
                 for (;;)
                     res.insert(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return res;
-        }
-
-        std::list<T> toList() const
-        {
-            std::list<T> res;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    res.push_back(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return res;
-        }
-
-        std::deque<T> toDeque() const
-        {
-            std::deque<T> res;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    res.push_back(en.nextObject());
             }
             catch(EnumeratorEndException &) {}
             return res;
