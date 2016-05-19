@@ -25,7 +25,7 @@ TEST(SelectRange, MakeChar)
     char ans[] = {'1','2','3','4'};
 
     auto rng = from(src);
-    auto dst = rng.select([](int a){return (char)(a+'0');});
+    auto dst = rng.select([](int a){return static_cast<char>('0' + a);});
 
     CheckRangeEqArray(dst, ans);
 }

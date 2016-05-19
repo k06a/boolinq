@@ -16,7 +16,7 @@ TEST(Avg, ThreeInts)
 
     auto rng = from(src);
 
-    EXPECT_EQ(2, rng.avg<double>());
+    EXPECT_NEAR(2.0, rng.avg<double>(), DBL_EPSILON);
 }
 
 TEST(Avg, FiveInts)
@@ -32,8 +32,8 @@ TEST(Avg, FiveInts)
     auto dst0 = rng.where([](int a){return a%2 == 0;});
     auto dst1 = rng.where([](int a){return a%2 == 1;});
 
-    EXPECT_EQ(3, dst0.avg<double>());
-    EXPECT_EQ(3, dst1.avg<double>());
+    EXPECT_NEAR(3.0, dst0.avg<double>(), DBL_EPSILON);
+    EXPECT_NEAR(3.0, dst1.avg<double>(), DBL_EPSILON);
 }
 
 TEST(Avg, FiveStringsLen)

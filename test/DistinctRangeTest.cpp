@@ -72,9 +72,9 @@ TEST(DistinctRange, OneFieldFront)
             return (name == man.name);
         }
 
-        bool operator == (const std::string & name) const
+        bool operator == (const std::string & manName) const
         {
-            return (this->name == name);
+            return (this->name == manName);
         }
     };
 

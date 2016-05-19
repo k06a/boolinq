@@ -88,7 +88,7 @@ TEST(IterRange, MapInt)
 
 TEST(IterRange, StdArrayInt)
 {
-    std::array<int, 5> arr = {1,2,3,4,5};
+    std::array<int, 5> arr = { {1,2,3,4,5} };
     int ans[] = {1,2,3,4,5};
 
     CheckRangeEqArray(from(arr), ans);
@@ -99,7 +99,7 @@ TEST(IterRange, StdArrayInt)
 TEST(IterRange, ArrayInt)
 {
     int arr[] = {1,2,3,4,5};
-    int * ptr = (int*)arr;
+    int * ptr = static_cast<int *>(arr);
     
     int ans[] = {1,2,3,4,5};
 

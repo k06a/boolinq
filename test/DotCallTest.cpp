@@ -47,9 +47,9 @@ TEST(DotCall, UnbytesRange)
     unsigned ansFL[] = {0x12345678,0xAABBCCDD};
     unsigned ansLF[] = {0x78563412,0xDDCCBBAA};
 
-    auto dstFL1 = from(src).unbytes<int>();
-    auto dstFL2 = from(src).unbytes<int>(FirstToLast);
-    auto dstLF1 = from(src).unbytes<int>(LastToFirst);
+    auto dstFL1 = from(src).unbytes<unsigned>();
+    auto dstFL2 = from(src).unbytes<unsigned>(FirstToLast);
+    auto dstLF1 = from(src).unbytes<unsigned>(LastToFirst);
 
     CheckRangeEqArray(dstFL1, ansFL);
     CheckRangeEqArray(dstFL2, ansFL);
@@ -131,9 +131,9 @@ TEST(DotCall, UnbitsRangeHLFL)
 
     auto dst1_4b = from(src).unbits();
     auto dst2_4b = from(src).unbits(HighToLow);
-    auto dst1_1i = from(src).unbits<int>(HighToLow);
-    auto dst2_1i = from(src).unbits<int>(HighToLow,FirstToLast);
-    auto dst3_1i = from(src).unbits<int>(HighToLow,LastToFirst);
+    auto dst1_1i = from(src).unbits<unsigned>(HighToLow);
+    auto dst2_1i = from(src).unbits<unsigned>(HighToLow,FirstToLast);
+    auto dst3_1i = from(src).unbits<unsigned>(HighToLow,LastToFirst);
 
     CheckRangeEqArray(dst1_4b, ans_4b);
     CheckRangeEqArray(dst2_4b, ans_4b);
