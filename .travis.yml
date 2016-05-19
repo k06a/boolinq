@@ -43,3 +43,5 @@ script:
   - mkdir build
   - cd build
   - cmake .. && make
+  - ./test/boolinqtest
+  - ./benchmark/boolinqbenchmark
