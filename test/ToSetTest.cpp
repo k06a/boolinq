@@ -18,7 +18,7 @@ TEST(ToSet, Vector2Set)
     auto rng = from(src);
     auto dst = rng.toSet();
 
-    EXPECT_EQ(3, dst.size());
+    EXPECT_EQ(3U, dst.size());
     EXPECT_NE(dst.end(), dst.find(1));
     EXPECT_NE(dst.end(), dst.find(2));
     EXPECT_NE(dst.end(), dst.find(3));

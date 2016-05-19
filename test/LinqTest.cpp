@@ -246,19 +246,19 @@ TEST(Linq, Creations)
     vec.push_back(4);
     vec.push_back(5);
     int arr[] = {1,2,3,4,5};
-    const int carr[] = {1,2,3,4,5};
+    //const int carr[] = {1,2,3,4,5};
     int * ptr = static_cast<int *>(arr);
-    const int * cptr = const_cast<int *>(arr);
+    //const int * cptr = const_cast<int *>(arr);
 
     auto dst_vec = from(vec);
     auto dst_arr = from(arr);
-    auto dst_carr = from(carr);
+    //auto dst_carr = from(carr);
     auto dst_ptr = from<int>(ptr, ptr+5);
-    auto dst_cptr = from<const int>(cptr, cptr+5);
+    //auto dst_cptr = from<const int>(cptr, cptr+5);
     auto dst_ptr_length = from<int>(ptr, 5);
-    auto dst_cptr_length = from<const int>(cptr, 5);
+    //auto dst_cptr_length = from<const int>(cptr, 5);
     auto dst_vec_iter = from<int>(vec.begin(), vec.end());
-    auto dst_vec_citer = from<const int>(vec.cbegin(), vec.cend());
+    //auto dst_vec_citer = from<const int>(vec.cbegin(), vec.cend());
 }
 
 //////////////////////////////////////////////////////////////////////////
