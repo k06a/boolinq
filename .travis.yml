@@ -29,6 +29,9 @@ matrix:
             - clang-3.8
           sources: *sources
 
+before_install:
+  - pip install --user cpp-coveralls
+
 install:
   - mkdir -p /tmp/tools
   - pushd /tmp/tools
@@ -45,3 +48,7 @@ script:
   - cmake .. && make
   - ./test/boolinqtest
   - ./benchmark/boolinqbenchmark
+  - cd ..
+  
+after_success:
+  - coveralls --gcov-options '\-lp'
