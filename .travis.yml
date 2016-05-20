@@ -30,6 +30,8 @@ matrix:
           sources: *sources
 
 install:
+  - export CXX=g++-5
+  - export CC=gcc-5
   - mkdir -p /tmp/tools
   - pushd /tmp/tools
   - if [[ ! -f "cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh" ]]; then
