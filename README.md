@@ -1,17 +1,17 @@
 boolinq 2.0
 =======
 
-C++ header-only Ranges and LINQ template library
+C++ single-file header-only Ranges and LINQ template library
 
 Just imagine LINQ support for STL/Qt collections :)
 
-Get source code here: **[boolinq.h](https://github.com/k06a/boolinq/blob/master/include/boolinq/boolinq.h)**
+Get source code here: **[boolinq.h](/include/boolinq/boolinq.h)**
 
 ###How it looks like?
 
 ####Example with integers
 
-```
+```c++
 int src[] = {1,2,3,4,5,6,7,8};
 auto dst = from(src).where( [](int a){return a%2 == 1;})    // 1,3,5,7
                     .select([](int a){return a*2;})         // 2,6,10,14
@@ -24,7 +24,7 @@ auto dst = from(src).where( [](int a){return a%2 == 1;})    // 1,3,5,7
 
 ####Example with structs
 
-```
+```c++
 struct Man
 {
     std::string name;
@@ -51,7 +51,7 @@ auto dst = from(src).where(  [](const Man & man){return man.age < 18;})
 
 ####Interesting example
 
-```
+```c++
 struct Message
 {
     std::string PhoneA;
@@ -86,7 +86,7 @@ int DenisUniqueContactCount =
 
 ####Today:
 
-- cast<T>()
+- cast&lt;T&gt;()
 - take(int)
 - skip(int)
 - concat(range)
@@ -119,22 +119,22 @@ int DenisUniqueContactCount =
 - toList()
 - toDeque()
 - toVector()
-- toContainer<T>()
+- toContainer&lt;T&gt;()
 
 ####Custom:
 
 - bytes()
-- bytes<ByteOrder>()
-- unbytes<T>()
-- unbytes<T,ByteOrder>()
+- bytes&lt;ByteOrder&gt;()
+- unbytes&lt;T&gt;()
+- unbytes&lt;T,ByteOrder&gt;()
 - bits()
-- bits<BitOrder>()
-- bits<BitOrder,ByteOrder>()
+- bits&lt;BitOrder&gt;()
+- bits&lt;BitOrder,ByteOrder&gt;()
 - unbits()
-- unbits<BitOrder>()
-- unbits<T>()
-- unbits<T,BitOrder>()
-- unbits<T,BitOrder,ByteOrder>()
+- unbits&lt;BitOrder&gt;()
+- unbits&lt;T&gt;()
+- unbits&lt;T,BitOrder&gt;()
+- unbits&lt;T,BitOrder,ByteOrder&gt;()
 
 ####Coming soon:
 
