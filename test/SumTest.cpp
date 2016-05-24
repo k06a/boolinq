@@ -63,7 +63,7 @@ TEST(Sum, FiveStringsLen)
 
     auto rng = from(src).sum([](const std::string & str){return str.size();});
 
-    EXPECT_EQ(26, rng);
+    EXPECT_EQ(26U, rng);
 }
 
 TEST(Sum, FiveStringsData)

@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <stdlib.h>
+#include <math.h>
 #include "boolinq.h"
 
 
@@ -38,17 +39,17 @@ int main (int argc, char ** argv)
 static void BM_BoolinqCode (benchmark::State& state)
 {
     while (state.KeepRunning () ) {
-        double avgValue = from(vecBoolinq).where( [](int a){return a%2 == 1;})
-                                   .avg<double>();
+        double avgValue = from(vecBoolinq).where([](int a){return a%2 == 1;})
+                                          .avg();
 
-        double disper = from(vecBoolinq).where(  [](int a){return a%2 == 1;})
-                                 .select([=](int a){return (double)((a-avgValue)*(a-avgValue));})
-                                 .avg<double>();
-        // It's no test, instead it's avoiding skip of calculation throgh optimization.
+        double stdValue = from(vecBoolinq).where([](int a){return a%2 == 1;})
+                                          .avg([=](int a){return (a - avgValue)*(a - avgValue);});
+
+        // It's no test, instead it's avoiding skip of calculation through optimization.
         state.PauseTiming ();
         EXPECT_TRUE(avgValue);
-        EXPECT_TRUE(disper);
-        state.ResumeTiming ();
+        EXPECT_TRUE(stdValue);
+        state.ResumeTiming();
     }
 }
 BENCHMARK(BM_BoolinqCode);
@@ -70,16 +71,16 @@ static void BM_CppCode (benchmark::State& state)
         }
         double avgValue = sum / count;
 
-        double disperSum = 0;
+        double stdSum = 0;
         for (unsigned i = 0; i < vecCpp.size(); i++)
             if (vecCpp[i] % 2 == 1)
-                disperSum += (vecCpp[i] - avgValue)*(vecCpp[i] - avgValue);
-        double disper = disperSum / count;
+                stdSum += (vecCpp[i] - avgValue)*(vecCpp[i] - avgValue);
+        double stdValue = stdSum / count;
 
-        // It's no test, instead it's avoiding skip of calculation throgh optimization.
+        // It's no test, instead it's avoiding skip of calculation through optimization.
         state.PauseTiming ();
         EXPECT_TRUE(avgValue);
-        EXPECT_TRUE(disper);
+        EXPECT_TRUE(stdValue);
         state.ResumeTiming ();
     }
 }
@@ -102,16 +103,16 @@ static void BM_CppIterCode (benchmark::State& state)
         }
         double avgValue = sum / count;
 
-        double disperSum = 0;
+        double stdSum = 0;
         for (auto it = vecCppIter.begin(); it != vecCppIter.end(); ++it)
             if (*it % 2 == 1)
-                disperSum += (*it - avgValue)*(*it - avgValue);
-        double disper = disperSum / count;
+                stdSum += (*it - avgValue)*(*it - avgValue);
+        double stdValue = stdSum / count;
 
-        // It's no test, instead it's avoiding skip of calculation throgh optimization.
+        // It's no test, instead it's avoiding skip of calculation through optimization.
         state.PauseTiming ();
         EXPECT_TRUE(avgValue);
-        EXPECT_TRUE(disper);
+        EXPECT_TRUE(stdValue);
         state.ResumeTiming ();
     }
 }

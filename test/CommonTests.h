@@ -10,29 +10,29 @@ using namespace boolinq;
 // Compare Range with array
 //////////////////////////////////////////////////////////////////////////
 
-template<typename R, typename T, int N, typename F>
+template<typename R, typename T, unsigned N, typename F>
 void CheckRangeEqArray(R dst, T (&ans)[N], F f)
 {
-    for (int i = 0; i < N; i++)
+    for (unsigned i = 0; i < N; i++)
         EXPECT_EQ(f(ans[i]), f(dst.nextObject()));
 
     EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
 }
 
-template<typename R, typename T, int N>
+template<typename R, typename T, unsigned N>
 void CheckRangeEqArray(R dst, T (&ans)[N])
 {
-    for (int i = 0; i < N; i++)
+    for (unsigned i = 0; i < N; i++)
         EXPECT_EQ(ans[i], dst.nextObject());
 
     EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
 }
 
-template<typename T, int N>
+template<typename T, unsigned N>
 std::set<T> ArrayToSet(T (&ans)[N])
 {
     std::set<T> res;
-    for(int i = 0; i < N; i++)
+    for(unsigned i = 0; i < N; i++)
         res.insert(ans[i]);
 
     EXPECT_EQ(N, res.size());
@@ -40,7 +40,7 @@ std::set<T> ArrayToSet(T (&ans)[N])
     return res;
 }
 
-template<typename R, typename T, int N>
+template<typename R, typename T, unsigned N>
 void CheckRangeEqSet(R dst, T (&ans)[N])
 {
     std::set<T> expected = ArrayToSet(ans);

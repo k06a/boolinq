@@ -16,7 +16,7 @@ TEST(UnbytesRange, OneIntDefault)
     unsigned ans[] = {0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<int>();
+    auto dst = rng.unbytes<unsigned>();
 
     CheckRangeEqArray(dst, ans);
 }

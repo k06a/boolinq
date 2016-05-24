@@ -93,7 +93,7 @@ TEST(TakeWhileRange_i, ManyToManyByIndexAndItemValue)
     int ans[] = {1,3,5,7,9,11};
 
     auto rng = from(src);
-    auto dst = rng.takeWhile_i([](int it, int idx){return idx < 3 || it > 5 && it < 12;});
+    auto dst = rng.takeWhile_i([](int it, int idx){return idx < 3 || (it > 5 && it < 12);});
 
     CheckRangeEqArray(dst, ans);
 }
