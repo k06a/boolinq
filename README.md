@@ -1,5 +1,7 @@
-boolinq 2.0
-=======
+#boolinq 2.0
+
+[![CI Status](https://travis-ci.org/k06a/boolinq.svg?branch=master)](https://travis-ci.org/k06a/boolinq)
+[![CI Status](https://coveralls.io/repos/k06a/boolinq/badge.svg?branch=master)](https://coveralls.io/github/k06a/boolinq)
 
 C++ single-file header-only Ranges and LINQ template library
 
