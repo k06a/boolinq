@@ -22,7 +22,7 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
-    - env: CXX=clang++-3.8 CC=clang-3.8 GCOV=gcov-5
+    - env: CXX=clang++-3.8 CC=clang-3.8 GCOV=gcov
       addons:
         apt:
           packages:
@@ -50,4 +50,4 @@ script:
   - ./benchmark/boolinqbenchmark
   
 after_success:
-  - coveralls --root .. --include include --gcov-options '\-lp' --verbose
+  - coveralls --root .. --include include --gcov-options '\-lp' --gcov $GCOV --verbose
