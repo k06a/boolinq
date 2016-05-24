@@ -14,7 +14,7 @@ env:
 
 matrix:
   include:
-    - env: CXX=g++-5 CC=gcc-5
+    - env: CXX=g++-5 CC=gcc-5 GCOV=gcov-5
       addons:
         apt:
           packages:
@@ -22,7 +22,7 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
-    - env: CXX=clang++-3.8 CC=clang-3.8
+    - env: CXX=clang++-3.8 CC=clang-3.8 GCOV=gcov-5
       addons:
         apt:
           packages:
@@ -48,7 +48,6 @@ script:
   - cmake .. && make
   - ./test/boolinqtest
   - ./benchmark/boolinqbenchmark
-  - cd ..
   
 after_success:
-  - coveralls --gcov-options '\-lp'
+  - coveralls --root .. --include include --gcov-options '\-lp' --verbose
