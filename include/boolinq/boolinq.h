@@ -591,14 +591,14 @@ namespace boolinq
 
     private:
 
-        template<typename C>
-        C pushBackToContainer() const {
+        template<typename C, typename TFunc>
+        C exportToContainer(TFunc func) const {
             C container;
             try
             {
                 auto en = _enumerator;
                 for (;;)
-                    container.push_back(en.nextObject());
+                    func(container, en.nextObject());
             }
             catch(EnumeratorEndException &) {}
             return container;
@@ -608,30 +608,30 @@ namespace boolinq
 
         std::vector<T> toVector() const
         {
-            return pushBackToContainer<std::vector<T> >();
+            return exportToContainer<std::vector<T> >([](std::vector<T> &container, const T &value){
+                container.push_back(value);
+            });
         }
 
         std::list<T> toList() const
         {
-            return pushBackToContainer<std::list<T> >();
+            return exportToContainer<std::list<T> >([](std::list<T> &container, const T &value){
+                container.push_back(value);
+            });
         }
 
         std::deque<T> toDeque() const
         {
-            return pushBackToContainer<std::deque<T> >();
+            return exportToContainer<std::deque<T> >([](std::deque<T> &container, const T &value){
+                container.push_back(value);
+            });
         }
 
         std::set<T> toSet() const
         {
-            std::set<T> res;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    res.insert(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return res;
+            return exportToContainer<std::set<T> >([](std::set<T> &container, const T &value){
+                container.insert(value);
+            });
         }
 
         // Custom methods
