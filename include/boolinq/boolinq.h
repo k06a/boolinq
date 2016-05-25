@@ -589,56 +589,49 @@ namespace boolinq
 
         // Export methods
 
-        std::vector<T> toVector() const
-        {
-            std::vector<T> vec;
+    private:
+
+        template<typename C, typename TFunc>
+        C exportToContainer(TFunc func) const {
+            C container;
             try
             {
                 auto en = _enumerator;
                 for (;;)
-                    vec.push_back(en.nextObject());
+                    func(container, en.nextObject());
             }
             catch(EnumeratorEndException &) {}
-            return vec;
+            return container;
         }
 
-        std::set<T> toSet() const
+    public:
+
+        std::vector<T> toVector() const
         {
-            std::set<T> res;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    res.insert(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return res;
+            return exportToContainer<std::vector<T> >([](std::vector<T> &container, const T &value){
+                container.push_back(value);
+            });
         }
 
         std::list<T> toList() const
         {
-            std::list<T> res;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    res.push_back(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return res;
+            return exportToContainer<std::list<T> >([](std::list<T> &container, const T &value){
+                container.push_back(value);
+            });
         }
 
         std::deque<T> toDeque() const
         {
-            std::deque<T> res;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    res.push_back(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return res;
+            return exportToContainer<std::deque<T> >([](std::deque<T> &container, const T &value){
+                container.push_back(value);
+            });
+        }
+
+        std::set<T> toSet() const
+        {
+            return exportToContainer<std::set<T> >([](std::set<T> &container, const T &value){
+                container.insert(value);
+            });
         }
 
         // Custom methods
