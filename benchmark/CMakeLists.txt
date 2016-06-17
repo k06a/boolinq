@@ -28,6 +28,5 @@ ADD_EXECUTABLE (
 TARGET_LINK_LIBRARIES (
     boolinqbenchmark
     gtest
-    pthread
     benchmark
 )
