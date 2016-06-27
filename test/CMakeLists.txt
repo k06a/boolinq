@@ -61,7 +61,6 @@ TARGET_LINK_LIBRARIES (
     boolinqtest
     gtest_main
     #gcov
-    pthread
 )
 ENABLE_TESTING ()
 ADD_TEST (BoolinqTest boolinqtest)
