@@ -45,6 +45,7 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/SumTest.cpp
     ${PROJECT_SOURCE_DIR}/test/TakeRangeTest.cpp
     ${PROJECT_SOURCE_DIR}/test/TakeWhileRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToContainerTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ToDequeTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ToListTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ToSetTest.cpp
