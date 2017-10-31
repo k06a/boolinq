@@ -1,4 +1,4 @@
-#boolinq 2.0
+# boolinq 2.0
 
 [![CI Status](https://travis-ci.org/k06a/boolinq.svg?branch=master)](https://travis-ci.org/k06a/boolinq)
 [![Coverage Status](https://coveralls.io/repos/github/k06a/boolinq/badge.svg?branch=master)](https://coveralls.io/github/k06a/boolinq?branch=master)
@@ -9,9 +9,9 @@ Just imagine LINQ support for STL/Qt collections :)
 
 Get source code here: **[boolinq.h](/include/boolinq/boolinq.h)**
 
-###How it looks like?
+### How it looks like?
 
-####Example with integers
+#### Example with integers
 
 ```c++
 int src[] = {1,2,3,4,5,6,7,8};
@@ -24,7 +24,7 @@ auto dst = from(src).where( [](int a){return a%2 == 1;})    // 1,3,5,7
 // dst items: 6,10
 ```
 
-####Example with structs
+#### Example with structs
 
 ```c++
 struct Man
@@ -51,7 +51,7 @@ auto dst = from(src).where(  [](const Man & man){return man.age < 18;})
 // dst items: "Kevin", "Layer", "Agata"
 ```
 
-####Interesting example
+#### Interesting example
 
 ```c++
 struct Message
@@ -78,15 +78,15 @@ int DenisUniqueContactCount =
 // DenisUniqueContactCount == 2    
 ```
 
-###Containers supported?
+### Containers supported?
 
 - C++: Native arrays, pairs of pointers
 - STL: list, stack, queue, vector, deque, set, map, any compatible ....
 - Qt: QList, QVector, QSet, QMap.
 
-###Operators supported?
+### Operators supported?
 
-####Today:
+#### Today:
 
 - cast&lt;T&gt;()
 - take(int)
@@ -123,7 +123,7 @@ int DenisUniqueContactCount =
 - toVector()
 - toContainer&lt;T&gt;()
 
-####Custom:
+#### Custom:
 
 - bytes()
 - bytes&lt;ByteOrder&gt;()
@@ -138,11 +138,11 @@ int DenisUniqueContactCount =
 - unbits&lt;T,BitOrder&gt;()
 - unbits&lt;T,BitOrder,ByteOrder&gt;()
 
-####Coming soon:
+#### Coming soon:
 
 - selectMany(lambda)
 
-####May be will be:
+#### May be will be:
 
 - gz()
 - ungz()
