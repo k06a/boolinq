@@ -41,7 +41,7 @@ TEST(GroupByRange, IntsFront)
     CheckRangeEqArray(dst.back(), ans_0);
     CheckRangeEqArray(dst.popFront(), ans_0);
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(GroupByRange, IntsBack)
@@ -73,7 +73,7 @@ TEST(GroupByRange, IntsBack)
     CheckRangeEqArray(dst.back(), ans_1);
     CheckRangeEqArray(dst.popBack(), ans_1);
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ TEST(GroupByRange, CountChildrenByAge)
     CheckRangeEqArray(dst.back(), ans_true);
     CheckRangeEqArray(dst.popFront(), ans_true);
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 */

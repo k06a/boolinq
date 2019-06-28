@@ -99,5 +99,5 @@ TEST(UnbytesRange, EmptyDefault)
     auto rng = from(src);
     auto dst = rng.unbytes<int>();
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }

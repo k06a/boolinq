@@ -5,7 +5,9 @@
 #include <iterator>
 #include <iostream>
 #include <vector>
+#include <deque>
 #include <list>
+#include <set>
 #include <unordered_set>
 
 //
@@ -64,7 +66,7 @@ namespace boolinq {
 
         void foreach(std::function<void(T)> apply) const
         {
-            return foreach_i([apply](T &&value, int index) { return apply(value); });
+            return foreach_i([apply](T value, int index) { return apply(value); });
         }
 
         Linq<LinqIndex<S, T>, T> where_i(std::function<bool(T, int)> filter) const
@@ -84,7 +86,7 @@ namespace boolinq {
 
         Linq<LinqIndex<S, T>, T> where(std::function<bool(T)> filter) const
         {
-            return where_i([filter](T &&value, int index) { return filter(value); });
+            return where_i([filter](T value, int index) { return filter(value); });
         }
 
         Linq<LinqIndex<S, T>, T> take(int count) const
@@ -99,7 +101,7 @@ namespace boolinq {
 
         Linq<LinqIndex<S, T>, T> takeWhile_i(std::function<bool(T, int)> predicate) const
         {
-            return where_i([predicate](T &&value, int i) {
+            return where_i([predicate](T value, int i) {
                 if (!predicate(value, i)) {
                     throw LinqEndException();
                 }
@@ -109,16 +111,18 @@ namespace boolinq {
 
         Linq<LinqIndex<S, T>, T> takeWhile(std::function<bool(T)> predicate) const
         {
-            return takeWhile_i([predicate](T &&value, int /*i*/) { return predicate(value); });
+            return takeWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
 
         Linq<LinqIndex<S, T>, T> skip(int count) const
         {
-            return where_i([count](T &&value, int i) { return i >= count; });
+            return where_i([count](T value, int i) { return i >= count; });
         }
 
         template<typename SS, typename TT>
-        struct LinqIndexFlag : public LinqIndex<SS, TT> {
+        struct LinqIndexFlag {
+            Linq<SS, TT> linq;
+            int index;
             bool flag;
         };
 
@@ -142,7 +146,7 @@ namespace boolinq {
 
         Linq<LinqIndexFlag<S, T>, T> skipWhile(std::function<bool(T)> predicate) const
         {
-            return skipWhile_i([predicate](T &&value, int /*i*/) { return predicate(value); });
+            return skipWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
 
         template<typename F, typename _TRet = typename std::result_of<F(T, int)>::type>
@@ -159,13 +163,37 @@ namespace boolinq {
         template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
         auto select(F apply) const -> Linq<LinqIndex<S, T>, _TRet>
         {
-            return select_i([apply](T &&value, int index) { return apply(value); });
+            return select_i([apply](T value, int /*index*/) { return apply(value); });
         }
 
         template<typename TRet>
         Linq<LinqIndex<S, T>, TRet> cast() const
         {
-            return select([](T &&value) { return TRet(value); });
+            return select_i([](T value, int /*i*/) { return TRet(value); });
+        }
+
+        template<typename S1, typename T1, typename S2, typename T2>
+        struct LinqLinq {
+            Linq<S1, T1> first;
+            Linq<S2, T2> second;
+            bool flag;
+        };
+
+        template<typename S2, typename T2>
+        Linq<LinqLinq<S, T, S2, T2>, T> concat(const Linq<S2, T2> & rhs) const
+        {
+            return Linq<LinqLinq<S, T, S2, T2>, T>(
+                {*this, rhs, false},
+                [](auto & tuple){
+                    if (!tuple.flag) {
+                        try {
+                            return tuple.first.next();
+                        }
+                        catch (LinqEndException &) {}
+                    }
+                    return tuple.second.next();
+                }
+            );
         }
 
         template<typename SS, typename TT, typename TCurrent>
@@ -203,7 +231,7 @@ namespace boolinq {
         auto selectMany(F apply) const
             -> Linq<LinqCurrentIndexFinished<S, T, _TRet>, typename _TRet::value_type>
         {
-            return selectMany_i([apply](T &&value, int index) { return apply(value); });
+            return selectMany_i([apply](T value, int index) { return apply(value); });
         }
 
         template<typename SS, typename TT, typename TTRet2>
@@ -212,11 +240,11 @@ namespace boolinq {
             std::unordered_set<TTRet2> set;
         };
 
-        template<typename TRet>
-        Linq<LinqUnorderedSet<S, T, TRet>, T> distinct(std::function<TRet(T)> transform) const
+        template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
+        auto distinct(F transform) const -> Linq<LinqUnorderedSet<S, T, _TRet>, T>
         {
-            return Linq<LinqUnorderedSet<S, T, TRet>, T>(
-                {*this, std::unordered_set<TRet>()},
+            return Linq<LinqUnorderedSet<S, T, _TRet>, T>(
+                {*this, std::unordered_set<_TRet>()},
                 [transform](auto &tuple) {
                     while (true) {
                         T value = tuple.linq.next();
@@ -230,7 +258,7 @@ namespace boolinq {
 
         Linq<LinqUnorderedSet<S, T, T>, T> distinct() const
         {
-            return distinct([](T &&value) { return value; });
+            return distinct([](T value) { return value; });
         }
 
         template<typename TT>
@@ -265,7 +293,7 @@ namespace boolinq {
 
         Linq<StdVectorAndIterator<T>, T> orderBy() const
         {
-            return orderBy([](T &&value) { return value; });
+            return orderBy([](T value) { return value; });
         }
 
         template<typename TT>
@@ -310,9 +338,9 @@ namespace boolinq {
         }
 
         template<typename F>
-        auto sum(F transform) const -> typename std::result_of<F(T, T)>::type
+        auto sum(F transform) const -> typename std::result_of<F(T)>::type
         {
-            return aggregate<T>(T(), [transform](T accumulator, T &&value) {
+            return aggregate<T>(T(), [transform](T accumulator, T value) {
                 return accumulator + transform(value);
             });
         }
@@ -327,7 +355,7 @@ namespace boolinq {
         auto avg(F transform) const -> typename std::result_of<F(T)>::type
         {
             int count = 0;
-            T res = sum([transform, &count](T &&value) {
+            T res = sum([transform, &count](T value) {
                 count++;
                 return transform(value);
             });
@@ -343,7 +371,7 @@ namespace boolinq {
         int count() const
         {
             int index = 0;
-            foreach([&index](T &&/**/a) { index++; });
+            foreach([&index](T /**/a) { index++; });
             return index;
         }
 
@@ -354,7 +382,7 @@ namespace boolinq {
 
         int count(const T &item) const
         {
-            return count([item](T &&value) { return item == value; });
+            return count([item](T value) { return item == value; });
         }
 
         // Bool aggregators
@@ -364,7 +392,7 @@ namespace boolinq {
             Linq<S, T> linq = *this;
             try {
                 while (true) {
-                    if (predicate(linq.nextObject()))
+                    if (predicate(linq.next()))
                         return true;
                 }
             }
@@ -374,22 +402,22 @@ namespace boolinq {
 
         bool any() const
         {
-            return any([](T &&value) { return static_cast<bool>(value); });
+            return any([](T value) { return static_cast<bool>(value); });
         }
 
         bool all(std::function<bool(T)> predicate) const
         {
-            return !any([predicate](T &&value) { return !predicate(value); });
+            return !any([predicate](T value) { return !predicate(value); });
         }
 
         bool all() const
         {
-            return all([](T &&value) { return static_cast<bool>(value); });
+            return all([](T value) { return static_cast<bool>(value); });
         }
 
         bool contains(const T &item) const
         {
-            return any([&item](T &&value) { return value == item; });
+            return any([&item](T value) { return value == item; });
         }
 
         // Election aggregators
@@ -418,7 +446,7 @@ namespace boolinq {
 
         T max() const
         {
-            return max([](T &&value) { return value; });
+            return max([](T value) { return value; });
         }
 
         template<typename F>
@@ -431,7 +459,7 @@ namespace boolinq {
 
         T min() const
         {
-            return min([](T &&value) { return value; });
+            return min([](T value) { return value; });
         }
 
         // Single object returners
@@ -462,13 +490,13 @@ namespace boolinq {
 
         T firstOrDefault() const
         {
-            firstOrDefault([](T &&/*value*/) { return true; });
+            firstOrDefault([](T /*value*/) { return true; });
         }
 
         T last(std::function<bool(T)> predicate) const
         {
             T res;
-            foreach([&res](T &&value) {
+            foreach([&res](T value) {
                 res = value;
             });
             return res;
@@ -476,7 +504,7 @@ namespace boolinq {
 
         T last() const
         {
-            return last([](T &&/*value*/) { return true; });
+            return last([](T /*value*/) { return true; });
         }
 
         T lastOrDefault(std::function<bool(T)> predicate) const
@@ -490,7 +518,7 @@ namespace boolinq {
 
         T lastOrDefault() const
         {
-            return lastOrDefault([](T && /*value*/) { return true; });
+            return lastOrDefault([](T  /*value*/) { return true; });
         }
 
         // Export to containers
@@ -498,7 +526,7 @@ namespace boolinq {
         std::vector<T> toStdVector() const
         {
             std::vector<T> items;
-            foreach([&items](T &&value) {
+            foreach([&items](T value) {
                 items.push_back(value);
             });
             return items;
@@ -507,8 +535,35 @@ namespace boolinq {
         std::list<T> toStdList() const
         {
             std::list<T> items;
-            foreach([&items](T &&value) {
+            foreach([&items](T value) {
                 items.push_back(value);
+            });
+            return items;
+        }
+
+        std::deque<T> toStdDeque() const
+        {
+            std::deque<T> items;
+            foreach([&items](T value) {
+                items.push_back(value);
+            });
+            return items;
+        }
+
+        std::set<T> toStdSet() const
+        {
+            std::set<T> items;
+            foreach([&items](T value) {
+                items.insert(value);
+            });
+            return items;
+        }
+
+        std::unordered_set<T> toStdUnorderedSet() const
+        {
+            std::unordered_set<T> items;
+            foreach([&items](T value) {
+                items.insert(value);
             });
             return items;
         }
@@ -550,7 +605,7 @@ namespace boolinq {
         template<typename TRet>
         Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbytes(BytesDirection direction = BytesFirstToLast) const
         {
-            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
+            return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
                  {*this, direction, BitsHighToLow, T(), 0},
                  [](auto & tuple) {
                      TRet value;
@@ -598,10 +653,10 @@ namespace boolinq {
             );
         }
 
-        template<typename TRet>
+        template<typename TRet = uint8_t>
         Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
-            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
+            return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
                  {*this, bytesDir, bitsDir, T(), 0},
                  [](auto & tuple) {
                      TRet value;
@@ -649,16 +704,16 @@ namespace boolinq {
         return Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type>(
             {begin, end},
             [](auto &pair) {
-                if (pair.first < pair.second) {
-                    return *(pair.first++);
+                if (pair.first == pair.second) {
+                    throw LinqEndException();
                 }
-                throw LinqEndException();
+                return *(pair.first++);
             }
         );
     }
 
     template<typename T>
-    Linq<std::pair<T, T>, T> from(T it, int n)
+    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(T it, int n)
     {
         return from(it, it + n);
     }

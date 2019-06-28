@@ -45,8 +45,8 @@ TEST(Sum, BoolSum)
     src.push_back(4);
     src.push_back(5);
 
-    auto rng1 = from(src).sum<int>([](int a){return a%2 == 0;});
-    auto rng2 = from(src).sum<int>([](int a){return a%2 == 1;});
+    auto rng1 = from(src).sum([](int a){return a%2 == 0;});
+    auto rng2 = from(src).sum([](int a){return a%2 == 1;});
 
     EXPECT_EQ(2, rng1);
     EXPECT_EQ(3, rng2);

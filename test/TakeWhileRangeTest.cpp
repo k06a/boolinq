@@ -193,7 +193,7 @@ TEST(TakeWhileRange, ManyToZero)
     auto rng = from(src);
     auto dst = rng.takeWhile([](int it){return it < 0;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ManyToZeroByIndex)
@@ -203,7 +203,7 @@ TEST(TakeWhileRange_i, ManyToZeroByIndex)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int /*it*/, int idx){return idx > 0;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ManyToZeroByItemValue)
@@ -213,7 +213,7 @@ TEST(TakeWhileRange_i, ManyToZeroByItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int /*idx*/){return it > 2;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ManyToZeroByIdexAndItemValue)
@@ -223,7 +223,7 @@ TEST(TakeWhileRange_i, ManyToZeroByIdexAndItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int idx){return it < 0 || idx > 0;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -279,7 +279,7 @@ TEST(TakeWhileRange, OneToZero)
     auto rng = from(src);
     auto dst = rng.takeWhile([](int){return false;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, OneToZeroByIndex)
@@ -289,7 +289,7 @@ TEST(TakeWhileRange_i, OneToZeroByIndex)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int /*it*/, int idx){return idx > 0;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, OneToZeroByItemValue)
@@ -299,7 +299,7 @@ TEST(TakeWhileRange_i, OneToZeroByItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int /*idx*/){return it < 5;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, OneToZeroByIndexAndItemValue)
@@ -309,7 +309,7 @@ TEST(TakeWhileRange_i, OneToZeroByIndexAndItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int idx){return idx == 0 && it > 5;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange, ZeroToZero)
@@ -319,7 +319,7 @@ TEST(TakeWhileRange, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.takeWhile([](int){return false;});
 
-    EXPECT_THROW(rng.nextObject(), LinqEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ZeroToZero)
@@ -329,7 +329,7 @@ TEST(TakeWhileRange_i, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int /*it*/, int /*idx*/){return false;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

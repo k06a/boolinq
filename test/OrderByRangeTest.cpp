@@ -63,7 +63,7 @@ TEST(OrderByRange, NoElements)
     auto rng = from(src);
     auto dst = rng.orderBy();
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

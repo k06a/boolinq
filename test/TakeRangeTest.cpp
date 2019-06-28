@@ -61,7 +61,7 @@ TEST(TakeRange, ManyToZero)
     auto rng = from(src);
     auto dst = rng.take(0);
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ TEST(TakeRange, OneToZero)
     auto rng = from(src);
     auto dst = rng.take(0);
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeRange, ZeroToZero)
@@ -105,7 +105,7 @@ TEST(TakeRange, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.take(0);
 
-    EXPECT_THROW(rng.nextObject(), LinqEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

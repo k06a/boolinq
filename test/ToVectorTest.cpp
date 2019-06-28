@@ -6,7 +6,7 @@
 
 using namespace boolinq;
 
-TEST(ToVector, Vector2Vector)
+TEST(toStdVector, Vector2Vector)
 {
     std::vector<int> src;
     src.push_back(100);
@@ -14,7 +14,7 @@ TEST(ToVector, Vector2Vector)
     src.push_back(300);
 
     auto rng = from(src);
-    auto dst = rng.toVector();
+    auto dst = rng.toStdVector();
 
     EXPECT_EQ(dst,src);
 }

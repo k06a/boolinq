@@ -36,13 +36,13 @@ namespace boolinq
     public:
         typedef T value_type;
     
-        Enumerator(std::function<T(S&)> nextObject, S data)
-            : _nextObject(nextObject)
+        Enumerator(std::function<T(S&)> next, S data)
+            : _nextObject(next)
             , _data(data)
         {
         }
 
-        T nextObject()
+        T next()
         {
             return _nextObject(_data);
         }
@@ -57,7 +57,7 @@ namespace boolinq
                 if (i > 0) {
                     stream << ' ';
                 }
-                stream << enumerator.nextObject();
+                stream << enumerator.next();
             }
         }
         catch(LinqEndException &) {}
@@ -133,9 +133,9 @@ namespace boolinq
         {
         }
 
-        T nextObject()
+        T next()
         {
-            return _enumerator.nextObject();
+            return _enumerator.next();
         }
 
         // Main methods
@@ -147,7 +147,7 @@ namespace boolinq
             try
             {
                 for (;;)
-                    action(en.nextObject(), index++);
+                    action(en.next(), index++);
             }
             catch(LinqEndException &) {}
         }
@@ -162,7 +162,7 @@ namespace boolinq
             return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
                 T object;
                 do
-                    object = pair.first.nextObject();
+                    object = pair.first.next();
                 while (!predicate(object, pair.second++));
                 return object;
             }, std::make_pair(_enumerator,0));
@@ -186,7 +186,7 @@ namespace boolinq
         LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile_i(std::function<bool(T,int)> predicate) const
         {
             return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
-                T object = pair.first.nextObject();
+                T object = pair.first.next();
                 if (!predicate(object,pair.second++)) {
                     throw LinqEndException();
                 }
@@ -208,12 +208,12 @@ namespace boolinq
         {
             return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
                 if (pair.second != 0) {
-                    return pair.first.nextObject();
+                    return pair.first.next();
                 }
 
                 T object;
                 do {
-                    object = pair.first.nextObject();
+                    object = pair.first.next();
                 } while (predicate(object,pair.second++));
 
                 return object;
@@ -229,7 +229,7 @@ namespace boolinq
         LinqObj<Enumerator<TRet,std::pair<TE,int> > > select_i(std::function<TRet(T,int)> transform) const
         {
             return Enumerator<TRet,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->TRet{
-                return transform(pair.first.nextObject(), pair.second++);
+                return transform(pair.first.next(), pair.second++);
             }, std::make_pair(_enumerator,0));
         }
 
@@ -264,7 +264,7 @@ namespace boolinq
 
             return Enumerator<T,DataType>([=](DataType & pair)->T{
                 for (;;) {
-                    T object = pair.first.nextObject();
+                    T object = pair.first.next();
                     TRet key = transform(object);
                     if (pair.second.find(key) == pair.second.end()) {
                         pair.second.insert(key);
@@ -316,7 +316,7 @@ namespace boolinq
             {
                 auto en = _enumerator;
                 for (;;) {
-                    objects.insert(en.nextObject());
+                    objects.insert(en.next());
                 }
             }
             catch(LinqEndException &) {}
@@ -351,7 +351,7 @@ namespace boolinq
             {
                 return (pair.first == pair.second.crend())
                      ? throw LinqEndException() : *(pair.first++);
-            }, DataType(toVector(), [](const std::vector<T> & vec){return vec.crbegin();}));
+            }, DataType(toStdVector(), [](const std::vector<T> & vec){return vec.crbegin();}));
         }
 
         // Aggregators
@@ -363,7 +363,7 @@ namespace boolinq
             {
                 auto en = _enumerator;
                 for (;;)
-                    start = accumulate(start, en.nextObject());
+                    start = accumulate(start, en.next());
             }
             catch(LinqEndException &) {}
             return start;
@@ -444,7 +444,7 @@ namespace boolinq
             {
                 auto en = _enumerator;
                 for (;;)
-                    if (predicate(en.nextObject()))
+                    if (predicate(en.next()))
                         return true;
             }
             catch(LinqEndException &) {}
@@ -476,11 +476,11 @@ namespace boolinq
         T elect(std::function<T(T,T)> accumulate) const
         {
             auto en = _enumerator;
-            T result = en.nextObject();
+            T result = en.next();
             try
             {
                 for (;;)
-                    result = accumulate(result, en.nextObject());
+                    result = accumulate(result, en.next());
             }
             catch(LinqEndException &) {}
             return result;
@@ -526,13 +526,13 @@ namespace boolinq
         {
             auto en = _enumerator;
             for (int i = 0; i < index; i++)
-                en.nextObject();
-            return en.nextObject();
+                en.next();
+            return en.next();
         }
 
         T first(std::function<bool(T)> predicate) const
         {
-            return where(predicate)._enumerator.nextObject();
+            return where(predicate)._enumerator.next();
         }
 
         T first() const
@@ -555,8 +555,8 @@ namespace boolinq
         T last(std::function<bool(T)> predicate) const
         {
             auto linq = where(predicate);
-            T object = linq._enumerator.nextObject();
-            try { for (;;) object = linq._enumerator.nextObject(); }
+            T object = linq._enumerator.next();
+            try { for (;;) object = linq._enumerator.next(); }
             catch(LinqEndException &) { return object; }
         }
 
@@ -585,12 +585,12 @@ namespace boolinq
 
             return Enumerator<T,DataType>([=](DataType & pair)->T{
                 if (pair.first)
-                    return pair.second.second.nextObject();
-                try { return pair.second.first.nextObject(); }
+                    return pair.second.second.next();
+                try { return pair.second.first.next(); }
                 catch(LinqEndException &)
                 {  
                     pair.first = true;
-                    return pair.second.second.nextObject();
+                    return pair.second.second.next();
                 }
             }, std::make_pair(false, std::make_pair(_enumerator, rhs._enumerator)));
         }
@@ -606,7 +606,7 @@ namespace boolinq
             {
                 auto en = _enumerator;
                 for (;;)
-                    func(container, en.nextObject());
+                    func(container, en.next());
             }
             catch(LinqEndException &) {}
             return container;
@@ -614,28 +614,28 @@ namespace boolinq
 
     public:
 
-        std::vector<T> toVector() const
+        std::vector<T> toStdVector() const
         {
             return exportToContainer<std::vector<T> >([](std::vector<T> &container, const T &value){
                 container.push_back(value);
             });
         }
 
-        std::list<T> toList() const
+        std::list<T> toStdList() const
         {
             return exportToContainer<std::list<T> >([](std::list<T> &container, const T &value){
                 container.push_back(value);
             });
         }
 
-        std::deque<T> toDeque() const
+        std::deque<T> toStdDeque() const
         {
             return exportToContainer<std::deque<T> >([](std::deque<T> &container, const T &value){
                 container.push_back(value);
             });
         }
 
-        std::set<T> toSet() const
+        std::set<T> toStdSet() const
         {
             return exportToContainer<std::set<T> >([](std::set<T> &container, const T &value){
                 container.insert(value);
@@ -649,14 +649,14 @@ namespace boolinq
             typedef std::pair<int,std::pair<TE,T> > DataType;
 
             auto pair = std::make_pair(_enumerator, T());
-            pair.second =  pair.first.nextObject();
+            pair.second =  pair.first.next();
 
             return Enumerator<int,DataType>([=](DataType & pair_)->int{
                 if ((direction == BytesFirstToLast && pair_.first == sizeof(T))
                     || (direction == BytesLastToFirst && pair_.first == -1))
                 {
                     pair_.first = (direction == BytesFirstToLast) ? 0 : sizeof(T)-1;
-                    pair_.second.second = pair_.second.first.nextObject();
+                    pair_.second.second = pair_.second.first.next();
                 }
                 unsigned char * ptr = reinterpret_cast<unsigned char *>(&pair_.second.second);
                 int value = ptr[pair_.first];
@@ -675,7 +675,7 @@ namespace boolinq
                      i != ((direction == BytesFirstToLast) ? int(sizeof(TRet)) : -1);
                      i += (direction == BytesFirstToLast) ? 1 : -1)
                 {
-                    ptr[i] = en.nextObject();
+                    ptr[i] = en.next();
                 }
                 return object;
             }, _enumerator);
@@ -692,13 +692,13 @@ namespace boolinq
                     || (direction == BitsHighToLow && pair.first == -1))
                 {
                     pair.first = (direction == BitsLowToHigh) ? 0 : CHAR_BIT-1;
-                    pair.second.second = static_cast<unsigned char>(pair.second.first.nextObject());
+                    pair.second.second = static_cast<unsigned char>(pair.second.first.next());
                 }
                 int value = 1 & (pair.second.second >> (pair.first % CHAR_BIT));
                 pair.first += (direction == BitsLowToHigh) ? 1 : -1;
                 return value;
             }, std::make_pair((direction == BitsLowToHigh) ? 0 : CHAR_BIT-1,
-                              std::make_pair(inner, inner.nextObject())));
+                              std::make_pair(inner, inner.next())));
         }
 
         LinqObj<Enumerator<unsigned char,TE> > unbits(BitsDirection direction = BitsHighToLow) const
@@ -709,7 +709,7 @@ namespace boolinq
                          i != ((direction == BitsLowToHigh) ? CHAR_BIT : -1);
                          i += (direction == BitsLowToHigh) ? 1 : -1)
                 {
-                    object |= (en.nextObject() << i);
+                    object |= (en.next() << i);
                 }
                 return object;
             }, _enumerator);

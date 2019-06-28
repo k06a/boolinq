@@ -17,7 +17,7 @@ TEST(WhereRange, IntOdd)
 
     auto rng = from(src);
     auto dst = rng.where([](int a){return a%2 == 1;});
-    
+
     CheckRangeEqArray(dst, ans);
 }
 
@@ -42,7 +42,7 @@ TEST(WhereRange, FirstLetterFront)
 
     auto rng = from(src);
     auto dst = rng.where([](std::string a){return a[0] == 'a';});
-    
+
     CheckRangeEqArray(dst, ans);
 }
 
@@ -73,17 +73,17 @@ TEST(WhereRange, NameAgeLess)
 
     auto rng = from(src);
     auto dst = rng.where([](const NameAge & a){return a.age < 18;});
-    
+
     CheckRangeEqArray(dst, ans, [](const NameAge & a){return a.name;});
 }
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 TEST(WhereRange, MayToOne)
 {
     int src[] = {0,1,2};
     int ans[] = {1};
-    
+
     auto rng = from(src);
     auto dst = rng.where([](int a){return a == 1;});
 
@@ -104,21 +104,21 @@ TEST(WhereRange, OneToOne)
 TEST(WhereRange, ManyToZero)
 {
     int src[] = {0,1,2};
-    
+
     auto rng = from(src);
     auto dst = rng.where([](int a){return a == 5;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(WhereRange, OneToZero)
 {
     int src[] = {5};
-    
+
     auto rng = from(src);
     auto dst = rng.where( [](int a){return a>10;});
 
-    EXPECT_THROW(dst.nextObject(), LinqEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(WhereRange, ZeroToZero)
@@ -128,5 +128,5 @@ TEST(WhereRange, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.where( [](int a){return a>0;});
 
-    EXPECT_THROW(rng.nextObject(), LinqEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }

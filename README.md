@@ -18,7 +18,7 @@ int src[] = {1,2,3,4,5,6,7,8};
 auto dst = from(src).where( [](int a){return a%2 == 1;})    // 1,3,5,7
                     .select([](int a){return a*2;})         // 2,6,10,14
                     .where( [](int a){return a>2 && a<12;}) // 6,10
-                    .toVector();
+                    .toStdVector();
 
 // dst type: std::vector<int>
 // dst items: 6,10
@@ -45,7 +45,7 @@ Man src[] =
 auto dst = from(src).where(  [](const Man & man){return man.age < 18;})
                     .orderBy([](const Man & man){return man.age;})
                     .select( [](const Man & man){return man.name;})
-                    .toVector();
+                    .toStdVector();
 
 // dst type: std::vector<std::string>
 // dst items: "Kevin", "Layer", "Agata"
@@ -90,14 +90,20 @@ int DenisUniqueContactCount =
 
 - cast&lt;T&gt;()
 - take(int)
+- takeWhile(int)
+- takeWhile_i(int)
 - skip(int)
+- skipWhile(int)
+- skipWhile_i(int)
 - concat(range)
 - where(lambda)
+- where_i(lambda)
 - select(lambda)
+- select_i(lambda)
+- selectMany(lambda)
 - reverse()
 - orderBy()
 - orderBy(lambda)
-- groupBy(lambda)
 - distinct()
 - distinct(lambda)
 - for_each(lambda)
@@ -114,14 +120,16 @@ int DenisUniqueContactCount =
 - max()
 - max(lambda)
 - count()
-- count(lambda)
 - contains(value)
 - elementAt(int)
-- toSet()
-- toList()
-- toDeque()
-- toVector()
-- toContainer&lt;T&gt;()
+- toStdSet()
+- toStdList()
+- toStdDeque()
+- toStdVector()
+
+#### Coming soon:
+
+- groupBy(lambda)
 
 #### Custom:
 
@@ -137,10 +145,6 @@ int DenisUniqueContactCount =
 - unbits&lt;T&gt;()
 - unbits&lt;T,BitOrder&gt;()
 - unbits&lt;T,BitOrder,ByteOrder&gt;()
-
-#### Coming soon:
-
-- selectMany(lambda)
 
 #### May be will be:
 
