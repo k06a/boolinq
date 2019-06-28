@@ -73,7 +73,7 @@ namespace boolinq {
         {
             return Linq<LinqIndex<S, T>, T>(
                 {*this, 0},
-                [filter](auto &pair) {
+                [filter](LinqIndex<S, T> &pair) {
                     while (true) {
                         T ret = pair.linq.next();
                         if (filter(ret, pair.index++)) {
@@ -130,7 +130,7 @@ namespace boolinq {
         {
             return Linq<LinqIndexFlag<S, T>, T>(
                 {*this, 0, false},
-                [predicate](auto &tuple) {
+                [predicate](LinqIndexFlag<S, T> &tuple) {
                     if (tuple.flag) {
                         return tuple.linq.next();
                     }
@@ -154,7 +154,7 @@ namespace boolinq {
         {
             return Linq<LinqIndex<S, T>, _TRet>(
                 {*this, 0},
-                [apply](auto &pair) {
+                [apply](LinqIndex<S, T> &pair) {
                     return apply(pair.linq.next(), pair.index++);
                 }
             );
@@ -184,7 +184,7 @@ namespace boolinq {
         {
             return Linq<LinqLinq<S, T, S2, T2>, T>(
                 {*this, rhs, false},
-                [](auto & tuple){
+                [](LinqLinq<S, T, S2, T2> &tuple){
                     if (!tuple.flag) {
                         try {
                             return tuple.first.next();
@@ -210,7 +210,7 @@ namespace boolinq {
         {
             return Linq<LinqCurrentIndexFinished<S, T, _TRet>, typename _TRet::value_type>(
                 {*this, _TRet(), 0, true},
-                [apply](auto &tuple) {
+                [apply](LinqCurrentIndexFinished<S, T, _TRet> &tuple) {
                     while (true) {
                         if (tuple.finished) {
                             tuple.current = apply(tuple.linq.next(), tuple.index++);
@@ -245,7 +245,7 @@ namespace boolinq {
         {
             return Linq<LinqUnorderedSet<S, T, _TRet>, T>(
                 {*this, std::unordered_set<_TRet>()},
-                [transform](auto &tuple) {
+                [transform](LinqUnorderedSet<S, T, _TRet> &tuple) {
                     while (true) {
                         T value = tuple.linq.next();
                         if (tuple.set.insert(transform(value)).second) {
@@ -279,7 +279,7 @@ namespace boolinq {
 
             return Linq<StdVectorAndIterator<T>, T>(
                 {items, TIter()},
-                [](auto &tuple) {
+                [](StdVectorAndIterator<T> &tuple) {
                     if (tuple.it == TIter()) {
                         tuple.it = tuple.vec.begin();
                     }
@@ -310,7 +310,7 @@ namespace boolinq {
 
             return Linq<StdListAndReverseIterator<T>, T>(
                 {items, TIter()},
-                [](auto &tuple) {
+                [](StdListAndReverseIterator<T> &tuple) {
                     if (tuple.it == TIter()) {
                         tuple.it = tuple.list.rbegin();
                     }
@@ -583,7 +583,7 @@ namespace boolinq {
         {
             return Linq<LinqBytesBitsValueIndex<S, T>, int>(
                  {*this, direction, BitsHighToLow, T(), sizeof(T)},
-                 [](auto & tuple) {
+                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
                       if (tuple.index == sizeof(T)) {
                           tuple.value = tuple.linq.next();
                           tuple.index = 0;
@@ -607,7 +607,7 @@ namespace boolinq {
         {
             return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
                  {*this, direction, BitsHighToLow, T(), 0},
-                 [](auto & tuple) {
+                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
                      TRet value;
                      uint8_t *ptr = reinterpret_cast<uint8_t *>(&value);
 
@@ -629,7 +629,7 @@ namespace boolinq {
         {
             return Linq<LinqBytesBitsValueIndex<S, T>, int>(
                  {*this, bytesDir, bitsDir, T(), sizeof(T)},
-                 [](auto & tuple) {
+                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
                       if (tuple.index == sizeof(T)) {
                           tuple.value = tuple.linq.next();
                           tuple.index = 0;
@@ -658,7 +658,7 @@ namespace boolinq {
         {
             return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
                  {*this, bytesDir, bitsDir, T(), 0},
-                 [](auto & tuple) {
+                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
                      TRet value;
                      uint8_t *ptr = reinterpret_cast<uint8_t *>(&value);
 
@@ -703,7 +703,7 @@ namespace boolinq {
     {
         return Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type>(
             {begin, end},
-            [](auto &pair) {
+            [](std::pair<T, T> &pair) {
                 if (pair.first == pair.second) {
                     throw LinqEndException();
                 }
@@ -767,7 +767,7 @@ namespace boolinq {
     Linq<std::pair<T, int>, T> repeat(T value, int count) {
         return Linq<std::pair<T, int>, T>(
             {value, count},
-            [](auto &pair) {
+            [](std::pair<T, int> &pair) {
                 if (pair.second > 0) {
                     pair.second--;
                     return pair.first;
@@ -781,7 +781,7 @@ namespace boolinq {
     Linq<std::pair<std::pair<T,T>,T>,T> range(T start, T end, T step) {
         return Linq<std::pair<std::pair<T,T>,T>,T>(
             {{start, end}, step},
-            [](auto & tuple) {
+            [](std::pair<std::pair<T,T>,T> &tuple) {
                 if (tuple.first.first < tuple.first.second) {
                     return *(tuple.first.first += tuple.second);
                 }
