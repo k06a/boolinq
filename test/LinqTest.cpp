@@ -28,7 +28,7 @@ TEST(Linq, WhereOdd)
         EXPECT_EQ(i, rng.nextObject());
     }
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.nextObject(), LinqEndException);
 }
 
 TEST(Linq, WhereOdd_WhereLess)
@@ -51,7 +51,7 @@ TEST(Linq, WhereOdd_WhereLess)
         EXPECT_EQ(i, rng.nextObject());
     }
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.nextObject(), LinqEndException);
 }
 
 TEST(Linq, WhereLess_WhereOdd)
@@ -215,7 +215,7 @@ TEST(Linq, Pointer_Front)
         EXPECT_EQ(i, dst.nextObject());
     }
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 
@@ -232,7 +232,7 @@ TEST(Linq, Array_Front)
         EXPECT_EQ(i, dst.nextObject());
     }
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

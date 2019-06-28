@@ -50,7 +50,7 @@ TEST(SkipRange, ManyToZero)
     auto rng = from(src);
     auto dst = rng.skip(6);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 TEST(SkipRange, ManyToZeroLess)
@@ -60,7 +60,7 @@ TEST(SkipRange, ManyToZeroLess)
     auto rng = from(src);
     auto dst = rng.skip(10);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ TEST(SkipRange, OneToZero)
     auto rng = from(src);
     auto dst = rng.skip(1);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 TEST(SkipRange, OneToZeroLess)
@@ -93,7 +93,7 @@ TEST(SkipRange, OneToZeroLess)
     auto rng = from(src);
     auto dst = rng.skip(2);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 TEST(SkipRange, ZeroToZero)
@@ -103,7 +103,7 @@ TEST(SkipRange, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.skip(0);
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.nextObject(), LinqEndException);
 }
 
 TEST(SkipRange, ZeroToZeroLess)
@@ -113,7 +113,7 @@ TEST(SkipRange, ZeroToZeroLess)
     auto rng = from(src);
     auto dst = rng.skip(2);
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.nextObject(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

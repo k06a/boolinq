@@ -1,813 +1,737 @@
-//
-// Copyright (C) <year> <copyright holders>
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-
 #pragma once
 
-#include <set>
-#include <list>
-#include <deque>
-#include <string>
-#include <vector>
-#include <iostream>
 #include <functional>
-#include <climits>
 
-namespace boolinq
-{
-    ////////////////////////////////////////////////////////////////
-    // Enumerator template
-    ////////////////////////////////////////////////////////////////
+#include <iterator>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <unordered_set>
 
-    class EnumeratorEndException {};
+//
 
-    template<typename T, typename S>
-    class Enumerator
-    {
-        std::function<T(S&)> _nextObject;
-        S _data;
+namespace boolinq {
+
+    struct LinqEndException {};
+
+    enum BytesDirection {
+        BytesFirstToLast,
+        BytesLastToFirst,
+    };
+
+    enum BitsDirection {
+        BitsHighToLow,
+        BitsLowToHigh,
+    };
+
+    template<typename S, typename T>
+    class Linq {
+        std::function<T(S &)> nextFunc;
+        S storage;
 
     public:
         typedef T value_type;
-    
-        Enumerator(std::function<T(S&)> nextObject, S data)
-            : _nextObject(nextObject)
-            , _data(data)
+
+        Linq() : nextFunc(), storage()
         {
         }
 
-        T nextObject()
-        {
-            return _nextObject(_data);
-        }
-    };
-
-    template<typename T, typename S>
-    std::ostream & operator << (std::ostream & stream, Enumerator<T,S> enumerator)
-    {
-        try
-        {
-            for (;;)
-                stream << enumerator.nextObject() << ' ';
-        }
-        catch(EnumeratorEndException &) {}
-        return stream;
-    }
-
-    ////////////////////////////////////////////////////////////////
-    // Iterator and Container pair
-    ////////////////////////////////////////////////////////////////
-
-    template<typename TI, typename TC>
-    class IteratorContainerPair
-    {
-        std::function<TI(const TC &)> get_ti;
-
-    public:
-        TC second;
-        TI first;
-        
-        IteratorContainerPair(const TC & tc, std::function<TI(const TC &)> get_ti_)
-            : get_ti(get_ti_)
-            , second(tc)
-            , first(get_ti(second))
+        Linq(S storage, std::function<T(S &)> nextFunc) : nextFunc(nextFunc), storage(storage)
         {
         }
 
-        IteratorContainerPair(const IteratorContainerPair<TI,TC> & pair)
-            : get_ti(pair.get_ti)
-            , second(pair.second)
-            , first(get_ti(second))
+        T next()
         {
-            for (auto it = pair.get_ti(pair.second); it != pair.first; ++it)
-                first++;
-        }
-    };
-
-    ////////////////////////////////////////////////////////////////
-    // Linq methods implementation
-    ////////////////////////////////////////////////////////////////
-
-    enum BytesDirection
-    {
-        FirstToLast,
-        LastToFirst,
-    };
-
-    enum BitsDirection
-    {
-        HighToLow,
-        LowToHigh,
-    };
-
-    template<typename TE>
-    class LinqObj
-    {
-        typedef typename TE::value_type T;
-        
-        template<typename TFunc, typename TArg>
-        static auto get_return_type(TFunc * func = NULL, TArg * arg1 = NULL)
-            -> decltype((*func)(*arg1));
-
-        template<typename TFunc, typename T1Arg, typename T2Arg>
-        static auto get_return_type(TFunc * func = NULL, T1Arg * arg1 = NULL, T2Arg * arg2 = NULL)
-            -> decltype((*func)(*arg1,*arg2));
-
-    public:
-        TE _enumerator;
-
-        typedef typename TE::value_type value_type;
-
-        LinqObj(TE enumerator)
-            : _enumerator(enumerator)
-        {
+            return nextFunc(storage);
         }
 
-        T nextObject()
-        {
-            return _enumerator.nextObject();
-        }
+        template<typename SS, typename TT>
+        struct LinqIndex {
+            Linq<SS, TT> linq;
+            int index;
+        };
 
-        // Main methods
-
-        void foreach_i(std::function<void(T,int)> action) const
+        void foreach_i(std::function<void(T, int)> apply) const
         {
-            auto en = _enumerator;
-            int index = 0;
-            try
-            {
-                for (;;)
-                    action(en.nextObject(), index++);
+            LinqIndex<S, T> storage = {*this, 0};
+            try {
+                while (true) {
+                    apply(storage.linq.next(), storage.index++);
+                }
             }
-            catch(EnumeratorEndException &) {}
+            catch (LinqEndException &) {}
         }
 
-        void foreach(std::function<void(T)> action) const
+        void foreach(std::function<void(T)> apply) const
         {
-            foreach_i([=](T a, int){return action(a);});
+            return foreach_i([apply](T &&value, int index) { return apply(value); });
         }
 
-        LinqObj<Enumerator<T,std::pair<TE,int> > > where_i(std::function<bool(T,int)> predicate) const
+        Linq<LinqIndex<S, T>, T> where_i(std::function<bool(T, int)> filter) const
         {
-            return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
-                T object;
-                do
-                    object = pair.first.nextObject();
-                while (!predicate(object, pair.second++));
-                return object;
-            }, std::make_pair(_enumerator,0));
+            return Linq<LinqIndex<S, T>, T>(
+                {*this, 0},
+                [filter](auto &pair) {
+                    while (true) {
+                        T ret = pair.linq.next();
+                        if (filter(ret, pair.index++)) {
+                            return ret;
+                        }
+                    }
+                }
+            );
         }
 
-        LinqObj<Enumerator<T,std::pair<TE,int> > > where(std::function<bool(T)> predicate) const
+        Linq<LinqIndex<S, T>, T> where(std::function<bool(T)> filter) const
         {
-            return where_i([=](T a, int){return predicate(a);});
+            return where_i([filter](T &&value, int index) { return filter(value); });
         }
 
-        LinqObj<Enumerator<T,std::pair<TE,int> > > take(int count) const
+        Linq<LinqIndex<S, T>, T> take(int count) const
         {
-            return where_i([=](T, int i){
-                if(i == count)
-                    throw EnumeratorEndException();
+            return where_i([count](T /*value*/, int i) {
+                if (i == count) {
+                    throw LinqEndException();
+                }
                 return true;
             });
         }
 
-        LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile_i(std::function<bool(T,int)> predicate) const
+        Linq<LinqIndex<S, T>, T> takeWhile_i(std::function<bool(T, int)> predicate) const
         {
-            return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
-                T object = pair.first.nextObject();
-                if(!predicate(object,pair.second++)) throw EnumeratorEndException();
-                return object;
-            }, std::make_pair(_enumerator,0));
-        }
-
-        LinqObj<Enumerator<T,std::pair<TE,int> > > takeWhile(std::function<bool(T)> predicate) const
-        {
-            return takeWhile_i([=](T t,int){return predicate(t);});
-        }
-
-        LinqObj<Enumerator<T,std::pair<TE,int> > > skip(int count) const
-        {
-            return where_i([=](T, int i){return i >= count;});
-        }
-
-        LinqObj<Enumerator<T,std::pair<TE,int> > > skipWhile_i(std::function<bool(T,int)> predicate) const
-        {
-            return Enumerator<T,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->T{
-                if (pair.second != 0)
-                    return pair.first.nextObject();
-
-                T object;
-                do
-                    object = pair.first.nextObject();
-                while (predicate(object,pair.second++));
-
-                return object;
-            }, std::make_pair(_enumerator,0));
-        }
-
-        LinqObj<Enumerator<T,std::pair<TE,int> > > skipWhile(std::function<bool(T)> predicate) const
-        {
-            return skipWhile_i([=](T t, int /*i*/){ return predicate(t);});
-        }
-
-        template<typename TRet>
-        LinqObj<Enumerator<TRet,std::pair<TE,int> > > select_i(std::function<TRet(T,int)> transform) const
-        {
-            return Enumerator<TRet,std::pair<TE,int> >([=](std::pair<TE,int> & pair)->TRet{
-                return transform(pair.first.nextObject(), pair.second++);
-            }, std::make_pair(_enumerator,0));
-        }
-
-        template<typename TFunc>
-        LinqObj<Enumerator<decltype(get_return_type<TFunc,T,int>()),std::pair<TE,int> > > select_i(TFunc transform) const
-        {
-            return select_i<decltype(get_return_type<TFunc,T,int>())>(transform);
-        }
-
-        template<typename TRet>
-        LinqObj<Enumerator<TRet,std::pair<TE,int> > > select(std::function<TRet(T)> transform) const
-        {
-            return select_i<TRet>([=](T a, int){return transform(a);});
-        }
-
-        template<typename TFunc>
-        LinqObj<Enumerator<decltype(get_return_type<TFunc,T>()),std::pair<TE,int> > > select(TFunc transform) const
-        {
-            return select<decltype(get_return_type<TFunc,T>())>(transform);
-        }
-
-        template<typename TRet>
-        LinqObj<Enumerator<TRet,std::pair<TE,int> > > cast() const
-        {
-            return select_i<TRet>([=](T a, int){return a;});
-        }
-
-        template<typename TRet>
-        LinqObj<Enumerator<T,std::pair<TE,std::set<TRet> > > > distinct(std::function<TRet(T)> transform) const
-        {
-            typedef std::pair<TE,std::set<TRet> > DataType;
-
-            return Enumerator<T,DataType>([=](DataType & pair)->T{
-                for (;;)
-                {
-                    T object = pair.first.nextObject();
-                    TRet key = transform(object);
-                    if (pair.second.find(key) == pair.second.end())
-                    {
-                        pair.second.insert(key);
-                        return object;
-                    } 
+            return where_i([predicate](T &&value, int i) {
+                if (!predicate(value, i)) {
+                    throw LinqEndException();
                 }
-            }, std::make_pair(_enumerator,std::set<TRet>()));
+                return true;
+            });
         }
 
-        template<typename TFunc>
-        LinqObj<Enumerator<T,std::pair<TE,std::set<decltype(get_return_type<TFunc,T>())> > > > distinct(TFunc transform) const
+        Linq<LinqIndex<S, T>, T> takeWhile(std::function<bool(T)> predicate) const
         {
-            return distinct<decltype(get_return_type<TFunc,T>())>(transform);
+            return takeWhile_i([predicate](T &&value, int /*i*/) { return predicate(value); });
         }
 
-
-        LinqObj<Enumerator<T,std::pair<TE,std::set<T> > > > distinct() const
+        Linq<LinqIndex<S, T>, T> skip(int count) const
         {
-            return distinct<T>([](T a){return a;});
+            return where_i([count](T &&value, int i) { return i >= count; });
         }
 
-    protected:
-
-        template<typename T, typename TRet>
-        class transform_comparer
-        {
-        public:
-            std::function<TRet(T)> func;
-            transform_comparer(std::function<TRet(T)> func_) : func(func_) {}
-
-            bool operator()(const T & a, const T & b) const
-            {
-                return func(a) < func(b);
-            }
+        template<typename SS, typename TT>
+        struct LinqIndexFlag : public LinqIndex<SS, TT> {
+            bool flag;
         };
 
-    public:
+        Linq<LinqIndexFlag<S, T>, T> skipWhile_i(std::function<bool(T, int)> predicate) const
+        {
+            return Linq<LinqIndexFlag<S, T>, T>(
+                {*this, 0, false},
+                [predicate](auto &tuple) {
+                    if (tuple.flag) {
+                        return tuple.linq.next();
+                    }
+                    while (true) {
+                        T ret = tuple.linq.next();
+                        if (predicate(ret, tuple.index++)) {
+                            return ret;
+                        }
+                    }
+                }
+            );
+        }
+
+        Linq<LinqIndexFlag<S, T>, T> skipWhile(std::function<bool(T)> predicate) const
+        {
+            return skipWhile_i([predicate](T &&value, int /*i*/) { return predicate(value); });
+        }
+
+        template<typename F, typename _TRet = typename std::result_of<F(T, int)>::type>
+        auto select_i(F apply) const -> Linq<LinqIndex<S, T>, _TRet>
+        {
+            return Linq<LinqIndex<S, T>, _TRet>(
+                {*this, 0},
+                [apply](auto &pair) {
+                    return apply(pair.linq.next(), pair.index++);
+                }
+            );
+        }
+
+        template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
+        auto select(F apply) const -> Linq<LinqIndex<S, T>, _TRet>
+        {
+            return select_i([apply](T &&value, int index) { return apply(value); });
+        }
 
         template<typename TRet>
-        LinqObj<Enumerator<T,IteratorContainerPair<typename std::multiset<T,transform_comparer<T,TRet> >::iterator,
-                                                   std::multiset<T,transform_comparer<T,TRet> > > > >
-        orderBy(std::function<TRet(T)> transform) const
+        Linq<LinqIndex<S, T>, TRet> cast() const
         {
-            typedef IteratorContainerPair<typename std::multiset<T,transform_comparer<T,TRet> >::iterator,
-                                          std::multiset<T,transform_comparer<T,TRet> > > DataType;
-
-            std::multiset<T,transform_comparer<T,TRet> > objects(transform);
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    objects.insert(en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-
-            return Enumerator<T,DataType>([](DataType & pair)
-            {
-                return (pair.first == pair.second.end())
-                     ? throw EnumeratorEndException() : *(pair.first++);
-            }, DataType(objects, [](const std::multiset<T,transform_comparer<T,TRet> > & mset){return mset.begin();}));
+            return select([](T &&value) { return TRet(value); });
         }
 
-        template<typename TFunc>
-        LinqObj<Enumerator<T,IteratorContainerPair<typename std::multiset<T,transform_comparer<T,decltype(get_return_type<TFunc,T>())> >::iterator,
-                                                   std::multiset<T,transform_comparer<T,decltype(get_return_type<TFunc,T>())> > > > >
-        orderBy(TFunc transform) const
+        template<typename SS, typename TT, typename TCurrent>
+        struct LinqCurrentIndexFinished {
+            Linq<SS, TT> linq;
+            TCurrent current;
+            int index;
+            bool finished;
+        };
+
+        template<typename F, typename _TRet = typename std::result_of<F(T,int)>::type>
+        auto selectMany_i(F apply) const
+            -> Linq<LinqCurrentIndexFinished<S, T, _TRet>, typename _TRet::value_type>
         {
-            return orderBy<decltype(get_return_type<TFunc,T>())>(transform);
+            return Linq<LinqCurrentIndexFinished<S, T, _TRet>, typename _TRet::value_type>(
+                {*this, _TRet(), 0, true},
+                [apply](auto &tuple) {
+                    while (true) {
+                        if (tuple.finished) {
+                            tuple.current = apply(tuple.linq.next(), tuple.index++);
+                            tuple.finished = false;
+                        }
+                        try {
+                            return tuple.current.next();
+                        }
+                        catch (LinqEndException &) {
+                            tuple.finished = true;
+                        }
+                    }
+                }
+            );
         }
 
-        LinqObj<Enumerator<T,IteratorContainerPair<typename std::multiset<T,transform_comparer<T,T> >::iterator,
-                                                   std::multiset<T,transform_comparer<T,T> > > > > orderBy() const
+        template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
+        auto selectMany(F apply) const
+            -> Linq<LinqCurrentIndexFinished<S, T, _TRet>, typename _TRet::value_type>
         {
-            return orderBy<T>([](T a){return a;});
+            return selectMany_i([apply](T &&value, int index) { return apply(value); });
         }
 
-        LinqObj<Enumerator<T,IteratorContainerPair<typename std::vector<T>::const_reverse_iterator,std::vector<T> > > > reverse() const
-        {
-            typedef IteratorContainerPair<typename std::vector<T>::const_reverse_iterator,std::vector<T> > DataType;
+        template<typename SS, typename TT, typename TTRet2>
+        struct LinqUnorderedSet {
+            Linq<SS, TT> linq;
+            std::unordered_set<TTRet2> set;
+        };
 
-            return Enumerator<T,DataType>([](DataType & pair)
-            {
-                return (pair.first == pair.second.crend())
-                     ? throw EnumeratorEndException() : *(pair.first++);
-            }, DataType(toVector(), [](const std::vector<T> & vec){return vec.crbegin();}));
+        template<typename TRet>
+        Linq<LinqUnorderedSet<S, T, TRet>, T> distinct(std::function<TRet(T)> transform) const
+        {
+            return Linq<LinqUnorderedSet<S, T, TRet>, T>(
+                {*this, std::unordered_set<TRet>()},
+                [transform](auto &tuple) {
+                    while (true) {
+                        T value = tuple.linq.next();
+                        if (tuple.set.insert(transform(value)).second) {
+                            return value;
+                        }
+                    }
+                }
+            );
+        }
+
+        Linq<LinqUnorderedSet<S, T, T>, T> distinct() const
+        {
+            return distinct([](T &&value) { return value; });
+        }
+
+        template<typename TT>
+        struct StdVectorAndIterator {
+            std::vector<TT> vec;
+            typename std::vector<TT>::iterator it;
+        };
+
+        template<typename F>
+        Linq<StdVectorAndIterator<T>, T> orderBy(F transform) const
+        {
+            typedef typename std::vector<T>::iterator TIter;
+
+            std::vector<T> items = toStdVector();
+            std::sort(items.begin(), items.end(), [transform](const T &a, const T &b) {
+                return transform(a) < transform(b);
+            });
+
+            return Linq<StdVectorAndIterator<T>, T>(
+                {items, TIter()},
+                [](auto &tuple) {
+                    if (tuple.it == TIter()) {
+                        tuple.it = tuple.vec.begin();
+                    }
+                    if (tuple.it == tuple.vec.end()) {
+                        throw LinqEndException();
+                    }
+                    return *(tuple.it++);
+                }
+            );
+        }
+
+        Linq<StdVectorAndIterator<T>, T> orderBy() const
+        {
+            return orderBy([](T &&value) { return value; });
+        }
+
+        template<typename TT>
+        struct StdListAndReverseIterator {
+            std::list<TT> list;
+            typename std::list<TT>::reverse_iterator it;
+        };
+
+        Linq<StdListAndReverseIterator<T>, T> reverse() const
+        {
+            typedef typename std::list<T>::reverse_iterator TIter;
+
+            std::list<T> items = toStdList();
+
+            return Linq<StdListAndReverseIterator<T>, T>(
+                {items, TIter()},
+                [](auto &tuple) {
+                    if (tuple.it == TIter()) {
+                        tuple.it = tuple.list.rbegin();
+                    }
+                    if (tuple.it == tuple.list.rend()) {
+                        throw LinqEndException();
+                    }
+                    return *(tuple.it++);
+                }
+            );
         }
 
         // Aggregators
 
         template<typename TRet>
-        TRet aggregate(TRet start, std::function<TRet(TRet,T)> accumulate) const
+        TRet aggregate(TRet start, std::function<TRet(TRet, T)> accumulate) const
         {
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    start = accumulate(start, en.nextObject());
+            Linq<S, T> linq = *this;
+            try {
+                while (true) {
+                    start = accumulate(start, linq.next());
+                }
             }
-            catch(EnumeratorEndException &) {}
+            catch (LinqEndException &) {}
             return start;
         }
 
-        template<typename TRet>
-        TRet sum(std::function<TRet(T)> transform) const
+        template<typename F>
+        auto sum(F transform) const -> typename std::result_of<F(T, T)>::type
         {
-            return aggregate<TRet>(TRet(), [=](TRet accumulator, T object){
-                return accumulator + transform(object);
+            return aggregate<T>(T(), [transform](T accumulator, T &&value) {
+                return accumulator + transform(value);
             });
         }
 
-        template<typename TFunc>
-        decltype(get_return_type<TFunc,T>()) sum(TFunc transform) const
-        {
-            return sum<decltype(get_return_type<TFunc,T>())>(transform);
-        }
-
-        template<typename TRet>
+        template<typename TRet = T>
         TRet sum() const
         {
-            return sum<TRet>([](T a){return a;});
+            return cast<TRet>().sum();
         }
 
-        T sum() const
-        {
-            return sum<T>();
-        }
-
-        template<typename TRet>
-        TRet avg(std::function<TRet(T)> transform) const
+        template<typename F>
+        auto avg(F transform) const -> typename std::result_of<F(T)>::type
         {
             int count = 0;
-            return aggregate<TRet>(TRet(), [&](TRet accumulator, T object)->TRet{
+            T res = sum([transform, &count](T &&value) {
                 count++;
-                return (accumulator*(count-1) + transform(object))/count;
+                return transform(value);
             });
+            return res / count;
         }
 
-        template<typename TFunc>
-        decltype(get_return_type<TFunc,T>()) avg(TFunc transform) const
-        {
-            return avg<decltype(get_return_type<TFunc,T>())>(transform);
-        }
-
-        template<typename TRet>
+        template<typename TRet = T>
         TRet avg() const
         {
-            return avg<TRet>([](T a){return a;});
-        }
-
-        T avg() const
-        {
-            return avg<T>();
-        }
-
-        int count(std::function<bool(T)> predicate) const
-        {
-            return aggregate<int>(0, [=](int count, T a){return count + (predicate(a)?1:0);});
-        }
-
-        int count(const T & value) const
-        {
-            return count([=](T a){return a == value;});
+            return cast<TRet>().avg();
         }
 
         int count() const
         {
-            return count([](T){return true;});
+            int index = 0;
+            foreach([&index](T &&/**/a) { index++; });
+            return index;
+        }
+
+        int count(std::function<bool(T)> predicate) const
+        {
+            return where(predicate).count();
+        }
+
+        int count(const T &item) const
+        {
+            return count([item](T &&value) { return item == value; });
         }
 
         // Bool aggregators
 
         bool any(std::function<bool(T)> predicate) const
         {
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    if (predicate(en.nextObject()))
+            Linq<S, T> linq = *this;
+            try {
+                while (true) {
+                    if (predicate(linq.nextObject()))
                         return true;
+                }
             }
-            catch(EnumeratorEndException &) {}
+            catch (LinqEndException &) {}
             return false;
         }
 
         bool any() const
         {
-            return any([](T a){return static_cast<bool>(a);});
+            return any([](T &&value) { return static_cast<bool>(value); });
         }
 
         bool all(std::function<bool(T)> predicate) const
         {
-            return !any([=](T a){return !predicate(a);});
+            return !any([predicate](T &&value) { return !predicate(value); });
         }
 
         bool all() const
         {
-            return all([](T a){return static_cast<bool>(a);});
+            return all([](T &&value) { return static_cast<bool>(value); });
         }
 
-        bool contains(const T & value) const
+        bool contains(const T &item) const
         {
-            return any([&](T a){return value == a;});
+            return any([&item](T &&value) { return value == item; });
         }
 
         // Election aggregators
 
-        T elect(std::function<T(T,T)> accumulate) const
+        T elect(std::function<T(T, T)> accumulate) const
         {
-            auto en = _enumerator;
-            T result = en.nextObject();
-            try
-            {
-                for (;;)
-                    result = accumulate(result, en.nextObject());
+            Linq<S, T> linq = *this;
+            T result;
+            try {
+                result = linq.next();
+                while (true) {
+                    result = accumulate(result, linq.next());
+                }
             }
-            catch(EnumeratorEndException &) {}
+            catch (LinqEndException &) {}
             return result;
-        } 
-
-        template<typename TRet>
-        T max(std::function<TRet(T)> transform) const
-        {
-            return elect([=](T a, T b){return transform(a) < transform(b) ? b : a;});
         }
 
-        template<typename TFunc>
-        T max(TFunc transform) const
+        template<typename F>
+        T max(F transform) const
         {
-            return max<decltype(get_return_type<TFunc,T>())>(transform);
+            return elect([transform](const T &a, const T &b) {
+                return (transform(a) < transform(b)) ? b : a;
+            });
         }
 
         T max() const
         {
-            return max<T>([](T a){return a;});
+            return max([](T &&value) { return value; });
         }
 
-        template<typename TRet>
-        T min(std::function<TRet(T)> transform) const
+        template<typename F>
+        T min(F transform) const
         {
-            return elect([=](T a, T b){return transform(a) < transform(b) ? a : b;});
-        }
-
-        template<typename TFunc>
-        T min(TFunc transform) const
-        {
-            return min<decltype(get_return_type<TFunc,T>())>(transform);
+            return elect([transform](const T &a, const T &b) {
+                return (transform(a) < transform(b)) ? a : b;
+            });
         }
 
         T min() const
         {
-            return min<T>([](T a){return a;});
+            return min([](T &&value) { return value; });
         }
 
         // Single object returners
 
         T elementAt(int index) const
         {
-            auto en = _enumerator;
-            for (int i = 0; i < index; i++)
-                en.nextObject();
-            return en.nextObject();
+            return skip(index - 1).next();
         }
 
         T first(std::function<bool(T)> predicate) const
         {
-            return where(predicate)._enumerator.nextObject();
+            return where(predicate).next();
         }
 
         T first() const
         {
-            return first([](T){return true;});
+            return next();
         }
 
-        T firstOrDefault(std::function<bool(T)> predicate)
+        T firstOrDefault(std::function<bool(T)> predicate) const
         {
-            try { return first(predicate); }
-            catch(EnumeratorEndException &) { return T(); }
+            try {
+                return where(predicate).next();
+            }
+            catch (LinqEndException &) {}
+            return T();
         }
 
         T firstOrDefault() const
         {
-            try { return first(); }
-            catch(EnumeratorEndException &) { return T(); }
+            firstOrDefault([](T &&/*value*/) { return true; });
         }
 
         T last(std::function<bool(T)> predicate) const
         {
-            auto linq = where(predicate);
-            T object = linq._enumerator.nextObject();
-            try { for (;;) object = linq._enumerator.nextObject(); }
-            catch(EnumeratorEndException &) { return object; }
+            T res;
+            foreach([&res](T &&value) {
+                res = value;
+            });
+            return res;
         }
 
         T last() const
         {
-            return last([](T){return true;});
+            return last([](T &&/*value*/) { return true; });
         }
 
         T lastOrDefault(std::function<bool(T)> predicate) const
         {
-            try { return last(predicate); }
-            catch(EnumeratorEndException &) { return T(); }
+            try {
+                return last(predicate);
+            }
+            catch (LinqEndException &) {}
+            return T();
         }
 
         T lastOrDefault() const
         {
-            return lastOrDefault([](T){return true;});
+            return lastOrDefault([](T && /*value*/) { return true; });
         }
 
-        // Set methods
+        // Export to containers
 
-        template<typename TE2>
-        LinqObj<Enumerator<T,std::pair<bool,std::pair<TE,TE2> > > > concat(LinqObj<TE2> rhs) const
+        std::vector<T> toStdVector() const
         {
-            typedef std::pair<bool,std::pair<TE,TE2> > DataType;
-
-            return Enumerator<T,DataType>([=](DataType & pair)->T{
-                if (pair.first)
-                    return pair.second.second.nextObject();
-                try { return pair.second.first.nextObject(); }
-                catch(EnumeratorEndException &) 
-                {  
-                    pair.first = true;
-                    return pair.second.second.nextObject();
-                }
-            }, std::make_pair(false, std::make_pair(_enumerator, rhs._enumerator)));
-        }
-
-        // Export methods
-
-    private:
-
-        template<typename C, typename TFunc>
-        C exportToContainer(TFunc func) const {
-            C container;
-            try
-            {
-                auto en = _enumerator;
-                for (;;)
-                    func(container, en.nextObject());
-            }
-            catch(EnumeratorEndException &) {}
-            return container;
-        }
-
-    public:
-
-        std::vector<T> toVector() const
-        {
-            return exportToContainer<std::vector<T> >([](std::vector<T> &container, const T &value){
-                container.push_back(value);
+            std::vector<T> items;
+            foreach([&items](T &&value) {
+                items.push_back(value);
             });
+            return items;
         }
 
-        std::list<T> toList() const
+        std::list<T> toStdList() const
         {
-            return exportToContainer<std::list<T> >([](std::list<T> &container, const T &value){
-                container.push_back(value);
+            std::list<T> items;
+            foreach([&items](T &&value) {
+                items.push_back(value);
             });
+            return items;
         }
 
-        std::deque<T> toDeque() const
+        // Bits and bytes
+
+        template<typename SS, typename TT>
+        struct LinqBytesBitsValueIndex{
+            Linq<SS, TT> linq;
+            BytesDirection bytesDirection;
+            BitsDirection bitsDirection;
+            TT value;
+            int index;
+        };
+
+        Linq<LinqBytesBitsValueIndex<S, T>, int> bytes(BytesDirection direction = BytesFirstToLast) const
         {
-            return exportToContainer<std::deque<T> >([](std::deque<T> &container, const T &value){
-                container.push_back(value);
-            });
-        }
+            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
+                 {*this, direction, BitsHighToLow, T(), sizeof(T)},
+                 [](auto & tuple) {
+                      if (tuple.index == sizeof(T)) {
+                          tuple.value = tuple.linq.next();
+                          tuple.index = 0;
+                      }
 
-        std::set<T> toSet() const
-        {
-            return exportToContainer<std::set<T> >([](std::set<T> &container, const T &value){
-                container.insert(value);
-            });
-        }
+                      uint8_t *ptr = reinterpret_cast<uint8_t *>(&tuple.value);
 
-        // Custom methods
+                      int byteIndex = tuple.index;
+                      if (tuple.bytesDirection == BytesLastToFirst) {
+                          byteIndex = sizeof(T) - 1 - byteIndex;
+                      }
 
-        LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > > bytes(BytesDirection direction = FirstToLast) const
-        {
-            typedef std::pair<int,std::pair<TE,T> > DataType;
-
-            auto pair = std::make_pair(_enumerator, T());
-            pair.second =  pair.first.nextObject();
-
-            return Enumerator<int,DataType>([=](DataType & pair_)->int{
-                if ((direction == FirstToLast && pair_.first == sizeof(T))
-                    || (direction == LastToFirst && pair_.first == -1))
-                {
-                    pair_.first = (direction == FirstToLast) ? 0 : sizeof(T)-1;
-                    pair_.second.second = pair_.second.first.nextObject();
-                }
-                unsigned char * ptr = reinterpret_cast<unsigned char *>(&pair_.second.second);
-                int value = ptr[pair_.first];
-                pair_.first += (direction == FirstToLast) ? 1 : -1;
-                return value;
-            }, std::make_pair((direction == FirstToLast) ? 0 : sizeof(T)-1, pair));
+                     tuple.index++;
+                     return ptr[byteIndex];
+                 }
+            );
         }
 
         template<typename TRet>
-        LinqObj<Enumerator<TRet,TE> > unbytes(BytesDirection direction = FirstToLast) const
+        Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbytes(BytesDirection direction = BytesFirstToLast) const
         {
-            return Enumerator<TRet,TE>([=](TE & en)->TRet{
-                TRet object;
-                unsigned char * ptr = reinterpret_cast<unsigned char *>(&object);
-                for (int i = (direction == FirstToLast) ? 0 : int(sizeof(TRet)-1);
-                     i != ((direction == FirstToLast) ? int(sizeof(TRet)) : -1);
-                     i += (direction == FirstToLast) ? 1 : -1)
-                {
-                    ptr[i] = en.nextObject();
-                }
-                return object;
-            }, _enumerator);
+            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
+                 {*this, direction, BitsHighToLow, T(), 0},
+                 [](auto & tuple) {
+                     TRet value;
+                     uint8_t *ptr = reinterpret_cast<uint8_t *>(&value);
+
+                     for (int i = 0; i < sizeof(TRet); i++) {
+                         int byteIndex = i;
+                         if (tuple.bytesDirection == BytesLastToFirst) {
+                             byteIndex = sizeof(TRet) - 1 - byteIndex;
+                         }
+
+                         ptr[byteIndex] = tuple.linq.next();
+                     }
+
+                     return value;
+                 }
+            );
         }
 
-        LinqObj<Enumerator<int,std::pair<int,std::pair<LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > >,unsigned char> > > > 
-        bits(BitsDirection direction = HighToLow, BytesDirection bytesDirection = FirstToLast) const
+        Linq<LinqBytesBitsValueIndex<S, T>, int> bits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
-            typedef std::pair<int,std::pair<LinqObj<Enumerator<int,std::pair<int,std::pair<TE,T> > > >,unsigned char> > DataType;
+            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
+                 {*this, bytesDir, bitsDir, T(), sizeof(T)},
+                 [](auto & tuple) {
+                      if (tuple.index == sizeof(T)) {
+                          tuple.value = tuple.linq.next();
+                          tuple.index = 0;
+                      }
 
-            auto inner = bytes(bytesDirection);
-            return Enumerator<int,DataType>([=](DataType & pair)->int{
-                if ((direction == LowToHigh && pair.first == CHAR_BIT)
-                    || (direction == HighToLow && pair.first == -1))
-                {
-                    pair.first = (direction == LowToHigh) ? 0 : CHAR_BIT-1;
-                    pair.second.second = static_cast<unsigned char>(pair.second.first.nextObject());
-                }
-                int value = 1 & (pair.second.second >> (pair.first % CHAR_BIT));
-                pair.first += (direction == LowToHigh) ? 1 : -1;
-                return value;
-            }, std::make_pair((direction == LowToHigh) ? 0 : CHAR_BIT-1,
-                              std::make_pair(inner, inner.nextObject())));
-        }
+                      uint8_t *ptr = reinterpret_cast<uint8_t *>(&tuple.value);
 
-        LinqObj<Enumerator<unsigned char,TE> > unbits(BitsDirection direction = HighToLow) const
-        {
-            return Enumerator<unsigned char,TE>([=](TE & en)->unsigned char{
-                unsigned char object = 0;
-                for (int i = (direction == LowToHigh) ? 0 : CHAR_BIT-1;
-                         i != ((direction == LowToHigh) ? CHAR_BIT : -1);
-                         i += (direction == LowToHigh) ? 1 : -1)
-                {
-                    object |= (en.nextObject() << i);
-                }
-                return object;
-            }, _enumerator);
+                      int byteIndex = tuple.index / 8;
+                      if (tuple.bytesDirection == BytesLastToFirst) {
+                          byteIndex = sizeof(T) - 1 - byteIndex;
+                      }
+
+                     int bitIndex = tuple.index % 8;
+                     if (tuple.bitsDirection == BitsHighToLow) {
+                         bitIndex = 7 - bitIndex;
+                     }
+
+                     tuple.index++;
+                     return (ptr[byteIndex] & (1 << bitIndex)) != 0;
+                 }
+            );
         }
 
         template<typename TRet>
-        LinqObj<Enumerator<TRet,Enumerator<unsigned char,TE> > > unbits(BitsDirection direction = HighToLow, BytesDirection bytesDirection = FirstToLast) const
+        Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
-            return unbits(direction).template unbytes<TRet>(bytesDirection);
-        }
+            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
+                 {*this, bytesDir, bitsDir, T(), 0},
+                 [](auto & tuple) {
+                     TRet value;
+                     uint8_t *ptr = reinterpret_cast<uint8_t *>(&value);
 
-        template<typename TE_>
-        friend std::ostream & operator << (std::ostream & stream, LinqObj<TE_> linq);
+                     for (int i = 0; i < sizeof(TRet); i++) {
+                         int byteIndex = i / 8;
+                         if (tuple.bytesDirection == BytesLastToFirst) {
+                             byteIndex = sizeof(TRet) - 1 - byteIndex;
+                         }
+
+                         int bitIndex = i % 8;
+                         if (tuple.bitsDirection == BitsHighToLow) {
+                             bitIndex = 7 - bitIndex;
+                         }
+
+                         ptr[byteIndex] |= (tuple.linq.next()?1:0) << bitIndex;
+                     }
+
+                     return value;
+                 }
+            );
+        }
     };
 
-    template<typename TE>
-    std::ostream & operator << (std::ostream & stream, LinqObj<TE> linq)
+    template<typename S, typename T>
+    std::ostream &operator<<(std::ostream &stream, Linq<S, T> linq)
     {
-        return stream << linq._enumerator;
+        try {
+            while (true) {
+                stream << linq.next() << ' ';
+            }
+        }
+        catch (LinqEndException &) {}
+        return stream;
     }
 
     ////////////////////////////////////////////////////////////////
     // Linq Creators
     ////////////////////////////////////////////////////////////////
 
-    template<typename T, typename TI>
-    LinqObj<Enumerator<T,TI> > from(TI begin, TI end)
+    template<typename T>
+    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(T begin, T end)
     {
-        return Enumerator<T,TI>([=](TI & iter){
-            return (iter == end) ? throw EnumeratorEndException() : *(iter++);
-        }, begin);
+        return Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type>(
+            {begin, end},
+            [](auto &pair) {
+                if (pair.first < pair.second) {
+                    return *(pair.first++);
+                }
+                throw LinqEndException();
+            }
+        );
     }
 
-    template<typename T, typename TI>
-    LinqObj<Enumerator<T,std::pair<TI,int> > > from(TI begin, int length) 
+    template<typename T>
+    Linq<std::pair<T, T>, T> from(T it, int n)
     {
-        return Enumerator<T,std::pair<TI,int> >([=](std::pair<TI,int> & pair){
-            return (pair.second++ == length) ? throw EnumeratorEndException() : *(pair.first++);
-        }, std::make_pair(begin,0));
+        return from(it, it + n);
     }
 
     template<typename T, int N>
-    auto from(T (&array)[N])
-        -> decltype(from<T>(array, array + N))
+    Linq<std::pair<T *, T *>, T> from(T (&array)[N])
     {
-        return from<T>(array, array + N);
+        return from((T *) (&array), (T *) (&array) + N);
     }
 
     template<template<class> class TV, typename TT>
     auto from(const TV<TT> & container)
-        -> decltype(from<TT>(std::begin(container), std::end(container)))
+        -> decltype(from(std::begin(container), std::end(container)))
     {
-        return from<TT>(std::begin(container), std::end(container));
+        return from(std::begin(container), std::end(container));
     }
 
     // std::list, std::vector, std::dequeue
     template<template<class,class> class TV, typename TT, typename TU>
     auto from(const TV<TT,TU> & container)
-        -> decltype(from<TT>(std::begin(container), std::end(container)))
+        -> decltype(from(std::begin(container), std::end(container)))
     {
-        return from<TT>(std::begin(container), std::end(container));
+        return from(std::begin(container), std::end(container));
     }
 
     // std::set
     template<template<class,class,class> class TV, typename TT, typename TS, typename TU>
     auto from(const TV<TT,TS,TU> & container)
-        -> decltype(from<TT>(std::begin(container), std::end(container)))
+        -> decltype(from(std::begin(container), std::end(container)))
     {
-        return from<TT>(std::begin(container), std::end(container));
+        return from(std::begin(container), std::end(container));
     }
 
     // std::map
     template<template<class,class,class,class> class TV, typename TK, typename TT, typename TS, typename TU>
     auto from(const TV<TK,TT,TS,TU> & container)
-        -> decltype(from<std::pair<TK, TT> >(std::begin(container), std::end(container)))
+        -> decltype(from(std::begin(container), std::end(container)))
     {
-        return from<std::pair<TK,TT> >(std::begin(container), std::end(container));
+        return from(std::begin(container), std::end(container));
     }
 
     // std::array
     template<template<class,size_t> class TV, typename TT, size_t TL>
     auto from(const TV<TT,TL> & container)
-        -> decltype(from<TT>(std::begin(container), std::end(container)))
+        -> decltype(from(std::begin(container), std::end(container)))
     {
-        return from<TT>(std::begin(container), std::end(container));
+        return from(std::begin(container), std::end(container));
     }
 
     template<typename T>
-    LinqObj<Enumerator<T,int> > repeat(T value, int count) 
-    {
-        return Enumerator<T,int>([=](int & index){
-            return (index++ >= count) ? throw EnumeratorEndException() : value;
-        },0);
+    Linq<std::pair<T, int>, T> repeat(T value, int count) {
+        return Linq<std::pair<T, int>, T>(
+            {value, count},
+            [](auto &pair) {
+                if (pair.second > 0) {
+                    pair.second--;
+                    return pair.first;
+                }
+                throw LinqEndException();
+            }
+        );
     }
 
     template<typename T>
-    LinqObj<Enumerator<T,std::pair<bool,T> > > range(T begin, T end, T step) 
-    {
-        return Enumerator<T,std::pair<bool,T> >([=](std::pair<bool,T> & pair){
-            if (!(pair.second < end))
-                throw EnumeratorEndException();
-            if (!pair.first)
-                pair.first = true;
-            else
-                pair.second += step;
-            return pair.second;
-        }, std::make_pair(false, begin));
+    Linq<std::pair<std::pair<T,T>,T>,T> range(T start, T end, T step) {
+        return Linq<std::pair<std::pair<T,T>,T>,T>(
+            {{start, end}, step},
+            [](auto & tuple) {
+                if (tuple.first.first < tuple.first.second) {
+                    return *(tuple.first.first += tuple.second);
+                }
+                throw LinqEndException();
+            }
+        );
     }
 }

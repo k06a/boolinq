@@ -27,7 +27,7 @@ TEST(UnbitsRange, OneByteHL)
     int ans[] = {0xAA};
     
     auto rng = from(src);
-    auto dst = rng.unbits(HighToLow);
+    auto dst = rng.unbits(BitsHighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -38,7 +38,7 @@ TEST(UnbitsRange, OneByteLH)
     int ans[] = {0xAA};
     
     auto rng = from(src);
-    auto dst = rng.unbits(LowToHigh);
+    auto dst = rng.unbits(BitsLowToHigh);
 
     CheckRangeEqArray(dst, ans);
 }

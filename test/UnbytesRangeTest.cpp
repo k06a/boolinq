@@ -27,7 +27,7 @@ TEST(UnbytesRange, OneIntFL)
     unsigned ans[] = {0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(FirstToLast);
+    auto dst = rng.unbytes<unsigned>(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -38,7 +38,7 @@ TEST(UnbytesRange, OneIntLF)
     unsigned ans[] = {0xAABBCCDD};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(LastToFirst);
+    auto dst = rng.unbytes<unsigned>(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -70,7 +70,7 @@ TEST(UnbytesRange, TwoIntsFL)
     unsigned ans[] = {0x12345678,0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(FirstToLast);
+    auto dst = rng.unbytes<unsigned>(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -85,7 +85,7 @@ TEST(UnbytesRange, TwoIntsLF)
     unsigned ans[] = {0x78563412,0xAABBCCDD};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(LastToFirst);
+    auto dst = rng.unbytes<unsigned>(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -99,5 +99,5 @@ TEST(UnbytesRange, EmptyDefault)
     auto rng = from(src);
     auto dst = rng.unbytes<int>();
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }

@@ -126,5 +126,5 @@ TEST(IterRange, EmptyVector)
     
     auto rng = from(src);
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.nextObject(), LinqEndException);
 }

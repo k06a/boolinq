@@ -27,7 +27,7 @@ TEST(BytesRange, OneByteFL)
     int ans[] = {0xAA};
 
     auto rng = from(src);
-    auto dst = rng.bytes(FirstToLast);
+    auto dst = rng.bytes(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -38,7 +38,7 @@ TEST(BytesRange, OneByteLF)
     int ans[] = {0xAA};
 
     auto rng = from(src);
-    auto dst = rng.bytes(LastToFirst);
+    auto dst = rng.bytes(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -62,7 +62,7 @@ TEST(BytesRange, OneIntFL)
     int ans[] = {0x78,0x56,0x34,0x12};
 
     auto rng = from(src);
-    auto dst = rng.bytes(FirstToLast);
+    auto dst = rng.bytes(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -73,7 +73,7 @@ TEST(BytesRange, OneIntLF)
     int ans[] = {0x12,0x34,0x56,0x78};
 
     auto rng = from(src);
-    auto dst = rng.bytes(LastToFirst);
+    auto dst = rng.bytes(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -90,7 +90,7 @@ TEST(BytesRange, IntsDefault)
     };
 
     auto rng = from(src);
-    auto dst = rng.bytes(FirstToLast);
+    auto dst = rng.bytes(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -105,7 +105,7 @@ TEST(BytesRange, IntsFL)
     };
 
     auto rng = from(src);
-    auto dst = rng.bytes(FirstToLast);
+    auto dst = rng.bytes(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -120,7 +120,7 @@ TEST(BytesRange, IntsLF)
     };
 
     auto rng = from(src);
-    auto dst = rng.bytes(LastToFirst);
+    auto dst = rng.bytes(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }

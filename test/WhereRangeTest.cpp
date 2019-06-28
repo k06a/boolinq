@@ -108,7 +108,7 @@ TEST(WhereRange, ManyToZero)
     auto rng = from(src);
     auto dst = rng.where([](int a){return a == 5;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 TEST(WhereRange, OneToZero)
@@ -118,7 +118,7 @@ TEST(WhereRange, OneToZero)
     auto rng = from(src);
     auto dst = rng.where( [](int a){return a>10;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 TEST(WhereRange, ZeroToZero)
@@ -128,5 +128,5 @@ TEST(WhereRange, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.where( [](int a){return a>0;});
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.nextObject(), LinqEndException);
 }

@@ -27,7 +27,7 @@ TEST(BitsRange, OneByteHL)
     int ans[] = {1,0,1,0,1,0,1,0};
 
     auto rng = from(src);
-    auto dst = rng.bits(HighToLow);
+    auto dst = rng.bits(BitsHighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -38,7 +38,7 @@ TEST(BitsRange, OneByteLH)
     int ans[] = {0,1,0,1,0,1,0,1};
 
     auto rng = from(src);
-    auto dst = rng.bits(LowToHigh);
+    auto dst = rng.bits(BitsLowToHigh);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -74,7 +74,7 @@ TEST(BitsRange, OneIntHL)
     };
 
     auto rng = from(src);
-    auto dst = rng.bits(HighToLow);
+    auto dst = rng.bits(BitsHighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -91,8 +91,8 @@ TEST(BitsRange, OneIntLH)
     };
 
     auto rng = from(src);
-    auto dst = rng.bits(LowToHigh,FirstToLast);
-    auto vvv = dst.toVector();
+    auto dst = rng.bits(BitsLowToHigh,BytesFirstToLast);
+    auto vvv = dst.toStdVector();
 
     CheckRangeEqArray(dst, ans);
 }
@@ -138,7 +138,7 @@ TEST(BitsRange, IntsHL)
     };
 
     auto rng = from(src);
-    auto dst = rng.bits(HighToLow);
+    auto dst = rng.bits(BitsHighToLow);
 
     CheckRangeEqArray(dst, ans);
 }
@@ -160,7 +160,7 @@ TEST(BitsRange, IntsLH)
     };
 
     auto rng = from(src);
-    auto dst = rng.bits(LowToHigh);
+    auto dst = rng.bits(BitsLowToHigh);
 
     CheckRangeEqArray(dst, ans);
 }

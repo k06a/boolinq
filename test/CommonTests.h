@@ -16,7 +16,7 @@ void CheckRangeEqArray(R dst, T (&ans)[N], F f)
     for (unsigned i = 0; i < N; i++)
         EXPECT_EQ(f(ans[i]), f(dst.nextObject()));
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 template<typename R, typename T, unsigned N>
@@ -25,7 +25,7 @@ void CheckRangeEqArray(R dst, T (&ans)[N])
     for (unsigned i = 0; i < N; i++)
         EXPECT_EQ(ans[i], dst.nextObject());
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.nextObject(), LinqEndException);
 }
 
 template<typename T, unsigned N>
