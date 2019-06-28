@@ -337,10 +337,10 @@ namespace boolinq {
             return start;
         }
 
-        template<typename F>
-        auto sum(F transform) const -> typename std::result_of<F(T)>::type
+        template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
+        auto sum(F transform) const -> _TRet
         {
-            return aggregate<T>(T(), [transform](T accumulator, T value) {
+            return aggregate<_TRet>(_TRet(), [transform](_TRet accumulator, T value) {
                 return accumulator + transform(value);
             });
         }
@@ -351,11 +351,11 @@ namespace boolinq {
             return cast<TRet>().sum();
         }
 
-        template<typename F>
-        auto avg(F transform) const -> typename std::result_of<F(T)>::type
+        template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
+        auto avg(F transform) const -> _TRet
         {
             int count = 0;
-            T res = sum([transform, &count](T value) {
+            _TRet res = sum([transform, &count](T value) {
                 count++;
                 return transform(value);
             });
