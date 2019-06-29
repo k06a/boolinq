@@ -266,7 +266,7 @@ namespace boolinq {
                     T value = tuple.linq.next();
                     _TKey key = apply(value);
                     if (tuple.set.insert(key).second) {
-                        return std::make_pair(key, tuple.linqCopy.where([apply, key](T &v){
+                        return std::make_pair(key, tuple.linqCopy.where([apply, key](T v){
                             return apply(v) == key;
                         }));
                     }
@@ -388,7 +388,7 @@ namespace boolinq {
         template<typename TRet = T>
         TRet sum() const
         {
-            return cast<TRet>().sum();
+            return sum([](T value) { return TRet(value); });
         }
 
         template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
@@ -405,7 +405,7 @@ namespace boolinq {
         template<typename TRet = T>
         TRet avg() const
         {
-            return cast<TRet>().avg();
+            return avg([](T value) { return TRet(value); });
         }
 
         int count() const
