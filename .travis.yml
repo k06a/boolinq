@@ -22,11 +22,67 @@ matrix:
           sources: &sources
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
+    - env: CXX=g++-6 CC=gcc-6 GCOV=gcov-6
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+    - env: CXX=g++-7 CC=gcc-7 GCOV=gcov-7
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+    - env: CXX=g++-8 CC=gcc-8 GCOV=gcov-8
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+    - env: CXX=g++-9 CC=gcc-9 GCOV=gcov-9
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
     - env: CXX=clang++-3.8 CC=clang-3.8 GCOV=gcov
       addons:
         apt:
           packages:
             - clang-3.8
+          sources: *sources
+    - env: CXX=clang++-4.0 CC=clang-4.0 GCOV=gcov
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+          sources: *sources
+    - env: CXX=clang++-5.0 CC=clang-5.0 GCOV=gcov
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+          sources: *sources
+    - env: CXX=clang++-6.0 CC=clang-6.0 GCOV=gcov
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+          sources: *sources
+    - env: CXX=clang++-7.0 CC=clang-7.0 GCOV=gcov
+      addons:
+        apt:
+          packages:
+            - clang-7.0
           sources: *sources
 
 before_install:
