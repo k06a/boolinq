@@ -69,8 +69,7 @@ namespace boolinq {
             return for_each_i([apply](T value, int index) { return apply(value); });
         }
 
-        template<typename F>
-        Linq<LinqIndex<S, T>, T> where_i(F filter) const
+        Linq<LinqIndex<S, T>, T> where_i(std::function<bool(T, int)> filter) const
         {
             return Linq<LinqIndex<S, T>, T>(
                 {*this, 0},
@@ -85,8 +84,7 @@ namespace boolinq {
             );
         }
 
-        template<typename F>
-        Linq<LinqIndex<S, T>, T> where(F filter) const
+        Linq<LinqIndex<S, T>, T> where(std::function<bool(T)> filter) const
         {
             return where_i([filter](T value, int index) { return filter(value); });
         }
@@ -101,8 +99,7 @@ namespace boolinq {
             });
         }
 
-        template<typename F>
-        Linq<LinqIndex<S, T>, T> takeWhile_i(F predicate) const
+        Linq<LinqIndex<S, T>, T> takeWhile_i(std::function<bool(T, int)> predicate) const
         {
             return where_i([predicate](T value, int i) {
                 if (!predicate(value, i)) {
@@ -112,8 +109,7 @@ namespace boolinq {
             });
         }
 
-        template<typename F>
-        Linq<LinqIndex<S, T>, T> takeWhile(F predicate) const
+        Linq<LinqIndex<S, T>, T> takeWhile(std::function<bool(T)> predicate) const
         {
             return takeWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
@@ -130,8 +126,7 @@ namespace boolinq {
             bool flag;
         };
 
-        template<typename F>
-        Linq<LinqIndexFlag<S, T>, T> skipWhile_i(F predicate) const
+        Linq<LinqIndexFlag<S, T>, T> skipWhile_i(std::function<bool(T, int)> predicate) const
         {
             return Linq<LinqIndexFlag<S, T>, T>(
                 {*this, 0, false},
@@ -150,8 +145,7 @@ namespace boolinq {
             );
         }
 
-        template<typename F>
-        Linq<LinqIndexFlag<S, T>, T> skipWhile(F predicate) const
+        Linq<LinqIndexFlag<S, T>, T> skipWhile(std::function<bool(T)> predicate) const
         {
             return skipWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
@@ -213,7 +207,7 @@ namespace boolinq {
 
         template<
             typename F,
-            typename _TRet = typename std::result_of<F(T,int)>::type,
+            typename _TRet = typename std::result_of<F(T, int)>::type,
             typename _TRetVal = typename _TRet::value_type
         >
         Linq<LinqCurrentIndexFinished<S, T, _TRet>, _TRetVal> selectMany_i(F apply) const
@@ -416,8 +410,7 @@ namespace boolinq {
             return index;
         }
 
-        template<typename F>
-        int count(F predicate) const
+        int count(std::function<bool(T)> predicate) const
         {
             return where(predicate).count();
         }
@@ -429,8 +422,7 @@ namespace boolinq {
 
         // Bool aggregators
 
-        template<typename F>
-        bool any(F predicate) const
+        bool any(std::function<bool(T)> predicate) const
         {
             Linq<S, T> linq = *this;
             try {
@@ -448,8 +440,7 @@ namespace boolinq {
             return any([](T value) { return static_cast<bool>(value); });
         }
 
-        template<typename F>
-        bool all(F predicate) const
+        bool all(std::function<bool(T)> predicate) const
         {
             return !any([predicate](T value) { return !predicate(value); });
         }
@@ -513,8 +504,7 @@ namespace boolinq {
             return skip(index).next();
         }
 
-        template<typename F>
-        T first(F predicate) const
+        T first(std::function<bool(T)> predicate) const
         {
             return where(predicate).next();
         }
@@ -524,8 +514,7 @@ namespace boolinq {
             return next();
         }
 
-        template<typename F>
-        T firstOrDefault(F predicate) const
+        T firstOrDefault(std::function<bool(T)> predicate) const
         {
             try {
                 return where(predicate).next();
@@ -539,8 +528,7 @@ namespace boolinq {
             firstOrDefault([](T /*value*/) { return true; });
         }
 
-        template<typename F>
-        T last(F predicate) const
+        T last(std::function<bool(T)> predicate) const
         {
             T res;
             for_each([&res](T value) {
@@ -554,8 +542,7 @@ namespace boolinq {
             return last([](T /*value*/) { return true; });
         }
 
-        template<typename F>
-        T lastOrDefault(F predicate) const
+        T lastOrDefault(std::function<bool(T)> predicate) const
         {
             try {
                 return last(predicate);
@@ -771,7 +758,7 @@ namespace boolinq {
     template<typename T, int N>
     Linq<std::pair<T *, T *>, T> from(T (&array)[N])
     {
-        return from((T *) (&array), (T *) (&array) + N);
+        return from((T *)(&array), (T *)(&array) + N);
     }
 
     template<template<class> class TV, typename TT>
@@ -782,32 +769,32 @@ namespace boolinq {
     }
 
     // std::list, std::vector, std::dequeue
-    template<template<class,class> class TV, typename TT, typename TU>
-    auto from(const TV<TT,TU> & container)
+    template<template<class, class> class TV, typename TT, typename TU>
+    auto from(const TV<TT, TU> & container)
         -> decltype(from(std::begin(container), std::end(container)))
     {
         return from(std::begin(container), std::end(container));
     }
 
     // std::set
-    template<template<class,class,class> class TV, typename TT, typename TS, typename TU>
-    auto from(const TV<TT,TS,TU> & container)
+    template<template<class, class, class> class TV, typename TT, typename TS, typename TU>
+    auto from(const TV<TT, TS, TU> & container)
         -> decltype(from(std::begin(container), std::end(container)))
     {
         return from(std::begin(container), std::end(container));
     }
 
     // std::map
-    template<template<class,class,class,class> class TV, typename TK, typename TT, typename TS, typename TU>
-    auto from(const TV<TK,TT,TS,TU> & container)
+    template<template<class, class, class, class> class TV, typename TK, typename TT, typename TS, typename TU>
+    auto from(const TV<TK, TT, TS, TU> & container)
         -> decltype(from(std::begin(container), std::end(container)))
     {
         return from(std::begin(container), std::end(container));
     }
 
     // std::array
-    template<template<class,size_t> class TV, typename TT, size_t TL>
-    auto from(const TV<TT,TL> & container)
+    template<template<class, size_t> class TV, typename TT, size_t TL>
+    auto from(const TV<TT, TL> & container)
         -> decltype(from(std::begin(container), std::end(container)))
     {
         return from(std::begin(container), std::end(container));
@@ -828,10 +815,10 @@ namespace boolinq {
     }
 
     template<typename T>
-    Linq<std::pair<std::pair<T,T>,T>,T> range(T start, T end, T step) {
-        return Linq<std::pair<std::pair<T,T>,T>,T>(
+    Linq<std::pair<std::pair<T, T>, T>, T> range(T start, T end, T step) {
+        return Linq<std::pair<std::pair<T, T>, T>, T>(
             {{start, end}, step},
-            [](std::pair<std::pair<T,T>,T> &tuple) {
+            [](std::pair<std::pair<T, T>, T> &tuple) {
                 if (tuple.first.first < tuple.first.second) {
                     return *(tuple.first.first += tuple.second);
                 }
