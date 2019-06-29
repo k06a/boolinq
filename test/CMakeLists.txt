@@ -32,7 +32,7 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/DotCallTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ElementAtTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ForeachTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/GroupByRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/GroupByTest.cpp
     ${PROJECT_SOURCE_DIR}/test/IterRangeTest.cpp
     ${PROJECT_SOURCE_DIR}/test/LinqTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MaxTest.cpp

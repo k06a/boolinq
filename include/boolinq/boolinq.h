@@ -257,7 +257,7 @@ namespace boolinq {
         >
         Linq<LinqCopyUnorderedSet<S, T, _TKey>, std::pair<_TKey, _TValue> > groupBy(F apply) const
         {
-            return Linq<LinqCopyUnorderedSet<S, T, _TKey>, std::pair<_TKey, Linq<S, T> > >(
+            return Linq<LinqCopyUnorderedSet<S, T, _TKey>, std::pair<_TKey, _TValue> >(
                 {*this, *this, std::unordered_set<_TKey>()},
                 [apply](LinqCopyUnorderedSet<S, T, _TKey> &tuple){
                     T value = tuple.linq.next();
@@ -267,6 +267,7 @@ namespace boolinq {
                             return apply(v) == key;
                         }));
                     }
+                    throw LinqEndException();
                 }
             );
         }
@@ -710,11 +711,8 @@ namespace boolinq {
                              bitIndex = CHAR_BIT - 1 - bitIndex;
                          }
 
-                         if (tuple.linq.next()) {
-                             ptr[byteIndex] |= (1 << bitIndex);
-                         } else {
-                             ptr[byteIndex] &= (~0 ^ (1 << bitIndex));
-                         }
+                         ptr[byteIndex] &= ~(1 << bitIndex);
+                         ptr[byteIndex] |= bool(tuple.linq.next()) << bitIndex;
                      }
 
                      return value;
