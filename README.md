@@ -89,6 +89,7 @@ int DenisUniqueContactCount =
 #### Today:
 
 - cast&lt;T&gt;()
+
 - take(int)
 - takeWhile(int)
 - takeWhile_i(int)
@@ -100,13 +101,17 @@ int DenisUniqueContactCount =
 - where_i(lambda)
 - select(lambda)
 - select_i(lambda)
-- selectMany(lambda)
 - reverse()
 - orderBy()
 - orderBy(lambda)
+
 - distinct()
 - distinct(lambda)
+- groupBy(lambda)
+- selectMany(lambda)
+
 - for_each(lambda)
+- for_each_i(lambda)
 - all()
 - all(lambda)
 - any()
@@ -126,10 +131,6 @@ int DenisUniqueContactCount =
 - toStdList()
 - toStdDeque()
 - toStdVector()
-
-#### Coming soon:
-
-- groupBy(lambda)
 
 #### Custom:
 
