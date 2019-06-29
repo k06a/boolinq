@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(DistinctRange, Ints1to6)
+TEST(Distinct, Ints1to6)
 {
     int src[] = {4,5,3,1,4,2,1,4,6};
     int ans[] = {1,2,3,4,5,6};
@@ -21,7 +21,7 @@ TEST(DistinctRange, Ints1to6)
     CheckRangeEqSet(dst, ans);
 }
 
-TEST(DistinctRange, IntMirrorFront)
+TEST(Distinct, IntMirrorFront)
 {
     int src[]   = {3,2,1,0,1,2,3};
     int ans[]  = {0,1,2,3};
@@ -32,7 +32,7 @@ TEST(DistinctRange, IntMirrorFront)
     CheckRangeEqSet(dst, ans);
 }
 
-TEST(DistinctRange, ManyEqualsFront)
+TEST(Distinct, ManyEqualsFront)
 {
     int src[] = {1,1,1,1};
     int ans[] = {1};
@@ -43,7 +43,7 @@ TEST(DistinctRange, ManyEqualsFront)
     CheckRangeEqSet(dst, ans);
 }
 
-TEST(DistinctRange, ManyEqualsWithOneFront)
+TEST(Distinct, ManyEqualsWithOneFront)
 {
     int src[] = {1,1,2,1};
     int ans[] = {1,2};
@@ -54,7 +54,7 @@ TEST(DistinctRange, ManyEqualsWithOneFront)
     CheckRangeEqSet(dst, ans);
 }
 
-TEST(DistinctRange, OneFieldFront)
+TEST(Distinct, OneFieldFront)
 {
     struct Man
     {

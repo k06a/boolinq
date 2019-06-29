@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(GroupByRange, Ints)
+TEST(GroupBy, Ints)
 {
     int arr[] = {0,1,2,3,4,5,6,7,8,9};
 
@@ -32,7 +32,7 @@ TEST(GroupByRange, Ints)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(GroupByRange, CountChildrenByAge)
+TEST(GroupBy, CountChildrenByAge)
 {
     struct Child
     {

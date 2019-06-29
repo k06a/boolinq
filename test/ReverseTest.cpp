@@ -10,7 +10,7 @@
 
 using namespace boolinq;
 
-TEST(ReverseRange, IntVector)
+TEST(Reverse, IntVector)
 {
     int src[] = {1,2,3,4};
     int ans[] = {4,3,2,1};
@@ -21,7 +21,7 @@ TEST(ReverseRange, IntVector)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(ReverseRange, DoubleReverse)
+TEST(Reverse, DoubleReverse)
 {
     int src[] = {1,2,3,4};
     int ans[] = {1,2,3,4};

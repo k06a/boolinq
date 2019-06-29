@@ -1,4 +1,4 @@
-#include <vector>
+#include <deque>
 
 #include <gtest/gtest.h>
 
@@ -6,15 +6,15 @@
 
 using namespace boolinq;
 
-TEST(toStdVector, Vector2Vector)
+TEST(ToStdDeque, Deque2Deque)
 {
-    std::vector<int> src;
+    std::deque<int> src;
     src.push_back(100);
     src.push_back(200);
     src.push_back(300);
 
     auto rng = from(src);
-    auto dst = rng.toStdVector();
+    auto dst = rng.toStdDeque();
 
     EXPECT_EQ(dst,src);
 }

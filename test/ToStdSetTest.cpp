@@ -6,7 +6,7 @@
 
 using namespace boolinq;
 
-TEST(toStdSet, Vector2Set)
+TEST(ToStdSet, Vector2Set)
 {
     std::vector<int> src;
     src.push_back(1);

@@ -23,35 +23,35 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/AllTest.cpp
     ${PROJECT_SOURCE_DIR}/test/AnyTest.cpp
     ${PROJECT_SOURCE_DIR}/test/AvgTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/BitsRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/BytesRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ConcatRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/BitsTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/BytesTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ConcatTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ContainsTest.cpp
     ${PROJECT_SOURCE_DIR}/test/CountTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/DistinctRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/DistinctTest.cpp
     ${PROJECT_SOURCE_DIR}/test/DotCallTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ElementAtTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ForeachTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ForEachTest.cpp
     ${PROJECT_SOURCE_DIR}/test/GroupByTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/IterRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/CtorTest.cpp
     ${PROJECT_SOURCE_DIR}/test/LinqTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MaxTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MinTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/OrderByRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ReverseRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/SelectRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/SkipRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/SkipWhileRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/OrderByTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ReverseTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SelectTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SkipTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SkipWhileTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SumTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/TakeRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/TakeWhileRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToDequeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToListTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToSetTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToVectorTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/UnbitsRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/UnbytesRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/WhereRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/TakeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/TakeWhileTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdDequeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdListTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdSetTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdVectorTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/UnbitsTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/UnbytesTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/WhereTest.cpp
 )
 ADD_EXECUTABLE (
     boolinqtest

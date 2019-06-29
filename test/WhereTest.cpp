@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, IntOdd)
+TEST(Where, IntOdd)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,  3,  5};
@@ -23,7 +23,7 @@ TEST(WhereRange, IntOdd)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, FirstLetterFront)
+TEST(Where, FirstLetterFront)
 {
     std::string src[] =
     {
@@ -48,7 +48,7 @@ TEST(WhereRange, FirstLetterFront)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, NameAgeLess)
+TEST(Where, NameAgeLess)
 {
     struct NameAge
     {
@@ -79,7 +79,7 @@ TEST(WhereRange, NameAgeLess)
 
 ////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, MayToOne)
+TEST(Where, MayToOne)
 {
     int src[] = {0,1,2};
     int ans[] = {1};
@@ -90,7 +90,7 @@ TEST(WhereRange, MayToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(WhereRange, OneToOne)
+TEST(Where, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -101,7 +101,7 @@ TEST(WhereRange, OneToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(WhereRange, ManyToZero)
+TEST(Where, ManyToZero)
 {
     int src[] = {0,1,2};
 
@@ -111,7 +111,7 @@ TEST(WhereRange, ManyToZero)
     EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(WhereRange, OneToZero)
+TEST(Where, OneToZero)
 {
     int src[] = {5};
 
@@ -121,7 +121,7 @@ TEST(WhereRange, OneToZero)
     EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(WhereRange, ZeroToZero)
+TEST(Where, ZeroToZero)
 {
     std::vector<int> src;
 

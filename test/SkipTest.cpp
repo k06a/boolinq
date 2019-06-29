@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(SkipRange, ManyToMany)
+TEST(Skip, ManyToMany)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -21,7 +21,7 @@ TEST(SkipRange, ManyToMany)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, ManyToLess)
+TEST(Skip, ManyToLess)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {4,5,6};
@@ -32,7 +32,7 @@ TEST(SkipRange, ManyToLess)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, ManyToOne)
+TEST(Skip, ManyToOne)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {6};
@@ -43,7 +43,7 @@ TEST(SkipRange, ManyToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, ManyToZero)
+TEST(Skip, ManyToZero)
 {
     int src[] = {1,2,3,4,5,6};
 
@@ -53,7 +53,7 @@ TEST(SkipRange, ManyToZero)
     EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipRange, ManyToZeroLess)
+TEST(Skip, ManyToZeroLess)
 {
     int src[] = {1,2,3,4,5,6};
 
@@ -65,7 +65,7 @@ TEST(SkipRange, ManyToZeroLess)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(SkipRange, OneToOne)
+TEST(Skip, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -76,7 +76,7 @@ TEST(SkipRange, OneToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, OneToZero)
+TEST(Skip, OneToZero)
 {
     int src[] = {5};
 
@@ -86,7 +86,7 @@ TEST(SkipRange, OneToZero)
     EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipRange, OneToZeroLess)
+TEST(Skip, OneToZeroLess)
 {
     int src[] = {5};
 
@@ -96,7 +96,7 @@ TEST(SkipRange, OneToZeroLess)
     EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipRange, ZeroToZero)
+TEST(Skip, ZeroToZero)
 {
     std::vector<int> src;
 
@@ -106,7 +106,7 @@ TEST(SkipRange, ZeroToZero)
     EXPECT_THROW(rng.next(), LinqEndException);
 }
 
-TEST(SkipRange, ZeroToZeroLess)
+TEST(Skip, ZeroToZeroLess)
 {
     std::vector<int> src;
 

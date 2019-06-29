@@ -15,7 +15,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(IterRange, ListInt)
+TEST(Ctor, ListInt)
 {
     std::list<int> lst;
     lst.push_back(1);
@@ -31,7 +31,7 @@ TEST(IterRange, ListInt)
     CheckRangeEqArray(from(lst.cbegin(), lst.cend()), ans);
 }
 
-TEST(IterRange, DequeInt)
+TEST(Ctor, DequeInt)
 {
     std::deque<int> dck;
     dck.push_back(1);
@@ -47,7 +47,7 @@ TEST(IterRange, DequeInt)
     CheckRangeEqArray(from(dck.cbegin(), dck.cend()), ans);
 }
 
-TEST(IterRange, VectorInt)
+TEST(Ctor, VectorInt)
 {
     std::vector<int> vec;
     vec.push_back(1);
@@ -63,7 +63,7 @@ TEST(IterRange, VectorInt)
     CheckRangeEqArray(from(vec.cbegin(), vec.cend()), ans);
 }
 
-TEST(IterRange, SetInt)
+TEST(Ctor, SetInt)
 {
     std::set<int> set = {1,2,3,4,5};
     int ans[] = {1,2,3,4,5};
@@ -73,7 +73,7 @@ TEST(IterRange, SetInt)
     CheckRangeEqSet(from(set.cbegin(), set.cend()), ans);
 }
 
-//TEST(IterRange, MapInt)
+//TEST(Ctor, MapInt)
 //{
 //    std::map<int, int> map = {{5,1},{4,2},{3,3},{2,4},{1,5}};
 //    std::pair<int, int> ans[] = {{5,1},{4,2},{3,3},{2,4},{1,5}};
@@ -86,7 +86,7 @@ TEST(IterRange, SetInt)
 //        .orderBy([](std::pair<int,int> p){ return p.second; }), ans);
 //}
 
-TEST(IterRange, StdArrayInt)
+TEST(Ctor, StdArrayInt)
 {
     std::array<int, 5> arr = { {1,2,3,4,5} };
     int ans[] = {1,2,3,4,5};
@@ -96,7 +96,7 @@ TEST(IterRange, StdArrayInt)
     CheckRangeEqArray(from(arr.cbegin(), arr.cend()), ans);
 }
 
-TEST(IterRange, ArrayInt)
+TEST(Ctor, ArrayInt)
 {
     int arr[] = {1,2,3,4,5};
     int * ptr = static_cast<int *>(arr);
@@ -110,7 +110,7 @@ TEST(IterRange, ArrayInt)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(IterRange, OneElement)
+TEST(Ctor, OneElement)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -120,7 +120,7 @@ TEST(IterRange, OneElement)
     CheckRangeEqArray(rng, ans);
 }
 
-TEST(IterRange, EmptyVector)
+TEST(Ctor, EmptyVector)
 {
     std::vector<int> src;
     

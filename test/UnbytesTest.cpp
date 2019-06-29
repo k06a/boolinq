@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbytesRange, OneIntDefault)
+TEST(Unbytes, OneIntDefault)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     unsigned ans[] = {0xDDCCBBAA};
@@ -21,7 +21,7 @@ TEST(UnbytesRange, OneIntDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, OneIntFL)
+TEST(Unbytes, OneIntFL)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     unsigned ans[] = {0xDDCCBBAA};
@@ -32,7 +32,7 @@ TEST(UnbytesRange, OneIntFL)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, OneIntLF)
+TEST(Unbytes, OneIntLF)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     unsigned ans[] = {0xAABBCCDD};
@@ -45,7 +45,7 @@ TEST(UnbytesRange, OneIntLF)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbytesRange, TwoIntsDefault)
+TEST(Unbytes, TwoIntsDefault)
 {
     unsigned char src[] = 
     {
@@ -60,7 +60,7 @@ TEST(UnbytesRange, TwoIntsDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, TwoIntsFL)
+TEST(Unbytes, TwoIntsFL)
 {
     unsigned char src[] = 
     {
@@ -75,7 +75,7 @@ TEST(UnbytesRange, TwoIntsFL)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, TwoIntsLF)
+TEST(Unbytes, TwoIntsLF)
 {
     unsigned char src[] = 
     {
@@ -92,7 +92,7 @@ TEST(UnbytesRange, TwoIntsLF)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbytesRange, EmptyDefault)
+TEST(Unbytes, EmptyDefault)
 {
     std::vector<unsigned char> src;
     

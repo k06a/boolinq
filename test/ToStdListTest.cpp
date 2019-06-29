@@ -6,7 +6,7 @@
 
 using namespace boolinq;
 
-TEST(toStdList, List2List)
+TEST(ToStdList, List2List)
 {
     std::list<int> src;
     src.push_back(100);

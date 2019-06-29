@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(BytesRange, OneByteDefault)
+TEST(Bytes, OneByteDefault)
 {
     unsigned char src[] = {0xAA};
     int ans[] = {0xAA};
@@ -21,7 +21,7 @@ TEST(BytesRange, OneByteDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(BytesRange, OneByteFL)
+TEST(Bytes, OneByteFL)
 {
     unsigned char src[] = {0xAA};
     int ans[] = {0xAA};
@@ -32,7 +32,7 @@ TEST(BytesRange, OneByteFL)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(BytesRange, OneByteLF)
+TEST(Bytes, OneByteLF)
 {
     unsigned char src[] = {0xAA};
     int ans[] = {0xAA};
@@ -45,7 +45,7 @@ TEST(BytesRange, OneByteLF)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(BytesRange, OneIntDefault)
+TEST(Bytes, OneIntDefault)
 {
     int src[] = {0x12345678};
     int ans[] = {0x78,0x56,0x34,0x12};
@@ -56,7 +56,7 @@ TEST(BytesRange, OneIntDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(BytesRange, OneIntFL)
+TEST(Bytes, OneIntFL)
 {
     int src[] = {0x12345678};
     int ans[] = {0x78,0x56,0x34,0x12};
@@ -67,7 +67,7 @@ TEST(BytesRange, OneIntFL)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(BytesRange, OneIntLF)
+TEST(Bytes, OneIntLF)
 {
     int src[] = {0x12345678};
     int ans[] = {0x12,0x34,0x56,0x78};
@@ -80,7 +80,7 @@ TEST(BytesRange, OneIntLF)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(BytesRange, IntsDefault)
+TEST(Bytes, IntsDefault)
 {
     unsigned src[] = {0x12345678, 0xAABBCCDD};
     int ans[] = 
@@ -95,7 +95,7 @@ TEST(BytesRange, IntsDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(BytesRange, IntsFL)
+TEST(Bytes, IntsFL)
 {
     unsigned src[] = {0x12345678, 0xAABBCCDD};
     int ans[] = 
@@ -110,7 +110,7 @@ TEST(BytesRange, IntsFL)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(BytesRange, IntsLF)
+TEST(Bytes, IntsLF)
 {
     unsigned src[] = {0x12345678, 0xAABBCCDD};
     int ans[] = 

@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbitsRange, OneByteDefault)
+TEST(Unbits, OneByteDefault)
 {
     int src[] = {1,0,1,0,1,0,1,0};
     int ans[] = {0xAA};
@@ -21,7 +21,7 @@ TEST(UnbitsRange, OneByteDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbitsRange, OneByteHL)
+TEST(Unbits, OneByteHL)
 {
     int src[] = {1,0,1,0,1,0,1,0};
     int ans[] = {0xAA};
@@ -32,7 +32,7 @@ TEST(UnbitsRange, OneByteHL)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbitsRange, OneByteLH)
+TEST(Unbits, OneByteLH)
 {
     int src[] = {0,1,0,1,0,1,0,1};
     int ans[] = {0xAA};

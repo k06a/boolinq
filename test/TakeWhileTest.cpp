@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(TakeWhileRange, ManyToMore)
+TEST(TakeWhile, ManyToMore)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -54,7 +54,7 @@ TEST(TakeWhileRange_i, ManyToMoreByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToMany)
+TEST(TakeWhile, ManyToMany)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -98,7 +98,7 @@ TEST(TakeWhileRange_i, ManyToManyByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToLess)
+TEST(TakeWhile, ManyToLess)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3};
@@ -142,7 +142,7 @@ TEST(TakeWhileRange_i, ManyToLessByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToOne)
+TEST(TakeWhile, ManyToOne)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1};
@@ -186,7 +186,7 @@ TEST(TakeWhileRange_i, ManyToOneByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToZero)
+TEST(TakeWhile, ManyToZero)
 {
     int src[] = {1,2,3,4,5,6};
 
@@ -228,7 +228,7 @@ TEST(TakeWhileRange_i, ManyToZeroByIdexAndItemValue)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(TakeWhileRange, OneToOne)
+TEST(TakeWhile, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -272,7 +272,7 @@ TEST(TakeWhileRange_i, OneToOneByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, OneToZero)
+TEST(TakeWhile, OneToZero)
 {
     int src[] = {5};
 
@@ -312,7 +312,7 @@ TEST(TakeWhileRange_i, OneToZeroByIndexAndItemValue)
     EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(TakeWhileRange, ZeroToZero)
+TEST(TakeWhile, ZeroToZero)
 {
     std::vector<int> src;
 
