@@ -712,6 +712,8 @@ namespace boolinq {
 
                          if (tuple.linq.next()) {
                              ptr[byteIndex] |= (1 << bitIndex);
+                         } else {
+                             ptr[byteIndex] &= (~0 ^ (1 << bitIndex));
                          }
                      }
 

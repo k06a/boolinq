@@ -60,30 +60,6 @@ matrix:
           packages:
             - clang-3.8
           sources: *sources
-    - env: CXX=clang++-4.0 CC=clang-4.0 GCOV=gcov
-      addons:
-        apt:
-          packages:
-            - clang-4.0
-          sources: *sources
-    - env: CXX=clang++-5.0 CC=clang-5.0 GCOV=gcov
-      addons:
-        apt:
-          packages:
-            - clang-5.0
-          sources: *sources
-    - env: CXX=clang++-6.0 CC=clang-6.0 GCOV=gcov
-      addons:
-        apt:
-          packages:
-            - clang-6.0
-          sources: *sources
-    - env: CXX=clang++-7.0 CC=clang-7.0 GCOV=gcov
-      addons:
-        apt:
-          packages:
-            - clang-7.0
-          sources: *sources
 
 before_install:
   - pip install --user cpp-coveralls
