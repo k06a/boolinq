@@ -9,6 +9,7 @@
 #include <vector>
 #include <deque>
 #include <list>
+#include <set>
 #include <unordered_set>
 
 //
@@ -664,9 +665,9 @@ namespace boolinq {
         Linq<LinqBytesBitsValueIndex<S, T>, int> bits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
             return Linq<LinqBytesBitsValueIndex<S, T>, int>(
-                 {*this, bytesDir, bitsDir, T(), sizeof(T)},
+                 {*this, bytesDir, bitsDir, T(), sizeof(T) * CHAR_BIT},
                  [](LinqBytesBitsValueIndex<S, T> &tuple) {
-                      if (tuple.index == sizeof(T)) {
+                      if (tuple.index == sizeof(T) * CHAR_BIT) {
                           tuple.value = tuple.linq.next();
                           tuple.index = 0;
                       }
@@ -695,10 +696,10 @@ namespace boolinq {
             return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
                  {*this, bytesDir, bitsDir, T(), 0},
                  [](LinqBytesBitsValueIndex<S, T> &tuple) {
-                     TRet value;
+                     TRet value = TRet();
                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                     for (int i = 0; i < sizeof(TRet); i++) {
+                     for (int i = 0; i < sizeof(TRet) * CHAR_BIT; i++) {
                          int byteIndex = i / CHAR_BIT;
                          if (tuple.bytesDirection == BytesLastToFirst) {
                              byteIndex = sizeof(TRet) - 1 - byteIndex;
@@ -710,7 +711,7 @@ namespace boolinq {
                          }
 
                          if (tuple.linq.next()) {
-                             ptr[byteIndex] |= 1 << bitIndex;
+                             ptr[byteIndex] |= (1 << bitIndex);
                          }
                      }
 
