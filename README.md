@@ -1,23 +1,23 @@
-# boolinq 2.0
+# boolinq 3.0
 
 [![CI Status](https://travis-ci.org/k06a/boolinq.svg?branch=master)](https://travis-ci.org/k06a/boolinq)
 [![Coverage Status](https://coveralls.io/repos/github/k06a/boolinq/badge.svg?branch=master)](https://coveralls.io/github/k06a/boolinq?branch=master)
 
-C++ single-file header-only Ranges and LINQ template library
+Super tiny C++11 single-file header-only LINQ template library
 
-Just imagine LINQ support for STL/Qt collections :)
+Just imagine .NET Framework LINQ support for STL/Qt collections :)
 
 Get source code here: **[boolinq.h](/include/boolinq/boolinq.h)**
 
-### How it looks like?
+## Wanna demo?
 
 #### Example with integers
 
-```c++
+```C++
 int src[] = {1,2,3,4,5,6,7,8};
-auto dst = from(src).where( [](int a){return a%2 == 1;})    // 1,3,5,7
-                    .select([](int a){return a*2;})         // 2,6,10,14
-                    .where( [](int a){return a>2 && a<12;}) // 6,10
+auto dst = from(src).where( [](int a) { return a % 2 == 1; })      // 1,3,5,7
+                    .select([](int a) { return a * 2; })           // 2,6,10,14
+                    .where( [](int a) { return a > 2 && a < 12; }) // 6,10
                     .toStdVector();
 
 // dst type: std::vector<int>
@@ -26,15 +26,13 @@ auto dst = from(src).where( [](int a){return a%2 == 1;})    // 1,3,5,7
 
 #### Example with structs
 
-```c++
-struct Man
-{
+```C++
+struct Man {
     std::string name;
     int age;
 };
 
-Man src[] =
-{
+Man src[] = {
     {"Kevin",14},
     {"Anton",18},
     {"Agata",17},
@@ -42,9 +40,9 @@ Man src[] =
     {"Layer",15},
 };
 
-auto dst = from(src).where(  [](const Man & man){return man.age < 18;})
-                    .orderBy([](const Man & man){return man.age;})
-                    .select( [](const Man & man){return man.name;})
+auto dst = from(src).where(  [](const Man & man) { return man.age < 18; })
+                    .orderBy([](const Man & man) { return man.age; })
+                    .select( [](const Man & man) { return man.name; })
                     .toStdVector();
 
 // dst type: std::vector<std::string>
@@ -53,16 +51,14 @@ auto dst = from(src).where(  [](const Man & man){return man.age < 18;})
 
 #### Interesting example
 
-```c++
-struct Message
-{
+```C++
+struct Message {
     std::string PhoneA;
     std::string PhoneB;
     std::string Text;
 };
 
-Message messages[] =
-{
+Message messages[] = {
     {"Anton","Troll","Hello, friend!"},
     {"Denis","Wride","OLOLO"},
     {"Anton","Papay","WTF?"},
@@ -71,83 +67,59 @@ Message messages[] =
 };
 
 int DenisUniqueContactCount =
-    from(messages).where(   [](const Message & msg){return msg.PhoneA == "Denis";})
-                  .distinct([](const Message & msg){return msg.PhoneB;})
+    from(messages).where(   [](const Message & msg) { return msg.PhoneA == "Denis"; })
+                  .distinct([](const Message & msg) { return msg.PhoneB; })
                   .count();
 
 // DenisUniqueContactCount == 2    
 ```
 
-### Containers supported?
+## Containers supported?
 
 - C++: Native arrays, pairs of pointers
 - STL: list, stack, queue, vector, deque, set, map, any compatible ....
 - Qt: QList, QVector, QSet, QMap.
 
-### Operators supported?
+## Operators supported?
 
-#### Today:
+#### Filters and reorders:
 
-- cast&lt;T&gt;()
+- `where(predicate)`, `where_i(predicate)`
+- `take(count)`, `takeWhile(predicate)`, `takeWhile_i(predicate)`
+- `skip(count)`, `skipWhile(predicate)`, `skipWhile_i(predicate)`
+- `orderBy()`, `orderBy(transform)`
+- `distinct()`, `distinct(transform)`
+- `concat(linq)`
+- `reverse()`
+- `cast<T>()`
 
-- take(int)
-- takeWhile(int)
-- takeWhile_i(int)
-- skip(int)
-- skipWhile(int)
-- skipWhile_i(int)
-- concat(range)
-- where(lambda)
-- where_i(lambda)
-- select(lambda)
-- select_i(lambda)
-- reverse()
-- orderBy()
-- orderBy(lambda)
+#### Transformers:
 
-- distinct()
-- distinct(lambda)
-- groupBy(lambda)
-- selectMany(lambda)
+- `select(transform)`, `select_i(transform)`
+- `groupBy(transform)`
+- `selectMany(transfom)`
 
-- for_each(lambda)
-- for_each_i(lambda)
-- all()
-- all(lambda)
-- any()
-- any(lambda)
-- sum()
-- sum(lambda)
-- avg()
-- avg(lambda)
-- min()
-- min(lambda)
-- max()
-- max(lambda)
-- count()
-- contains(value)
-- elementAt(int)
-- toStdSet()
-- toStdList()
-- toStdDeque()
-- toStdVector()
+#### Aggregators:
 
-#### Custom:
+- `all()`, `all(predicate)`
+- `any()`, `any(lambda)`
+- `sum()`, `sum<T>()`, `sum(lambda)`
+- `avg()`, `avg<T>()`, `avg(lambda)`
+- `min()`, `min(lambda)`
+- `max()`, `max(lambda)`
+- `count()`, `count(value)`, `count(predicate)`
+- `contains(value)`
+- `elementAt(index)`
+- `toStdSet()`, `toStdList()`, `toStdDeque()`, `toStdVector()`
 
-- bytes()
-- bytes&lt;ByteOrder&gt;()
-- unbytes&lt;T&gt;()
-- unbytes&lt;T,ByteOrder&gt;()
-- bits()
-- bits&lt;BitOrder&gt;()
-- bits&lt;BitOrder,ByteOrder&gt;()
-- unbits()
-- unbits&lt;BitOrder&gt;()
-- unbits&lt;T&gt;()
-- unbits&lt;T,BitOrder&gt;()
-- unbits&lt;T,BitOrder,ByteOrder&gt;()
+#### Bits and Bytes:
 
-#### May be will be:
+- `bytes<T>(ByteDirection?)`
+- `unbytes<T>(ByteDirection?)`
+- `bits(BitsDirection?, BytesDirection?)`
+- `unbits<T = unsigned char>(BitsDirection?, BytesDirection?)`
+
+#### Coming soon:
 
 - gz()
 - ungz()
