@@ -637,7 +637,7 @@ namespace boolinq {
                           tuple.index = 0;
                       }
 
-                      uint8_t *ptr = reinterpret_cast<uint8_t *>(&tuple.value);
+                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&tuple.value);
 
                       int byteIndex = tuple.index;
                       if (tuple.bytesDirection == BytesLastToFirst) {
@@ -657,7 +657,7 @@ namespace boolinq {
                  {*this, direction, BitsHighToLow, T(), 0},
                  [](LinqBytesBitsValueIndex<S, T> &tuple) {
                      TRet value;
-                     uint8_t *ptr = reinterpret_cast<uint8_t *>(&value);
+                     unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
                      for (int i = 0; i < sizeof(TRet); i++) {
                          int byteIndex = i;
@@ -683,45 +683,47 @@ namespace boolinq {
                           tuple.index = 0;
                       }
 
-                      uint8_t *ptr = reinterpret_cast<uint8_t *>(&tuple.value);
+                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&tuple.value);
 
-                      int byteIndex = tuple.index / 8;
+                      int byteIndex = tuple.index / CHAR_BIT;
                       if (tuple.bytesDirection == BytesLastToFirst) {
                           byteIndex = sizeof(T) - 1 - byteIndex;
                       }
 
-                     int bitIndex = tuple.index % 8;
+                     int bitIndex = tuple.index % CHAR_BIT;
                      if (tuple.bitsDirection == BitsHighToLow) {
-                         bitIndex = 7 - bitIndex;
+                         bitIndex = CHAR_BIT - 1 - bitIndex;
                      }
 
                      tuple.index++;
-                     return (ptr[byteIndex] & (1 << bitIndex)) != 0;
+                     return ((ptr[byteIndex] & (1 << bitIndex)) != 0) ? 1 : 0;
                  }
             );
         }
 
-        template<typename TRet = uint8_t>
+        template<typename TRet = unsigned char>
         Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
             return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
                  {*this, bytesDir, bitsDir, T(), 0},
                  [](LinqBytesBitsValueIndex<S, T> &tuple) {
                      TRet value;
-                     uint8_t *ptr = reinterpret_cast<uint8_t *>(&value);
+                     unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
                      for (int i = 0; i < sizeof(TRet); i++) {
-                         int byteIndex = i / 8;
+                         int byteIndex = i / CHAR_BIT;
                          if (tuple.bytesDirection == BytesLastToFirst) {
                              byteIndex = sizeof(TRet) - 1 - byteIndex;
                          }
 
-                         int bitIndex = i % 8;
+                         int bitIndex = i % CHAR_BIT;
                          if (tuple.bitsDirection == BitsHighToLow) {
-                             bitIndex = 7 - bitIndex;
+                             bitIndex = CHAR_BIT - 1 - bitIndex;
                          }
 
-                         ptr[byteIndex] |= (tuple.linq.next()?1:0) << bitIndex;
+                         if (tuple.linq.next()) {
+                             ptr[byteIndex] |= 1 << bitIndex;
+                         }
                      }
 
                      return value;

@@ -78,8 +78,8 @@ TEST(DotCall, BitsRangeHL)
 
     auto dstFL1 = from(src).bits();
     auto dstFL2 = from(src).bits(BitsHighToLow);
-    auto dstFL3 = from(src).bits(BitsHighToLow,BytesFirstToLast);
-    auto dstLF1 = from(src).bits(BitsHighToLow,BytesLastToFirst);
+    auto dstFL3 = from(src).bits(BitsHighToLow, BytesFirstToLast);
+    auto dstLF1 = from(src).bits(BitsHighToLow, BytesLastToFirst);
 
     CheckRangeEqArray(dstFL1, ansFL);
     CheckRangeEqArray(dstFL2, ansFL);
@@ -106,8 +106,8 @@ TEST(DotCall, BitsRangeLH)
     };
 
     auto dstFL1 = from(src).bits(BitsLowToHigh);
-    auto dstFL2 = from(src).bits(BitsLowToHigh,BytesFirstToLast);
-    auto dstLF1 = from(src).bits(BitsLowToHigh,BytesLastToFirst);
+    auto dstFL2 = from(src).bits(BitsLowToHigh, BytesFirstToLast);
+    auto dstLF1 = from(src).bits(BitsLowToHigh, BytesLastToFirst);
 
     CheckRangeEqArray(dstFL1, ansFL);
     CheckRangeEqArray(dstFL2, ansFL);
@@ -132,8 +132,8 @@ TEST(DotCall, UnbitsRangeHLFL)
     auto dst1_4b = from(src).unbits();
     auto dst2_4b = from(src).unbits(BitsHighToLow);
     auto dst1_1i = from(src).unbits<unsigned>(BitsHighToLow);
-    auto dst2_1i = from(src).unbits<unsigned>(BitsHighToLow,BytesFirstToLast);
-    auto dst3_1i = from(src).unbits<unsigned>(BitsHighToLow,BytesLastToFirst);
+    auto dst2_1i = from(src).unbits<unsigned>(BitsHighToLow, BytesFirstToLast);
+    auto dst3_1i = from(src).unbits<unsigned>(BitsHighToLow, BytesLastToFirst);
 
     CheckRangeEqArray(dst1_4b, ans_4b);
     CheckRangeEqArray(dst2_4b, ans_4b);
