@@ -61,10 +61,8 @@ static void BM_CppCode (benchmark::State& state)
     while (state.KeepRunning () ) {
         double sum = 0;
         int count = 0;
-        for (unsigned i = 0; i < vecCpp.size(); i++)
-        {
-            if (vecCpp[i] % 2 == 1)
-            {
+        for (unsigned i = 0; i < vecCpp.size(); i++) {
+            if (vecCpp[i] % 2 == 1) {
                 sum += vecCpp[i];
                 count++;
             }
@@ -72,9 +70,11 @@ static void BM_CppCode (benchmark::State& state)
         double avgValue = sum / count;
 
         double stdSum = 0;
-        for (unsigned i = 0; i < vecCpp.size(); i++)
-            if (vecCpp[i] % 2 == 1)
-                stdSum += (vecCpp[i] - avgValue)*(vecCpp[i] - avgValue);
+        for (unsigned i = 0; i < vecCpp.size(); i++) {
+            if (vecCpp[i] % 2 == 1) {
+                stdSum += (vecCpp[i] - avgValue) * (vecCpp[i] - avgValue);
+            }
+        }
         double stdValue = stdSum / count;
 
         // It's no test, instead it's avoiding skip of calculation through optimization.
@@ -93,10 +93,8 @@ static void BM_CppIterCode (benchmark::State& state)
     while (state.KeepRunning () ) {
         double sum = 0;
         int count = 0;
-        for (auto it = vecCppIter.begin(); it != vecCppIter.end(); ++it)
-        {
-            if (*it % 2 == 1)
-            {
+        for (auto it = vecCppIter.begin(); it != vecCppIter.end(); ++it) {
+            if (*it % 2 == 1) {
                 sum += *it;
                 count++;
             }
@@ -104,9 +102,11 @@ static void BM_CppIterCode (benchmark::State& state)
         double avgValue = sum / count;
 
         double stdSum = 0;
-        for (auto it = vecCppIter.begin(); it != vecCppIter.end(); ++it)
-            if (*it % 2 == 1)
-                stdSum += (*it - avgValue)*(*it - avgValue);
+        for (auto it = vecCppIter.begin(); it != vecCppIter.end(); ++it) {
+            if (*it % 2 == 1) {
+                stdSum += (*it - avgValue) * (*it - avgValue);
+            }
+        }
         double stdValue = stdSum / count;
 
         // It's no test, instead it's avoiding skip of calculation through optimization.
