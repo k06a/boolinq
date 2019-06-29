@@ -3,9 +3,10 @@
 #include <limits.h>
 
 #include <functional>
+#include <tuple>
 
-#include <iterator>
 #include <iostream>
+#include <iterator>
 #include <vector>
 #include <deque>
 #include <list>
@@ -49,18 +50,12 @@ namespace boolinq {
             return nextFunc(storage);
         }
 
-        template<typename SS, typename TT>
-        struct LinqIndex {
-            Linq<SS, TT> linq;
-            int index;
-        };
-
         void for_each_i(std::function<void(T, int)> apply) const
         {
-            LinqIndex<S, T> storage = {*this, 0};
+            Linq<S, T> linq = *this;
             try {
-                while (true) {
-                    apply(storage.linq.next(), storage.index++);
+                for (int i = 0; ; i++) {
+                    apply(linq.next(), i);
                 }
             }
             catch (LinqEndException &) {}
@@ -71,14 +66,17 @@ namespace boolinq {
             return for_each_i([apply](T value, int index) { return apply(value); });
         }
 
-        Linq<LinqIndex<S, T>, T> where_i(std::function<bool(T, int)> filter) const
+        Linq<std::tuple<Linq<S, T>, int>, T> where_i(std::function<bool(T, int)> filter) const
         {
-            return Linq<LinqIndex<S, T>, T>(
-                {*this, 0},
-                [filter](LinqIndex<S, T> &pair) {
+            return Linq<std::tuple<Linq<S, T>, int>, T>(
+                std::make_tuple(*this, 0),
+                [filter](std::tuple<Linq<S, T>, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    int &index = std::get<1>(tuple);
+
                     while (true) {
-                        T ret = pair.linq.next();
-                        if (filter(ret, pair.index++)) {
+                        T ret = linq.next();
+                        if (filter(ret, index++)) {
                             return ret;
                         }
                     }
@@ -86,12 +84,12 @@ namespace boolinq {
             );
         }
 
-        Linq<LinqIndex<S, T>, T> where(std::function<bool(T)> filter) const
+        Linq<std::tuple<Linq<S, T>, int>, T> where(std::function<bool(T)> filter) const
         {
             return where_i([filter](T value, int index) { return filter(value); });
         }
 
-        Linq<LinqIndex<S, T>, T> take(int count) const
+        Linq<std::tuple<Linq<S, T>, int>, T> take(int count) const
         {
             return where_i([count](T /*value*/, int i) {
                 if (i == count) {
@@ -101,7 +99,7 @@ namespace boolinq {
             });
         }
 
-        Linq<LinqIndex<S, T>, T> takeWhile_i(std::function<bool(T, int)> predicate) const
+        Linq<std::tuple<Linq<S, T>, int>, T> takeWhile_i(std::function<bool(T, int)> predicate) const
         {
             return where_i([predicate](T value, int i) {
                 if (!predicate(value, i)) {
@@ -111,12 +109,12 @@ namespace boolinq {
             });
         }
 
-        Linq<LinqIndex<S, T>, T> takeWhile(std::function<bool(T)> predicate) const
+        Linq<std::tuple<Linq<S, T>, int>, T> takeWhile(std::function<bool(T)> predicate) const
         {
             return takeWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
 
-        Linq<LinqIndex<S, T>, T> skip(int count) const
+        Linq<std::tuple<Linq<S, T>, int>, T> skip(int count) const
         {
             return where_i([count](T value, int i) { return i >= count; });
         }
@@ -153,24 +151,27 @@ namespace boolinq {
         }
 
         template<typename F, typename _TRet = typename std::result_of<F(T, int)>::type>
-        Linq<LinqIndex<S, T>, _TRet> select_i(F apply) const
+        Linq<std::tuple<Linq<S, T>, int>, _TRet> select_i(F apply) const
         {
-            return Linq<LinqIndex<S, T>, _TRet>(
-                {*this, 0},
-                [apply](LinqIndex<S, T> &pair) {
-                    return apply(pair.linq.next(), pair.index++);
+            return Linq<std::tuple<Linq<S, T>, int>, _TRet>(
+                std::make_tuple(*this, 0),
+                [apply](std::tuple<Linq<S, T>, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    int &index = std::get<1>(tuple);
+
+                    return apply(linq.next(), index++);
                 }
             );
         }
 
         template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
-        Linq<LinqIndex<S, T>, _TRet> select(F apply) const
+        Linq<std::tuple<Linq<S, T>, int>, _TRet> select(F apply) const
         {
             return select_i([apply](T value, int /*index*/) { return apply(value); });
         }
 
         template<typename TRet>
-        Linq<LinqIndex<S, T>, TRet> cast() const
+        Linq<std::tuple<Linq<S, T>, int>, TRet> cast() const
         {
             return select_i([](T value, int /*i*/) { return TRet(value); });
         }
@@ -253,7 +254,7 @@ namespace boolinq {
         template<
             typename F,
             typename _TKey = typename std::result_of<F(T)>::type,
-            typename _TValue = Linq<LinqIndex<S, T>, T> // where(predicate)
+            typename _TValue = Linq<std::tuple<Linq<S, T>, int>, T> // where(predicate)
         >
         Linq<LinqCopyUnorderedSet<S, T, _TKey>, std::pair<_TKey, _TValue> > groupBy(F apply) const
         {
