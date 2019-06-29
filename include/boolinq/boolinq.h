@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits.h>
+
 #include <functional>
 
 #include <iterator>
@@ -7,7 +9,6 @@
 #include <vector>
 #include <deque>
 #include <list>
-#include <set>
 #include <unordered_set>
 
 //
