@@ -684,7 +684,7 @@ namespace boolinq {
                      }
 
                      tuple.index++;
-                     return ((ptr[byteIndex] & (1 << bitIndex)) != 0) ? 1 : 0;
+                     return (ptr[byteIndex] >> bitIndex) & 1;
                  }
             );
         }
