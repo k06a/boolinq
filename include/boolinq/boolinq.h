@@ -141,7 +141,8 @@ namespace boolinq {
                     }
                     while (true) {
                         T ret = tuple.linq.next();
-                        if (predicate(ret, tuple.index++)) {
+                        if (!predicate(ret, tuple.index++)) {
+                            tuple.flag = true;
                             return ret;
                         }
                     }
@@ -509,7 +510,7 @@ namespace boolinq {
 
         T elementAt(int index) const
         {
-            return skip(index - 1).next();
+            return skip(index).next();
         }
 
         template<typename F>
