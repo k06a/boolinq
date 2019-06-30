@@ -23,6 +23,7 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/AllTest.cpp
     ${PROJECT_SOURCE_DIR}/test/AnyTest.cpp
     ${PROJECT_SOURCE_DIR}/test/AvgTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/AppendTest.cpp
     ${PROJECT_SOURCE_DIR}/test/BitsTest.cpp
     ${PROJECT_SOURCE_DIR}/test/BytesTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ConcatTest.cpp
@@ -38,6 +39,7 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/MaxTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MinTest.cpp
     ${PROJECT_SOURCE_DIR}/test/OrderByTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/PrependTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ReverseTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SelectTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SkipTest.cpp

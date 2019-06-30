@@ -89,6 +89,7 @@ int DenisUniqueContactCount =
 - `skip(count)`, `skipWhile(predicate)`, `skipWhile_i(predicate)`
 - `orderBy()`, `orderBy(transform)`
 - `distinct()`, `distinct(transform)`
+- `append(items)`, `prepend(items)`
 - `concat(linq)`
 - `reverse()`
 - `cast<T>()`

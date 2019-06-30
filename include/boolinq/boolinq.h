@@ -152,6 +152,51 @@ namespace boolinq {
             return skipWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
 
+        template<typename SS, typename TT>
+        struct LinqValueIndex {
+            Linq<SS, TT> linq;
+            std::vector<TT> values;
+            int index;
+        };
+
+        template<typename ... Types>
+        Linq<LinqValueIndex<S, T>, T> append(Types ... newValues) const
+        {
+            return Linq<LinqValueIndex<S, T>, T>(
+                {*this, { newValues... }, -1},
+                [](LinqValueIndex<S, T> &tuple) {
+                    if (tuple.index == -1) {
+                        try {
+                            return tuple.linq.next();
+                        }
+                        catch (LinqEndException &) {
+                            tuple.index = 0;
+                        }
+                    }
+
+                    if (tuple.index < tuple.values.size()) {
+                        return tuple.values[tuple.index++];
+                    }
+
+                    throw LinqEndException();
+                }
+            );
+        }
+
+        template<typename ... Types>
+        Linq<LinqValueIndex<S, T>, T> prepend(Types ... newValues) const
+        {
+            return Linq<LinqValueIndex<S, T>, T>(
+                {*this, { newValues... }, 0},
+                [](LinqValueIndex<S, T> &tuple) {
+                    if (tuple.index < tuple.values.size()) {
+                        return tuple.values[tuple.index++];
+                    }
+                    return tuple.linq.next();
+                }
+            );
+        }
+
         template<typename F, typename _TRet = typename std::result_of<F(T, int)>::type>
         Linq<LinqIndex<S, T>, _TRet> select_i(F apply) const
         {
