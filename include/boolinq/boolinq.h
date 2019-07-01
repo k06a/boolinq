@@ -119,25 +119,22 @@ namespace boolinq {
             return where_i([count](T value, int i) { return i >= count; });
         }
 
-        template<typename SS, typename TT>
-        struct LinqIndexFlag {
-            Linq<SS, TT> linq;
-            int index;
-            bool flag;
-        };
-
-        Linq<LinqIndexFlag<S, T>, T> skipWhile_i(std::function<bool(T, int)> predicate) const
+        Linq<std::tuple<Linq<S, T>, int, bool>, T> skipWhile_i(std::function<bool(T, int)> predicate) const
         {
-            return Linq<LinqIndexFlag<S, T>, T>(
-                {*this, 0, false},
-                [predicate](LinqIndexFlag<S, T> &tuple) {
-                    if (tuple.flag) {
-                        return tuple.linq.next();
+            return Linq<std::tuple<Linq<S, T>, int, bool>, T>(
+                std::make_tuple(*this, 0, false),
+                [predicate](std::tuple<Linq<S, T>, int, bool> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    int &index = std::get<1>(tuple);
+                    bool &flag = std::get<2>(tuple);
+
+                    if (flag) {
+                        return linq.next();
                     }
                     while (true) {
-                        T ret = tuple.linq.next();
-                        if (!predicate(ret, tuple.index++)) {
-                            tuple.flag = true;
+                        T ret = linq.next();
+                        if (!predicate(ret, index++)) {
+                            flag = true;
                             return ret;
                         }
                     }
@@ -145,35 +142,32 @@ namespace boolinq {
             );
         }
 
-        Linq<LinqIndexFlag<S, T>, T> skipWhile(std::function<bool(T)> predicate) const
+        Linq<std::tuple<Linq<S, T>, int, bool>, T> skipWhile(std::function<bool(T)> predicate) const
         {
             return skipWhile_i([predicate](T value, int /*i*/) { return predicate(value); });
         }
 
-        template<typename SS, typename TT>
-        struct LinqValueIndex {
-            Linq<SS, TT> linq;
-            std::vector<TT> values;
-            int index;
-        };
-
         template<typename ... Types>
-        Linq<LinqValueIndex<S, T>, T> append(Types ... newValues) const
+        Linq<std::tuple<Linq<S, T>, std::vector<T>, int>, T> append(Types ... newValues) const
         {
-            return Linq<LinqValueIndex<S, T>, T>(
-                {*this, { newValues... }, -1},
-                [](LinqValueIndex<S, T> &tuple) {
-                    if (tuple.index == -1) {
+            return Linq<std::tuple<Linq<S, T>, std::vector<T>, int>, T>(
+                std::make_tuple(*this, std::vector<T>{ newValues... }, -1),
+                [](std::tuple<Linq<S, T>, std::vector<T>, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    std::vector<T> &values = std::get<1>(tuple);
+                    int &index = std::get<2>(tuple);
+
+                    if (index == -1) {
                         try {
-                            return tuple.linq.next();
+                            return linq.next();
                         }
                         catch (LinqEndException &) {
-                            tuple.index = 0;
+                            index = 0;
                         }
                     }
 
-                    if (tuple.index < tuple.values.size()) {
-                        return tuple.values[tuple.index++];
+                    if (index < values.size()) {
+                        return values[index++];
                     }
 
                     throw LinqEndException();
@@ -182,15 +176,19 @@ namespace boolinq {
         }
 
         template<typename ... Types>
-        Linq<LinqValueIndex<S, T>, T> prepend(Types ... newValues) const
+        Linq<std::tuple<Linq<S, T>, std::vector<T>, int>, T> prepend(Types ... newValues) const
         {
-            return Linq<LinqValueIndex<S, T>, T>(
-                {*this, { newValues... }, 0},
-                [](LinqValueIndex<S, T> &tuple) {
-                    if (tuple.index < tuple.values.size()) {
-                        return tuple.values[tuple.index++];
+            return Linq<std::tuple<Linq<S, T>, std::vector<T>, int>, T>(
+                std::make_tuple(*this, std::vector<T>{ newValues... }, 0),
+                [](std::tuple<Linq<S, T>, std::vector<T>, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    std::vector<T> &values = std::get<1>(tuple);
+                    int &index = std::get<2>(tuple);
+
+                    if (index < values.size()) {
+                        return values[index++];
                     }
-                    return tuple.linq.next();
+                    return linq.next();
                 }
             );
         }
@@ -221,58 +219,52 @@ namespace boolinq {
             return select_i([](T value, int /*i*/) { return TRet(value); });
         }
 
-        template<typename S1, typename T1, typename S2, typename T2>
-        struct LinqLinq {
-            Linq<S1, T1> first;
-            Linq<S2, T2> second;
-            bool flag;
-        };
-
         template<typename S2, typename T2>
-        Linq<LinqLinq<S, T, S2, T2>, T> concat(const Linq<S2, T2> & rhs) const
+        Linq<std::tuple<Linq<S, T>, Linq<S2, T2>, bool>, T> concat(const Linq<S2, T2> & rhs) const
         {
-            return Linq<LinqLinq<S, T, S2, T2>, T>(
-                {*this, rhs, false},
-                [](LinqLinq<S, T, S2, T2> &tuple){
-                    if (!tuple.flag) {
+            return Linq<std::tuple<Linq<S, T>, Linq<S2, T2>, bool>, T>(
+                std::make_tuple(*this, rhs, false),
+                [](std::tuple<Linq<S, T>, Linq<S2, T2>, bool> &tuple){
+                    Linq<S, T> &first = std::get<0>(tuple);
+                    Linq<S2, T2> &second = std::get<1>(tuple);
+                    bool &flag = std::get<2>(tuple);
+
+                    if (!flag) {
                         try {
-                            return tuple.first.next();
+                            return first.next();
                         }
                         catch (LinqEndException &) {}
                     }
-                    return tuple.second.next();
+                    return second.next();
                 }
             );
         }
-
-        template<typename SS, typename TT, typename TCurrent>
-        struct LinqCurrentIndexFinished {
-            Linq<SS, TT> linq;
-            TCurrent current;
-            int index;
-            bool finished;
-        };
 
         template<
             typename F,
             typename _TRet = typename std::result_of<F(T, int)>::type,
             typename _TRetVal = typename _TRet::value_type
         >
-        Linq<LinqCurrentIndexFinished<S, T, _TRet>, _TRetVal> selectMany_i(F apply) const
+        Linq<std::tuple<Linq<S, T>, _TRet, int, bool>, _TRetVal> selectMany_i(F apply) const
         {
-            return Linq<LinqCurrentIndexFinished<S, T, _TRet>, _TRetVal>(
-                {*this, _TRet(), 0, true},
-                [apply](LinqCurrentIndexFinished<S, T, _TRet> &tuple) {
+            return Linq<std::tuple<Linq<S, T>, _TRet, int, bool>, _TRetVal>(
+                std::make_tuple(*this, _TRet(), 0, true),
+                [apply](std::tuple<Linq<S, T>, _TRet, int, bool> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    _TRet &current = std::get<1>(tuple);
+                    int &index = std::get<2>(tuple);
+                    bool &finished = std::get<3>(tuple);
+
                     while (true) {
-                        if (tuple.finished) {
-                            tuple.current = apply(tuple.linq.next(), tuple.index++);
-                            tuple.finished = false;
+                        if (finished) {
+                            current = apply(linq.next(), index++);
+                            finished = false;
                         }
                         try {
-                            return tuple.current.next();
+                            return current.next();
                         }
                         catch (LinqEndException &) {
-                            tuple.finished = true;
+                            finished = true;
                         }
                     }
                 }
@@ -284,32 +276,28 @@ namespace boolinq {
             typename _TRet = typename std::result_of<F(T)>::type,
             typename _TRetVal = typename _TRet::value_type
         >
-        Linq<LinqCurrentIndexFinished<S, T, _TRet>, _TRetVal> selectMany(F apply) const
+        Linq<std::tuple<Linq<S, T>, _TRet, int, bool>, _TRetVal> selectMany(F apply) const
         {
             return selectMany_i([apply](T value, int index) { return apply(value); });
         }
-
-        template<typename SS, typename TT, typename TKey>
-        struct LinqCopyUnorderedSet {
-            Linq<SS, TT> linq;
-            Linq<SS, TT> linqCopy;
-            std::unordered_set<TKey> set;
-        };
 
         template<
             typename F,
             typename _TKey = typename std::result_of<F(T)>::type,
             typename _TValue = Linq<std::tuple<Linq<S, T>, int>, T> // where(predicate)
         >
-        Linq<LinqCopyUnorderedSet<S, T, _TKey>, std::pair<_TKey, _TValue> > groupBy(F apply) const
+        Linq<std::tuple<Linq<S, T>, Linq<S, T>, std::unordered_set<_TKey> >, std::pair<_TKey, _TValue> > groupBy(F apply) const
         {
-            return Linq<LinqCopyUnorderedSet<S, T, _TKey>, std::pair<_TKey, _TValue> >(
-                {*this, *this, std::unordered_set<_TKey>()},
-                [apply](LinqCopyUnorderedSet<S, T, _TKey> &tuple){
-                    T value = tuple.linq.next();
-                    _TKey key = apply(value);
-                    if (tuple.set.insert(key).second) {
-                        return std::make_pair(key, tuple.linqCopy.where([apply, key](T v){
+            return Linq<std::tuple<Linq<S, T>, Linq<S, T>, std::unordered_set<_TKey> >, std::pair<_TKey, _TValue> >(
+                std::make_tuple(*this, *this, std::unordered_set<_TKey>()),
+                [apply](std::tuple<Linq<S, T>, Linq<S, T>, std::unordered_set<_TKey> > &tuple){
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    Linq<S, T> &linqCopy = std::get<1>(tuple);
+                    std::unordered_set<_TKey> &set = std::get<2>(tuple);
+
+                    _TKey key = apply(linq.next());
+                    if (set.insert(key).second) {
+                        return std::make_pair(key, linqCopy.where([apply, key](T v){
                             return apply(v) == key;
                         }));
                     }
@@ -318,21 +306,18 @@ namespace boolinq {
             );
         }
 
-        template<typename SS, typename TT, typename TKey>
-        struct LinqUnorderedSet {
-            Linq<SS, TT> linq;
-            std::unordered_set<TKey> set;
-        };
-
         template<typename F, typename _TRet = typename std::result_of<F(T)>::type>
-        Linq<LinqUnorderedSet<S, T, _TRet>, T> distinct(F transform) const
+        Linq<std::tuple<Linq<S, T>, std::unordered_set<_TRet> >, T> distinct(F transform) const
         {
-            return Linq<LinqUnorderedSet<S, T, _TRet>, T>(
-                {*this, std::unordered_set<_TRet>()},
-                [transform](LinqUnorderedSet<S, T, _TRet> &tuple) {
+            return Linq<std::tuple<Linq<S, T>, std::unordered_set<_TRet> >, T>(
+                std::make_tuple(*this, std::unordered_set<_TRet>()),
+                [transform](std::tuple<Linq<S, T>, std::unordered_set<_TRet> > &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    std::unordered_set<_TRet> &set = std::get<1>(tuple);
+
                     while (true) {
-                        T value = tuple.linq.next();
-                        if (tuple.set.insert(transform(value)).second) {
+                        T value = linq.next();
+                        if (set.insert(transform(value)).second) {
                             return value;
                         }
                     }
@@ -340,68 +325,57 @@ namespace boolinq {
             );
         }
 
-        Linq<LinqUnorderedSet<S, T, T>, T> distinct() const
+        Linq<std::tuple<Linq<S, T>, std::unordered_set<T> >, T> distinct() const
         {
             return distinct([](T value) { return value; });
         }
 
-        template<typename TT>
-        struct StdVectorAndIterator {
-            std::vector<TT> vec;
-            typename std::vector<TT>::iterator it;
-        };
-
-        template<typename F>
-        Linq<StdVectorAndIterator<T>, T> orderBy(F transform) const
+        template<typename F, typename _TIter = typename std::vector<T>::iterator>
+        Linq<std::tuple<std::vector<T>, _TIter>, T> orderBy(F transform) const
         {
-            typedef typename std::vector<T>::iterator TIter;
-
             std::vector<T> items = toStdVector();
             std::sort(items.begin(), items.end(), [transform](const T &a, const T &b) {
                 return transform(a) < transform(b);
             });
 
-            return Linq<StdVectorAndIterator<T>, T>(
-                {items, TIter()},
-                [](StdVectorAndIterator<T> &tuple) {
-                    if (tuple.it == TIter()) {
-                        tuple.it = tuple.vec.begin();
+            return Linq<std::tuple<std::vector<T>, _TIter>, T>(
+                std::make_tuple(items, _TIter()),
+                [](std::tuple<std::vector<T>, _TIter> &tuple) {
+                    std::vector<T> &vec = std::get<0>(tuple);
+                    _TIter &it = std::get<1>(tuple);
+
+                    if (it == _TIter()) {
+                        it = vec.begin();
                     }
-                    if (tuple.it == tuple.vec.end()) {
+                    if (it == vec.end()) {
                         throw LinqEndException();
                     }
-                    return *(tuple.it++);
+                    return *(it++);
                 }
             );
         }
 
-        Linq<StdVectorAndIterator<T>, T> orderBy() const
+        Linq<std::tuple<std::vector<T>, typename std::vector<T>::iterator>, T> orderBy() const
         {
             return orderBy([](T value) { return value; });
         }
 
-        template<typename TT>
-        struct StdListAndReverseIterator {
-            std::list<TT> list;
-            typename std::list<TT>::reverse_iterator it;
-        };
-
-        Linq<StdListAndReverseIterator<T>, T> reverse() const
+        template<typename _TIter = typename std::list<T>::reverse_iterator>
+        Linq<std::tuple<std::list<T>, _TIter>, T> reverse() const
         {
-            typedef typename std::list<T>::reverse_iterator TIter;
+            return Linq<std::tuple<std::list<T>, _TIter>, T>(
+                std::make_tuple(toStdList(), _TIter()),
+                [](std::tuple<std::list<T>, _TIter> &tuple) {
+                    std::list<T> &list = std::get<0>(tuple);
+                    _TIter &it = std::get<1>(tuple);
 
-            std::list<T> items = toStdList();
-
-            return Linq<StdListAndReverseIterator<T>, T>(
-                {items, TIter()},
-                [](StdListAndReverseIterator<T> &tuple) {
-                    if (tuple.it == TIter()) {
-                        tuple.it = tuple.list.rbegin();
+                    if (it == _TIter()) {
+                        it = list.rbegin();
                     }
-                    if (tuple.it == tuple.list.rend()) {
+                    if (it == list.rend()) {
                         throw LinqEndException();
                     }
-                    return *(tuple.it++);
+                    return *(it++);
                 }
             );
         }
@@ -654,54 +628,54 @@ namespace boolinq {
 
         // Bits and bytes
 
-        template<typename SS, typename TT>
-        struct LinqBytesBitsValueIndex{
-            Linq<SS, TT> linq;
-            BytesDirection bytesDirection;
-            BitsDirection bitsDirection;
-            TT value;
-            int index;
-        };
-
-        Linq<LinqBytesBitsValueIndex<S, T>, int> bytes(BytesDirection direction = BytesFirstToLast) const
+        Linq<std::tuple<Linq<S, T>, BytesDirection, T, int>, int> bytes(BytesDirection direction = BytesFirstToLast) const
         {
-            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
-                 {*this, direction, BitsHighToLow, T(), sizeof(T)},
-                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
-                      if (tuple.index == sizeof(T)) {
-                          tuple.value = tuple.linq.next();
-                          tuple.index = 0;
+            return Linq<std::tuple<Linq<S, T>, BytesDirection, T, int>, int>(
+                 std::make_tuple(*this, direction, T(), sizeof(T)),
+                 [](std::tuple<Linq<S, T>, BytesDirection, T, int> &tuple) {
+                     Linq<S, T> &linq = std::get<0>(tuple);
+                     BytesDirection &bytesDirection = std::get<1>(tuple);
+                     T &value = std::get<2>(tuple);
+                     int &index = std::get<3>(tuple);
+
+                      if (index == sizeof(T)) {
+                          value = linq.next();
+                          index = 0;
                       }
 
-                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&tuple.value);
+                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                      int byteIndex = tuple.index;
-                      if (tuple.bytesDirection == BytesLastToFirst) {
+                      int byteIndex = index;
+                      if (bytesDirection == BytesLastToFirst) {
                           byteIndex = sizeof(T) - 1 - byteIndex;
                       }
 
-                     tuple.index++;
+                     index++;
                      return ptr[byteIndex];
                  }
             );
         }
 
         template<typename TRet>
-        Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbytes(BytesDirection direction = BytesFirstToLast) const
+        Linq<std::tuple<Linq<S, T>, BytesDirection, int>, TRet> unbytes(BytesDirection direction = BytesFirstToLast) const
         {
-            return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
-                 {*this, direction, BitsHighToLow, T(), 0},
-                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
+            return Linq<std::tuple<Linq<S, T>, BytesDirection, int>, TRet>(
+                 std::make_tuple(*this, direction, 0),
+                 [](std::tuple<Linq<S, T>, BytesDirection, int> &tuple) {
+                     Linq<S, T> &linq = std::get<0>(tuple);
+                     BytesDirection &bytesDirection = std::get<1>(tuple);
+                     int &index = std::get<2>(tuple);
+
                      TRet value;
                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
                      for (int i = 0; i < sizeof(TRet); i++) {
                          int byteIndex = i;
-                         if (tuple.bytesDirection == BytesLastToFirst) {
+                         if (bytesDirection == BytesLastToFirst) {
                              byteIndex = sizeof(TRet) - 1 - byteIndex;
                          }
 
-                         ptr[byteIndex] = tuple.linq.next();
+                         ptr[byteIndex] = linq.next();
                      }
 
                      return value;
@@ -709,56 +683,67 @@ namespace boolinq {
             );
         }
 
-        Linq<LinqBytesBitsValueIndex<S, T>, int> bits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
+        Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int>, int> bits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
-            return Linq<LinqBytesBitsValueIndex<S, T>, int>(
-                 {*this, bytesDir, bitsDir, T(), sizeof(T) * CHAR_BIT},
-                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
-                      if (tuple.index == sizeof(T) * CHAR_BIT) {
-                          tuple.value = tuple.linq.next();
-                          tuple.index = 0;
-                      }
+            return Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int>, int>(
+                 std::make_tuple(*this, bytesDir, bitsDir, T(), sizeof(T) * CHAR_BIT),
+                 [](std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int> &tuple) {
+                     Linq<S, T> &linq = std::get<0>(tuple);
+                     BytesDirection &bytesDirection = std::get<1>(tuple);
+                     BitsDirection &bitsDirection = std::get<2>(tuple);
+                     T &value = std::get<3>(tuple);
+                     int &index = std::get<4>(tuple);
 
-                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&tuple.value);
+                     if (index == sizeof(T) * CHAR_BIT) {
+                         value = linq.next();
+                         index = 0;
+                     }
 
-                      int byteIndex = tuple.index / CHAR_BIT;
-                      if (tuple.bytesDirection == BytesLastToFirst) {
-                          byteIndex = sizeof(T) - 1 - byteIndex;
-                      }
+                     unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                     int bitIndex = tuple.index % CHAR_BIT;
-                     if (tuple.bitsDirection == BitsHighToLow) {
+                     int byteIndex = index / CHAR_BIT;
+                     if (bytesDirection == BytesLastToFirst) {
+                         byteIndex = sizeof(T) - 1 - byteIndex;
+                     }
+
+                     int bitIndex = index % CHAR_BIT;
+                     if (bitsDirection == BitsHighToLow) {
                          bitIndex = CHAR_BIT - 1 - bitIndex;
                      }
 
-                     tuple.index++;
+                     index++;
                      return (ptr[byteIndex] >> bitIndex) & 1;
                  }
             );
         }
 
         template<typename TRet = unsigned char>
-        Linq<LinqBytesBitsValueIndex<S, T>, TRet> unbits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
+        Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int>, TRet> unbits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
-            return Linq<LinqBytesBitsValueIndex<S, T>, TRet>(
-                 {*this, bytesDir, bitsDir, T(), 0},
-                 [](LinqBytesBitsValueIndex<S, T> &tuple) {
+            return Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int>, TRet>(
+                 std::make_tuple(*this, bytesDir, bitsDir, 0),
+                 [](std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int> &tuple) {
+                     Linq<S, T> &linq = std::get<0>(tuple);
+                     BytesDirection &bytesDirection = std::get<1>(tuple);
+                     BitsDirection &bitsDirection = std::get<2>(tuple);
+                     int &index = std::get<3>(tuple);
+
                      TRet value = TRet();
                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
                      for (int i = 0; i < sizeof(TRet) * CHAR_BIT; i++) {
                          int byteIndex = i / CHAR_BIT;
-                         if (tuple.bytesDirection == BytesLastToFirst) {
+                         if (bytesDirection == BytesLastToFirst) {
                              byteIndex = sizeof(TRet) - 1 - byteIndex;
                          }
 
                          int bitIndex = i % CHAR_BIT;
-                         if (tuple.bitsDirection == BitsHighToLow) {
+                         if (bitsDirection == BitsHighToLow) {
                              bitIndex = CHAR_BIT - 1 - bitIndex;
                          }
 
                          ptr[byteIndex] &= ~(1 << bitIndex);
-                         ptr[byteIndex] |= bool(tuple.linq.next()) << bitIndex;
+                         ptr[byteIndex] |= bool(linq.next()) << bitIndex;
                      }
 
                      return value;
