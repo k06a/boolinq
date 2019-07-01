@@ -32,14 +32,17 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/DistinctTest.cpp
     ${PROJECT_SOURCE_DIR}/test/DotCallTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ElementAtTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/FirstTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ForEachTest.cpp
     ${PROJECT_SOURCE_DIR}/test/GroupByTest.cpp
     ${PROJECT_SOURCE_DIR}/test/CtorTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/LastTest.cpp
     ${PROJECT_SOURCE_DIR}/test/LinqTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MaxTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MinTest.cpp
     ${PROJECT_SOURCE_DIR}/test/OrderByTest.cpp
     ${PROJECT_SOURCE_DIR}/test/PrependTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/RangeTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ReverseTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SelectTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SelectManyTest.cpp

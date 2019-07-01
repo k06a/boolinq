@@ -429,7 +429,7 @@ namespace boolinq {
         int count() const
         {
             int index = 0;
-            for_each([&index](T /**/a) { index++; });
+            for_each([&index](T /*a*/) { index++; });
             return index;
         }
 
@@ -482,15 +482,14 @@ namespace boolinq {
 
         T elect(std::function<T(T, T)> accumulate) const
         {
-            Linq<S, T> linq = *this;
             T result;
-            try {
-                result = linq.next();
-                while (true) {
-                    result = accumulate(result, linq.next());
+            for_each_i([accumulate, &result](T value, int i) {
+                if (i == 0) {
+                    result = value;
+                } else {
+                    result = accumulate(result, value);
                 }
-            }
-            catch (LinqEndException &) {}
+            });
             return result;
         }
 
@@ -534,7 +533,7 @@ namespace boolinq {
 
         T first() const
         {
-            return next();
+            return Linq<S, T>(*this).next();
         }
 
         T firstOrDefault(std::function<bool(T)> predicate) const
@@ -548,15 +547,25 @@ namespace boolinq {
 
         T firstOrDefault() const
         {
-            firstOrDefault([](T /*value*/) { return true; });
+            try {
+                return Linq<S, T>(*this).next();
+            }
+            catch (LinqEndException &) {}
+            return T();
         }
 
         T last(std::function<bool(T)> predicate) const
         {
             T res;
-            for_each([&res](T value) {
+            int index = -1;
+            where(predicate).for_each_i([&res, &index](T value, int i) {
                 res = value;
+                index = i;
             });
+
+            if (index == -1) {
+                throw LinqEndException();
+            }
             return res;
         }
 
@@ -567,11 +576,11 @@ namespace boolinq {
 
         T lastOrDefault(std::function<bool(T)> predicate) const
         {
-            try {
-                return last(predicate);
-            }
-            catch (LinqEndException &) {}
-            return T();
+            T res = T();
+            where(predicate).for_each([&res](T value) {
+                res = value;
+            });
+            return res;
         }
 
         T lastOrDefault() const
@@ -769,10 +778,10 @@ namespace boolinq {
     ////////////////////////////////////////////////////////////////
 
     template<typename T>
-    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(T begin, T end)
+    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(const T & begin, const T & end)
     {
         return Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type>(
-            {begin, end},
+            std::make_pair(begin, end),
             [](std::pair<T, T> &pair) {
                 if (pair.first == pair.second) {
                     throw LinqEndException();
@@ -783,60 +792,60 @@ namespace boolinq {
     }
 
     template<typename T>
-    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(T it, int n)
+    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(const T & it, int n)
     {
         return from(it, it + n);
     }
 
     template<typename T, int N>
-    Linq<std::pair<T *, T *>, T> from(T (&array)[N])
+    Linq<std::pair<const T *, const T *>, T> from(T (&array)[N])
     {
-        return from((T *)(&array), (T *)(&array) + N);
+        return from((const T *)(&array), (const T *)(&array) + N);
     }
 
     template<template<class> class TV, typename TT>
     auto from(const TV<TT> & container)
-        -> decltype(from(std::begin(container), std::end(container)))
+        -> decltype(from(std::cbegin(container), std::cend(container)))
     {
-        return from(std::begin(container), std::end(container));
+        return from(std::cbegin(container), std::cend(container));
     }
 
     // std::list, std::vector, std::dequeue
     template<template<class, class> class TV, typename TT, typename TU>
     auto from(const TV<TT, TU> & container)
-        -> decltype(from(std::begin(container), std::end(container)))
+        -> decltype(from(std::cbegin(container), std::cend(container)))
     {
-        return from(std::begin(container), std::end(container));
+        return from(std::cbegin(container), std::cend(container));
     }
 
     // std::set
     template<template<class, class, class> class TV, typename TT, typename TS, typename TU>
     auto from(const TV<TT, TS, TU> & container)
-        -> decltype(from(std::begin(container), std::end(container)))
+        -> decltype(from(std::cbegin(container), std::cend(container)))
     {
-        return from(std::begin(container), std::end(container));
+        return from(std::cbegin(container), std::cend(container));
     }
 
     // std::map
     template<template<class, class, class, class> class TV, typename TK, typename TT, typename TS, typename TU>
     auto from(const TV<TK, TT, TS, TU> & container)
-        -> decltype(from(std::begin(container), std::end(container)))
+        -> decltype(from(std::cbegin(container), std::cend(container)))
     {
-        return from(std::begin(container), std::end(container));
+        return from(std::cbegin(container), std::cend(container));
     }
 
     // std::array
     template<template<class, size_t> class TV, typename TT, size_t TL>
     auto from(const TV<TT, TL> & container)
-        -> decltype(from(std::begin(container), std::end(container)))
+        -> decltype(from(std::cbegin(container), std::cend(container)))
     {
-        return from(std::begin(container), std::end(container));
+        return from(std::cbegin(container), std::cend(container));
     }
 
     template<typename T>
-    Linq<std::pair<T, int>, T> repeat(T value, int count) {
+    Linq<std::pair<T, int>, T> repeat(const T & value, int count) {
         return Linq<std::pair<T, int>, T>(
-            {value, count},
+            std::make_pair(value, count),
             [](std::pair<T, int> &pair) {
                 if (pair.second > 0) {
                     pair.second--;
@@ -848,12 +857,18 @@ namespace boolinq {
     }
 
     template<typename T>
-    Linq<std::pair<std::pair<T, T>, T>, T> range(T start, T end, T step) {
-        return Linq<std::pair<std::pair<T, T>, T>, T>(
-            {{start, end}, step},
-            [](std::pair<std::pair<T, T>, T> &tuple) {
-                if (tuple.first.first < tuple.first.second) {
-                    return *(tuple.first.first += tuple.second);
+    Linq<std::tuple<T, T, T>, T> range(const T & start, const T & end, const T & step) {
+        return Linq<std::tuple<T, T, T>, T>(
+            std::make_tuple(start, end, step),
+            [](std::tuple<T, T, T> &tuple) {
+                T &start = std::get<0>(tuple);
+                T &end = std::get<1>(tuple);
+                T &step = std::get<2>(tuple);
+
+                T value = start;
+                if (value < end) {
+                    start += step;
+                    return value;
                 }
                 throw LinqEndException();
             }
