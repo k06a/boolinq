@@ -330,24 +330,26 @@ namespace boolinq {
             return distinct([](T value) { return value; });
         }
 
-        template<typename F, typename _TIter = typename std::vector<T>::iterator>
-        Linq<std::tuple<std::vector<T>, _TIter>, T> orderBy(F transform) const
+        template<typename F, typename _TIter = typename std::vector<T>::const_iterator>
+        Linq<std::tuple<std::vector<T>, _TIter, bool>, T> orderBy(F transform) const
         {
             std::vector<T> items = toStdVector();
             std::sort(items.begin(), items.end(), [transform](const T &a, const T &b) {
                 return transform(a) < transform(b);
             });
 
-            return Linq<std::tuple<std::vector<T>, _TIter>, T>(
-                std::make_tuple(items, _TIter()),
-                [](std::tuple<std::vector<T>, _TIter> &tuple) {
+            return Linq<std::tuple<std::vector<T>, _TIter, bool>, T>(
+                std::make_tuple(items, _TIter(), false),
+                [](std::tuple<std::vector<T>, _TIter, bool> &tuple) {
                     std::vector<T> &vec = std::get<0>(tuple);
                     _TIter &it = std::get<1>(tuple);
+                    bool &flag = std::get<2>(tuple);
 
-                    if (it == _TIter()) {
-                        it = vec.begin();
+                    if (!flag) {
+                        flag = true;
+                        it = vec.cbegin();
                     }
-                    if (it == vec.end()) {
+                    if (it == vec.cend()) {
                         throw LinqEndException();
                     }
                     return *(it++);
@@ -355,24 +357,26 @@ namespace boolinq {
             );
         }
 
-        Linq<std::tuple<std::vector<T>, typename std::vector<T>::iterator>, T> orderBy() const
+        Linq<std::tuple<std::vector<T>, typename std::vector<T>::const_iterator, bool>, T> orderBy() const
         {
             return orderBy([](T value) { return value; });
         }
 
-        template<typename _TIter = typename std::list<T>::reverse_iterator>
-        Linq<std::tuple<std::list<T>, _TIter>, T> reverse() const
+        template<typename _TIter = typename std::list<T>::const_reverse_iterator>
+        Linq<std::tuple<std::list<T>, _TIter, bool>, T> reverse() const
         {
-            return Linq<std::tuple<std::list<T>, _TIter>, T>(
-                std::make_tuple(toStdList(), _TIter()),
-                [](std::tuple<std::list<T>, _TIter> &tuple) {
+            return Linq<std::tuple<std::list<T>, _TIter, bool>, T>(
+                std::make_tuple(toStdList(), _TIter(), false),
+                [](std::tuple<std::list<T>, _TIter, bool> &tuple) {
                     std::list<T> &list = std::get<0>(tuple);
                     _TIter &it = std::get<1>(tuple);
+                    bool &flag = std::get<2>(tuple);
 
-                    if (it == _TIter()) {
-                        it = list.rbegin();
+                    if (!flag) {
+                        flag = true;
+                        it = list.crbegin();
                     }
-                    if (it == list.rend()) {
+                    if (it == list.crend()) {
                         throw LinqEndException();
                     }
                     return *(it++);
@@ -805,41 +809,41 @@ namespace boolinq {
 
     template<template<class> class TV, typename TT>
     auto from(const TV<TT> & container)
-        -> decltype(from(std::cbegin(container), std::cend(container)))
+        -> decltype(from(container.cbegin(), container.cend()))
     {
-        return from(std::cbegin(container), std::cend(container));
+        return from(container.cbegin(), container.cend());
     }
 
     // std::list, std::vector, std::dequeue
     template<template<class, class> class TV, typename TT, typename TU>
     auto from(const TV<TT, TU> & container)
-        -> decltype(from(std::cbegin(container), std::cend(container)))
+        -> decltype(from(container.cbegin(), container.cend()))
     {
-        return from(std::cbegin(container), std::cend(container));
+        return from(container.cbegin(), container.cend());
     }
 
     // std::set
     template<template<class, class, class> class TV, typename TT, typename TS, typename TU>
     auto from(const TV<TT, TS, TU> & container)
-        -> decltype(from(std::cbegin(container), std::cend(container)))
+        -> decltype(from(container.cbegin(), container.cend()))
     {
-        return from(std::cbegin(container), std::cend(container));
+        return from(container.cbegin(), container.cend());
     }
 
     // std::map
     template<template<class, class, class, class> class TV, typename TK, typename TT, typename TS, typename TU>
     auto from(const TV<TK, TT, TS, TU> & container)
-        -> decltype(from(std::cbegin(container), std::cend(container)))
+        -> decltype(from(container.cbegin(), container.cend()))
     {
-        return from(std::cbegin(container), std::cend(container));
+        return from(container.cbegin(), container.cend());
     }
 
     // std::array
     template<template<class, size_t> class TV, typename TT, size_t TL>
     auto from(const TV<TT, TL> & container)
-        -> decltype(from(std::cbegin(container), std::cend(container)))
+        -> decltype(from(container.cbegin(), container.cend()))
     {
-        return from(std::cbegin(container), std::cend(container));
+        return from(container.cbegin(), container.cend());
     }
 
     template<typename T>

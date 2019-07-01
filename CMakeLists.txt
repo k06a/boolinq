@@ -1,8 +1,9 @@
 # Common variables.
-CMAKE_MINIMUM_REQUIRED  (VERSION 2.8)
-PROJECT                 (boolinq)
-SET (boolinq_VERSION_MAJOR 2)
-SET (boolinq_VERSION_MINOR 0)
+CMAKE_MINIMUM_REQUIRED  (VERSION 3.0)
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif()
+PROJECT                 (boolinq VERSION 3.0.0 LANGUAGES CXX)
 
 
 SET (CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS} -O0 -ggdb3 -DDEBUG")
