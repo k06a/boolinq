@@ -42,6 +42,7 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/PrependTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ReverseTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SelectTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SelectManyTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SkipTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SkipWhileTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SumTest.cpp
