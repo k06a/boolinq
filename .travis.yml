@@ -1,5 +1,5 @@
 language: none
-sudo: true
+sudo: false
 
 cache:
   apt: true

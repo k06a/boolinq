@@ -1,5 +1,5 @@
 # Common variables.
-SET (CMAKE_BUILD_TYPE Release)
+#SET (CMAKE_BUILD_TYPE Release)
 SET (CMAKE_CXX_STANDARD 11)
 SET (CMAKE_CXX_STANDARD_REQUIRED ON)
 SET (TARGET "${PROJECT_NAME}-bench" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
@@ -27,7 +27,6 @@ ADD_EXECUTABLE (
 )
 TARGET_LINK_LIBRARIES (
     "${PROJECT_NAME}-bench"
-    benchmark_main
-    gtest_main
+    benchmark
     gtest
 )
