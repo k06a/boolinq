@@ -8,7 +8,7 @@
 
 using namespace boolinq;
 
-TEST(SelectRange, Mul2)
+TEST(Select, Mul2)
 {
     int src[] = {1,2,3,4};
     int ans[] = {2,4,6,8};
@@ -19,7 +19,7 @@ TEST(SelectRange, Mul2)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SelectRange, MakeChar)
+TEST(Select, MakeChar)
 {
     int src[] = {1,2,3,4};
     char ans[] = {'1','2','3','4'};
@@ -30,7 +30,7 @@ TEST(SelectRange, MakeChar)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SelectRange, MakeString)
+TEST(Select, MakeString)
 {
     int src[] = {1,2,3,4};
 

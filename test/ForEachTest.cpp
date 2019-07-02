@@ -16,7 +16,7 @@ TEST(ForEach, ThreeCharsSum)
     src.push_back('c');
 
     std::string str = "";
-    from(src).foreach([&](char a){str += a;});
+    from(src).for_each([&](char a){str += a;});
 
     EXPECT_EQ("abc", str);
 }
@@ -29,7 +29,7 @@ TEST(ForEach, ThreeCharsUpperSum)
     src.push_back('c');
 
     std::string str = "";
-    from(src).foreach([&](char a){str += a + ('A' - 'a');});
+    from(src).for_each([&](char a){str += a + ('A' - 'a');});
 
     EXPECT_EQ("ABC", str);
 }
@@ -42,7 +42,7 @@ TEST(ForEach, ThreeIntsSum)
     src.push_back(30);
 
     int sum = 0;
-    from(src).foreach([&](int a){sum += a;});
+    from(src).for_each([&](int a){sum += a;});
 
     EXPECT_EQ(60, sum);
 }

@@ -1,21 +1,20 @@
 # Common variables.
 SET (CMAKE_CXX_STANDARD 11)
 SET (CMAKE_CXX_STANDARD_REQUIRED ON)
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Winit-self -Weffc++ ")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual -Wsign-promo")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Winit-self -Weffc++ ")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual -Wsign-promo")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 SET (CMAKE_SHARED_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
-INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/externals/gtest/include)
-
+INCLUDE_DIRECTORIES (${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
 
 # Unit tests.
 SET (
@@ -23,47 +22,54 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/AllTest.cpp
     ${PROJECT_SOURCE_DIR}/test/AnyTest.cpp
     ${PROJECT_SOURCE_DIR}/test/AvgTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/BitsRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/BytesRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ConcatRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/AppendTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/BitsTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/BytesTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ConcatTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ContainsTest.cpp
     ${PROJECT_SOURCE_DIR}/test/CountTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/DistinctRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/DistinctTest.cpp
     ${PROJECT_SOURCE_DIR}/test/DotCallTest.cpp
     ${PROJECT_SOURCE_DIR}/test/ElementAtTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ForeachTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/GroupByRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/IterRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/FirstTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ForEachTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/GroupByTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/CtorTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/LastTest.cpp
     ${PROJECT_SOURCE_DIR}/test/LinqTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MaxTest.cpp
     ${PROJECT_SOURCE_DIR}/test/MinTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/OrderByRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ReverseRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/SelectRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/SkipRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/SkipWhileRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/OrderByTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/PrependTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/RangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ReverseTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SelectTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SelectManyTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SkipTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/SkipWhileTest.cpp
     ${PROJECT_SOURCE_DIR}/test/SumTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/TakeRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/TakeWhileRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToDequeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToListTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToSetTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/ToVectorTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/UnbitsRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/UnbytesRangeTest.cpp
-    ${PROJECT_SOURCE_DIR}/test/WhereRangeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/TakeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/TakeWhileTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdDequeTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdListTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdSetTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/ToStdVectorTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/UnbitsTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/UnbytesTest.cpp
+    ${PROJECT_SOURCE_DIR}/test/WhereTest.cpp
 )
 ADD_EXECUTABLE (
-    boolinqtest
+    "${PROJECT_NAME}-test"
     ${BoolinqTest_SOURCES}
 )
 TARGET_LINK_LIBRARIES (
-    boolinqtest
+    "${PROJECT_NAME}-test"
     gtest_main
+    gtest
     #gcov
 )
 ENABLE_TESTING ()
-ADD_TEST (BoolinqTest boolinqtest)
+ADD_TEST (BoolinqTest "${PROJECT_NAME}-test")
 
 
 # Test coverage report.
@@ -74,7 +80,7 @@ ADD_CUSTOM_COMMAND (
     COMMAND lcov -q -c -f -b . -d ${PROJECT_BINARY_DIR}/boolinq -o ${Coverage_REPORT}
     COMMAND lcov -e ${Coverage_REPORT} '${PROJECT_SOURCE_DIR}/boolinq/*' -o ${Coverage_REPORT}
     COMMAND genhtml ${Coverage_REPORT} --legend --demangle-cpp -f -q -o ${Coverage_DIR}
-    DEPENDS boolinqtest
+    DEPENDS "${PROJECT_NAME}-test"
 )
 ADD_CUSTOM_TARGET (coverage DEPENDS ${Coverage_REPORT})
 # FIXME: Doesn't work correctly (require explicit call cmake when files appear).

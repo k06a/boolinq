@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(SkipRange, ManyToMany)
+TEST(Skip, ManyToMany)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -21,7 +21,7 @@ TEST(SkipRange, ManyToMany)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, ManyToLess)
+TEST(Skip, ManyToLess)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {4,5,6};
@@ -32,7 +32,7 @@ TEST(SkipRange, ManyToLess)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, ManyToOne)
+TEST(Skip, ManyToOne)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {6};
@@ -43,29 +43,29 @@ TEST(SkipRange, ManyToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, ManyToZero)
+TEST(Skip, ManyToZero)
 {
     int src[] = {1,2,3,4,5,6};
 
     auto rng = from(src);
     auto dst = rng.skip(6);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipRange, ManyToZeroLess)
+TEST(Skip, ManyToZeroLess)
 {
     int src[] = {1,2,3,4,5,6};
 
     auto rng = from(src);
     auto dst = rng.skip(10);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(SkipRange, OneToOne)
+TEST(Skip, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -76,44 +76,44 @@ TEST(SkipRange, OneToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipRange, OneToZero)
+TEST(Skip, OneToZero)
 {
     int src[] = {5};
 
     auto rng = from(src);
     auto dst = rng.skip(1);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipRange, OneToZeroLess)
+TEST(Skip, OneToZeroLess)
 {
     int src[] = {5};
 
     auto rng = from(src);
     auto dst = rng.skip(2);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipRange, ZeroToZero)
+TEST(Skip, ZeroToZero)
 {
     std::vector<int> src;
 
     auto rng = from(src);
     auto dst = rng.skip(0);
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
-TEST(SkipRange, ZeroToZeroLess)
+TEST(Skip, ZeroToZeroLess)
 {
     std::vector<int> src;
 
     auto rng = from(src);
     auto dst = rng.skip(2);
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

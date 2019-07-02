@@ -1,4 +1,4 @@
-#include <list>
+#include <deque>
 
 #include <gtest/gtest.h>
 
@@ -6,15 +6,15 @@
 
 using namespace boolinq;
 
-TEST(ToList, List2List)
+TEST(ToStdDeque, Deque2Deque)
 {
-    std::list<int> src;
+    std::deque<int> src;
     src.push_back(100);
     src.push_back(200);
     src.push_back(300);
 
     auto rng = from(src);
-    auto dst = rng.toList();
+    auto dst = rng.toStdDeque();
 
     EXPECT_EQ(dst,src);
 }

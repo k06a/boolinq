@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbytesRange, OneIntDefault)
+TEST(Unbytes, OneIntDefault)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     unsigned ans[] = {0xDDCCBBAA};
@@ -21,31 +21,31 @@ TEST(UnbytesRange, OneIntDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, OneIntFL)
+TEST(Unbytes, OneIntFL)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     unsigned ans[] = {0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(FirstToLast);
+    auto dst = rng.unbytes<unsigned>(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, OneIntLF)
+TEST(Unbytes, OneIntLF)
 {
     unsigned char src[] = {0xAA,0xBB,0xCC,0xDD};
     unsigned ans[] = {0xAABBCCDD};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(LastToFirst);
+    auto dst = rng.unbytes<unsigned>(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbytesRange, TwoIntsDefault)
+TEST(Unbytes, TwoIntsDefault)
 {
     unsigned char src[] = 
     {
@@ -60,7 +60,7 @@ TEST(UnbytesRange, TwoIntsDefault)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, TwoIntsFL)
+TEST(Unbytes, TwoIntsFL)
 {
     unsigned char src[] = 
     {
@@ -70,12 +70,12 @@ TEST(UnbytesRange, TwoIntsFL)
     unsigned ans[] = {0x12345678,0xDDCCBBAA};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(FirstToLast);
+    auto dst = rng.unbytes<unsigned>(BytesFirstToLast);
 
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(UnbytesRange, TwoIntsLF)
+TEST(Unbytes, TwoIntsLF)
 {
     unsigned char src[] = 
     {
@@ -85,19 +85,19 @@ TEST(UnbytesRange, TwoIntsLF)
     unsigned ans[] = {0x78563412,0xAABBCCDD};
 
     auto rng = from(src);
-    auto dst = rng.unbytes<unsigned>(LastToFirst);
+    auto dst = rng.unbytes<unsigned>(BytesLastToFirst);
 
     CheckRangeEqArray(dst, ans);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(UnbytesRange, EmptyDefault)
+TEST(Unbytes, EmptyDefault)
 {
     std::vector<unsigned char> src;
     
     auto rng = from(src);
     auto dst = rng.unbytes<int>();
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }

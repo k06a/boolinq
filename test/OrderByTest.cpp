@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(OrderByRange, RandomIntsWithDuplicates)
+TEST(OrderBy, RandomIntsWithDuplicates)
 {
     int src[] = {4,5,3,1,4,2,1,4,6};
     int ans[] = {1,1,2,3,4,4,4,5,6};
@@ -21,7 +21,7 @@ TEST(OrderByRange, RandomIntsWithDuplicates)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(OrderByRange, ReverseInts)
+TEST(OrderBy, ReverseInts)
 {
     int src[] = {4,3,2,1};
     int ans[] = {1,2,3,4};
@@ -32,7 +32,7 @@ TEST(OrderByRange, ReverseInts)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(OrderByRange, ThreeElements)
+TEST(OrderBy, ThreeElements)
 {
     int src[] = {1,3,2};
     int ans[] = {1,2,3};
@@ -45,7 +45,7 @@ TEST(OrderByRange, ThreeElements)
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(OrderByRange, OneElement)
+TEST(OrderBy, OneElement)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -56,19 +56,19 @@ TEST(OrderByRange, OneElement)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(OrderByRange, NoElements)
+TEST(OrderBy, NoElements)
 {
     std::vector<int> src;
     
     auto rng = from(src);
     auto dst = rng.orderBy();
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(OrderByRange, RandomStringByContent)
+TEST(OrderBy, RandomStringByContent)
 {
     std::string src[] =
     {
@@ -96,7 +96,7 @@ TEST(OrderByRange, RandomStringByContent)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(OrderByRange, RandomStringByLength)
+TEST(OrderBy, RandomStringByLength)
 {
     std::string src[] =
     {

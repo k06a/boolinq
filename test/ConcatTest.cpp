@@ -5,7 +5,7 @@
 
 using namespace boolinq;
 
-TEST(ConcatRange, ArrayArray)
+TEST(Concat, ArrayArray)
 {
     int src1[] = {1,2,3,4,5};
     int src2[] = {6,7,8,9};
@@ -19,7 +19,7 @@ TEST(ConcatRange, ArrayArray)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(ConcatRange, ArrayVector)
+TEST(Concat, ArrayVector)
 {
     int src1[] = {1,2,3,4,5};
     std::vector<int> src2;
@@ -37,7 +37,7 @@ TEST(ConcatRange, ArrayVector)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(ConcatRange, ArrayVectorArray)
+TEST(Concat, ArrayVectorArray)
 {
     int src1[] = {1,2,3,4,5};
     std::vector<int> src2;

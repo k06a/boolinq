@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(TakeRange, ManyToMore)
+TEST(Take, ManyToMore)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -21,7 +21,7 @@ TEST(TakeRange, ManyToMore)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeRange, ManyToMany)
+TEST(Take, ManyToMany)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -32,7 +32,7 @@ TEST(TakeRange, ManyToMany)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeRange, ManyToLess)
+TEST(Take, ManyToLess)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3};
@@ -43,7 +43,7 @@ TEST(TakeRange, ManyToLess)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeRange, ManyToOne)
+TEST(Take, ManyToOne)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1};
@@ -54,19 +54,19 @@ TEST(TakeRange, ManyToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeRange, ManyToZero)
+TEST(Take, ManyToZero)
 {
     int src[] = {1,2,3,4,5,6};
 
     auto rng = from(src);
     auto dst = rng.take(0);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(TakeRange, OneToMore)
+TEST(Take, OneToMore)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -77,7 +77,7 @@ TEST(TakeRange, OneToMore)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeRange, OneToOne)
+TEST(Take, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -88,24 +88,24 @@ TEST(TakeRange, OneToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeRange, OneToZero)
+TEST(Take, OneToZero)
 {
     int src[] = {5};
 
     auto rng = from(src);
     auto dst = rng.take(0);
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(TakeRange, ZeroToZero)
+TEST(Take, ZeroToZero)
 {
     std::vector<int> src;
 
     auto rng = from(src);
     auto dst = rng.take(0);
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

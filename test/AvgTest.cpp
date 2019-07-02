@@ -47,5 +47,5 @@ TEST(Avg, FiveStringsLen)
 
     auto rng = from(src);
 
-    EXPECT_EQ(5, rng.avg<int>([](const std::string & str){return str.size();}));
+    EXPECT_EQ(5, rng.avg([](const std::string & str){return str.size();}));
 }

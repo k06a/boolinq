@@ -25,10 +25,10 @@ TEST(Linq, WhereOdd)
 
     for (int i = 1; i <= 5; i+=2)
     {
-        EXPECT_EQ(i, rng.nextObject());
+        EXPECT_EQ(i, rng.next());
     }
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 TEST(Linq, WhereOdd_WhereLess)
@@ -48,10 +48,10 @@ TEST(Linq, WhereOdd_WhereLess)
 
     for (int i = 1; i <= 3; i+=2)
     {
-        EXPECT_EQ(i, rng.nextObject());
+        EXPECT_EQ(i, rng.next());
     }
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 TEST(Linq, WhereLess_WhereOdd)
@@ -68,7 +68,7 @@ TEST(Linq, WhereLess_WhereOdd)
 
     auto rng = from(src).where([](int a){return a < 4;})
                         .where([](int a){return a%2 == 1;})
-                        .toVector();
+                        .toStdVector();
 
     std::vector<int> ans;
     ans.push_back(1);
@@ -92,7 +92,7 @@ TEST(Linq, WhereLess_WhereOdd_OrderByDesc)
     auto rng = from(src).where([](int a){return a < 6;})
                         .where([](int a){return a%2 == 1;})
                         .orderBy([](int a){return -a;})
-                        .toVector();
+                        .toStdVector();
 
     std::vector<int> ans;
     ans.push_back(5);
@@ -115,7 +115,7 @@ TEST(Linq, WhereOdd_ToVector)
     src.push_back(8);
 
     auto dst = from(src).where([](int a){return a%2 == 1;})
-                        .toVector();
+                        .toStdVector();
 
     std::vector<int> ans;
     ans.push_back(1);
@@ -141,7 +141,7 @@ TEST(Linq, WhereOdd_WhereLess_SelectMul2_ToVector)
     auto dst = from(src).where([](int a){return a%2 == 1;})
                         .where([](int a){return a < 6;})
                         .select([](int a){return a*2;})
-                        .toVector();
+                        .toStdVector();
 
     std::vector<int> ans;
     ans.push_back(2);
@@ -167,7 +167,7 @@ TEST(Linq, WhereOdd_WhereLess_SelectMul2_Reverse_ToVector)
         .where([](int a){return a < 6;})
         .select([](int a){return a*2;})
         .reverse()
-        .toVector();
+        .toStdVector();
 
     std::vector<int> ans;
     ans.push_back(10);
@@ -193,7 +193,7 @@ TEST(Linq, WhereOdd_Reverse_Reverse)
                         .reverse()
                         .where([](int a){return a < 4;})
                         .reverse()
-                        .toVector();
+                        .toStdVector();
 
     std::vector<int> ans;
     ans.push_back(1);
@@ -208,14 +208,14 @@ TEST(Linq, Pointer_Front)
 {
     int src[] = {1,2,3,4,5};
 
-    auto dst = from<int>(static_cast<int *>(src), static_cast<int *>(src) + 5);
+    auto dst = from(static_cast<int *>(src), static_cast<int *>(src) + 5);
 
     for(int i = 1; i <= 5; i++)
     {
-        EXPECT_EQ(i, dst.nextObject());
+        EXPECT_EQ(i, dst.next());
     }
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 
@@ -229,10 +229,10 @@ TEST(Linq, Array_Front)
 
     for(int i = 1; i <= 5; i++)
     {
-        EXPECT_EQ(i, dst.nextObject());
+        EXPECT_EQ(i, dst.next());
     }
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -253,12 +253,12 @@ TEST(Linq, Creations)
     auto dst_vec = from(vec);
     auto dst_arr = from(arr);
     //auto dst_carr = from(carr);
-    auto dst_ptr = from<int>(ptr, ptr+5);
-    //auto dst_cptr = from<const int>(cptr, cptr+5);
-    auto dst_ptr_length = from<int>(ptr, 5);
-    //auto dst_cptr_length = from<const int>(cptr, 5);
-    auto dst_vec_iter = from<int>(vec.begin(), vec.end());
-    //auto dst_vec_citer = from<const int>(vec.cbegin(), vec.cend());
+    auto dst_ptr = from(ptr, ptr+5);
+    //auto dst_cptr = from(cptr, cptr+5);
+    auto dst_ptr_length = from(ptr, 5);
+    //auto dst_cptr_length = from(cptr, 5);
+    auto dst_vec_iter = from(vec.begin(), vec.end());
+    //auto dst_vec_citer = from(vec.cbegin(), vec.cend());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -301,8 +301,8 @@ TEST(Linq, MessagesCountUniqueContacts)
 TEST(Linq, ForwardIterating)
 {
     std::stringstream stream("0123456789");
-    auto dst = from<char>(std::istream_iterator<char>(stream),
-                          std::istream_iterator<char>())
+    auto dst = from(std::istream_iterator<char>(stream),
+                    std::istream_iterator<char>())
                .where( [](char a){return a % 2 == 0;})
                .select([](char a){return std::string(1,a);})
                .sum();

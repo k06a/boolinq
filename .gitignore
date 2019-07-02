@@ -7,3 +7,5 @@ ipch
 *.suo
 [Bb]uild*
 nbproject
+.idea
+cmake-build-debug

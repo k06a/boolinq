@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(TakeWhileRange, ManyToMore)
+TEST(TakeWhile, ManyToMore)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -54,7 +54,7 @@ TEST(TakeWhileRange_i, ManyToMoreByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToMany)
+TEST(TakeWhile, ManyToMany)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -98,7 +98,7 @@ TEST(TakeWhileRange_i, ManyToManyByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToLess)
+TEST(TakeWhile, ManyToLess)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3};
@@ -142,7 +142,7 @@ TEST(TakeWhileRange_i, ManyToLessByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToOne)
+TEST(TakeWhile, ManyToOne)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1};
@@ -186,14 +186,14 @@ TEST(TakeWhileRange_i, ManyToOneByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, ManyToZero)
+TEST(TakeWhile, ManyToZero)
 {
     int src[] = {1,2,3,4,5,6};
 
     auto rng = from(src);
     auto dst = rng.takeWhile([](int it){return it < 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ManyToZeroByIndex)
@@ -203,7 +203,7 @@ TEST(TakeWhileRange_i, ManyToZeroByIndex)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int /*it*/, int idx){return idx > 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ManyToZeroByItemValue)
@@ -213,7 +213,7 @@ TEST(TakeWhileRange_i, ManyToZeroByItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int /*idx*/){return it > 2;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ManyToZeroByIdexAndItemValue)
@@ -223,12 +223,12 @@ TEST(TakeWhileRange_i, ManyToZeroByIdexAndItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int idx){return it < 0 || idx > 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(TakeWhileRange, OneToOne)
+TEST(TakeWhile, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -272,14 +272,14 @@ TEST(TakeWhileRange_i, OneToOneByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(TakeWhileRange, OneToZero)
+TEST(TakeWhile, OneToZero)
 {
     int src[] = {5};
 
     auto rng = from(src);
     auto dst = rng.takeWhile([](int){return false;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, OneToZeroByIndex)
@@ -289,7 +289,7 @@ TEST(TakeWhileRange_i, OneToZeroByIndex)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int /*it*/, int idx){return idx > 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, OneToZeroByItemValue)
@@ -299,7 +299,7 @@ TEST(TakeWhileRange_i, OneToZeroByItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int /*idx*/){return it < 5;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, OneToZeroByIndexAndItemValue)
@@ -309,17 +309,17 @@ TEST(TakeWhileRange_i, OneToZeroByIndexAndItemValue)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int it, int idx){return idx == 0 && it > 5;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(TakeWhileRange, ZeroToZero)
+TEST(TakeWhile, ZeroToZero)
 {
     std::vector<int> src;
 
     auto rng = from(src);
     auto dst = rng.takeWhile([](int){return false;});
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 TEST(TakeWhileRange_i, ZeroToZero)
@@ -329,7 +329,7 @@ TEST(TakeWhileRange_i, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.takeWhile_i([](int /*it*/, int /*idx*/){return false;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

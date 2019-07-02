@@ -1,8 +1,9 @@
 # Common variables.
-CMAKE_MINIMUM_REQUIRED  (VERSION 2.8)
-PROJECT                 (boolinq)
-SET (boolinq_VERSION_MAJOR 2)
-SET (boolinq_VERSION_MINOR 0)
+CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif()
+PROJECT (boolinq VERSION 3.0.0 LANGUAGES CXX)
 
 
 SET (CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS} -O0 -ggdb3 -DDEBUG")
@@ -27,10 +28,9 @@ SET_DIRECTORY_PROPERTIES (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CppCheck_REPO
 
 
 # Testing.
-ADD_SUBDIRECTORY (externals/gtest)
+ADD_SUBDIRECTORY (externals/googletest)
 ADD_SUBDIRECTORY (externals/benchmark)
 ADD_SUBDIRECTORY (test)
-ADD_SUBDIRECTORY (benchmark)
-ADD_DEPENDENCIES (boolinqbenchmark gtest)
-ADD_DEPENDENCIES (boolinqbenchmark gtest_main)
-ADD_DEPENDENCIES (boolinqbenchmark benchmark)
+ADD_SUBDIRECTORY (bench)
+ADD_DEPENDENCIES ("${PROJECT_NAME}-test" gtest)
+ADD_DEPENDENCIES ("${PROJECT_NAME}-bench" benchmark)

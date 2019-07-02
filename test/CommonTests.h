@@ -14,18 +14,18 @@ template<typename R, typename T, unsigned N, typename F>
 void CheckRangeEqArray(R dst, T (&ans)[N], F f)
 {
     for (unsigned i = 0; i < N; i++)
-        EXPECT_EQ(f(ans[i]), f(dst.nextObject()));
+        EXPECT_EQ(f(ans[i]), f(dst.next()));
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 template<typename R, typename T, unsigned N>
 void CheckRangeEqArray(R dst, T (&ans)[N])
 {
     for (unsigned i = 0; i < N; i++)
-        EXPECT_EQ(ans[i], dst.nextObject());
+        EXPECT_EQ(ans[i], dst.next());
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 template<typename T, unsigned N>
@@ -44,7 +44,7 @@ template<typename R, typename T, unsigned N>
 void CheckRangeEqSet(R dst, T (&ans)[N])
 {
     std::set<T> expected = ArrayToSet(ans);
-    std::set<typename R::value_type> actual = dst.toSet();
+    std::set<typename R::value_type> actual = dst.toStdSet();
 
     EXPECT_EQ(expected.size(), actual.size());
 

@@ -10,7 +10,7 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(SkipWhileRange, ManyToMore)
+TEST(SkipWhile, ManyToMore)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -54,7 +54,7 @@ TEST(SkipWhileRange_i, ManyToMoreByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipWhileRange, ManyToMany)
+TEST(SkipWhile, ManyToMany)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,2,3,4,5,6};
@@ -99,7 +99,7 @@ TEST(SkipWhileRange_i, ManyToManyByIndexAndItemValue)
 }
 
 
-TEST(SkipWhileRange, ManyToLess)
+TEST(SkipWhile, ManyToLess)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {3,4,5,6};
@@ -143,7 +143,7 @@ TEST(SkipWhileRange_i, ManyToLessByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipWhileRange, ManyToOne)
+TEST(SkipWhile, ManyToOne)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {6};
@@ -187,14 +187,14 @@ TEST(SkipWhileRange_i, ManyToOneByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipWhileRange, ManyToZero)
+TEST(SkipWhile, ManyToZero)
 {
     int src[] = {1,2,3,4,5,6};
 
     auto rng = from(src);
     auto dst = rng.skipWhile([](int it){return it > 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, ManyToZeroeByIndex)
@@ -204,7 +204,7 @@ TEST(SkipWhileRange_i, ManyToZeroeByIndex)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int /*it*/, int idx){return idx < 6;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, ManyToZeroByItemValue)
@@ -214,7 +214,7 @@ TEST(SkipWhileRange_i, ManyToZeroByItemValue)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int it, int /*idx*/){return it > 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, ManyToZeroIndexAndItemValue)
@@ -224,12 +224,12 @@ TEST(SkipWhileRange_i, ManyToZeroIndexAndItemValue)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int it, int idx){return idx != it;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(SkipWhileRange, OneToOne)
+TEST(SkipWhile, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -273,14 +273,14 @@ TEST(SkipWhileRange_i, OneToOneByIndexAndItemValue)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(SkipWhileRange, OneToZero)
+TEST(SkipWhile, OneToZero)
 {
     int src[] = {5};
 
     auto rng = from(src);
     auto dst = rng.skipWhile([](int it){return it == 5;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, OneToZeroByIndex)
@@ -290,7 +290,7 @@ TEST(SkipWhileRange_i, OneToZeroByIndex)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int /*it*/, int idx){return idx < 6;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, OneToZeroByItemValue)
@@ -300,7 +300,7 @@ TEST(SkipWhileRange_i, OneToZeroByItemValue)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int it, int /*idx*/){return it > 0;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, OneToZeroIndexAndItemValue)
@@ -310,17 +310,17 @@ TEST(SkipWhileRange_i, OneToZeroIndexAndItemValue)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int it, int idx){return idx != it;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(SkipWhileRange, ZeroToZero)
+TEST(SkipWhile, ZeroToZero)
 {
     std::vector<int> src;
 
     auto rng = from(src);
     auto dst = rng.skipWhile([](int){return false;});
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 TEST(SkipWhileRange_i, ZeroToZero)
@@ -330,7 +330,7 @@ TEST(SkipWhileRange_i, ZeroToZero)
     auto rng = from(src);
     auto dst = rng.skipWhile_i([](int /*it*/, int /*idx*/){return true;});
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }
 
 //////////////////////////////////////////////////////////////////////////

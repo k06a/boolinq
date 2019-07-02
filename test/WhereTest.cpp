@@ -10,20 +10,20 @@ using namespace boolinq;
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, IntOdd)
+TEST(Where, IntOdd)
 {
     int src[] = {1,2,3,4,5,6};
     int ans[] = {1,  3,  5};
 
     auto rng = from(src);
     auto dst = rng.where([](int a){return a%2 == 1;});
-    
+
     CheckRangeEqArray(dst, ans);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, FirstLetterFront)
+TEST(Where, FirstLetterFront)
 {
     std::string src[] =
     {
@@ -42,13 +42,13 @@ TEST(WhereRange, FirstLetterFront)
 
     auto rng = from(src);
     auto dst = rng.where([](std::string a){return a[0] == 'a';});
-    
+
     CheckRangeEqArray(dst, ans);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, NameAgeLess)
+TEST(Where, NameAgeLess)
 {
     struct NameAge
     {
@@ -73,24 +73,24 @@ TEST(WhereRange, NameAgeLess)
 
     auto rng = from(src);
     auto dst = rng.where([](const NameAge & a){return a.age < 18;});
-    
+
     CheckRangeEqArray(dst, ans, [](const NameAge & a){return a.name;});
 }
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
-TEST(WhereRange, MayToOne)
+TEST(Where, MayToOne)
 {
     int src[] = {0,1,2};
     int ans[] = {1};
-    
+
     auto rng = from(src);
     auto dst = rng.where([](int a){return a == 1;});
 
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(WhereRange, OneToOne)
+TEST(Where, OneToOne)
 {
     int src[] = {5};
     int ans[] = {5};
@@ -101,32 +101,32 @@ TEST(WhereRange, OneToOne)
     CheckRangeEqArray(dst, ans);
 }
 
-TEST(WhereRange, ManyToZero)
+TEST(Where, ManyToZero)
 {
     int src[] = {0,1,2};
-    
+
     auto rng = from(src);
     auto dst = rng.where([](int a){return a == 5;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(WhereRange, OneToZero)
+TEST(Where, OneToZero)
 {
     int src[] = {5};
-    
+
     auto rng = from(src);
     auto dst = rng.where( [](int a){return a>10;});
 
-    EXPECT_THROW(dst.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(dst.next(), LinqEndException);
 }
 
-TEST(WhereRange, ZeroToZero)
+TEST(Where, ZeroToZero)
 {
     std::vector<int> src;
 
     auto rng = from(src);
     auto dst = rng.where( [](int a){return a>0;});
 
-    EXPECT_THROW(rng.nextObject(), EnumeratorEndException);
+    EXPECT_THROW(rng.next(), LinqEndException);
 }

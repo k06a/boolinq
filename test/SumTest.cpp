@@ -36,7 +36,7 @@ TEST(Sum, FiveInts)
     EXPECT_EQ(9, dst1);
 }
 
-TEST(Sum, BoolSum)
+TEST(Sum, TransformSum)
 {
     std::vector<int> src;
     src.push_back(1);
@@ -45,10 +45,10 @@ TEST(Sum, BoolSum)
     src.push_back(4);
     src.push_back(5);
 
-    auto rng1 = from(src).sum<int>([](int a){return a%2 == 0;});
-    auto rng2 = from(src).sum<int>([](int a){return a%2 == 1;});
+    auto rng1 = from(src).sum([](int a){return a/2;});
+    auto rng2 = from(src).sum([](int a){return a%2;});
 
-    EXPECT_EQ(2, rng1);
+    EXPECT_EQ(6, rng1);
     EXPECT_EQ(3, rng2);
 }
 
@@ -80,4 +80,18 @@ TEST(Sum, FiveStringsData)
     std::string ans = "helloapplenokiaoracleponny";
 
     EXPECT_EQ(ans, rng);
+}
+
+TEST(Sum, TransfromStringSum)
+{
+    std::vector<std::string> src;
+    src.push_back("hello");
+    src.push_back("apple");
+    src.push_back("nokia");
+    src.push_back("oracle");
+    src.push_back("ponny");
+
+    auto sum = from(src).sum([](std::string s) { return s.size(); });
+
+    EXPECT_EQ(26, sum);
 }
