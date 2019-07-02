@@ -111,6 +111,8 @@ int DenisUniqueContactCount =
 - `count()`, `count(value)`, `count(predicate)`
 - `contains(value)`
 - `elementAt(index)`
+- `first()`, `first(filter)`, `firstOrDefault()`, `firstOrDefault(filter)`
+- `last()`, `last(filter)`, `lastOrDefault()`, `lastOrDefault(filter)`
 - `toStdSet()`, `toStdList()`, `toStdDeque()`, `toStdVector()`
 
 #### Bits and Bytes:
