@@ -1,8 +1,9 @@
+#include <stdlib.h>
+#include <math.h>
+
 #include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
-#include <stdlib.h>
-#include <math.h>
 #include "boolinq.h"
 
 

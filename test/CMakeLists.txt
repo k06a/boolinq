@@ -1,21 +1,20 @@
 # Common variables.
 SET (CMAKE_CXX_STANDARD 11)
 SET (CMAKE_CXX_STANDARD_REQUIRED ON)
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Winit-self -Weffc++ ")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual -Wsign-promo")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
-SET (TARGET boolinqtest CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Winit-self -Weffc++ ")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual -Wsign-promo")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 SET (CMAKE_SHARED_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
-INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/externals/gtest/include)
-
+INCLUDE_DIRECTORIES (${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
 
 # Unit tests.
 SET (
@@ -60,16 +59,17 @@ SET (
     ${PROJECT_SOURCE_DIR}/test/WhereTest.cpp
 )
 ADD_EXECUTABLE (
-    boolinqtest
+    "${PROJECT_NAME}-test"
     ${BoolinqTest_SOURCES}
 )
 TARGET_LINK_LIBRARIES (
-    boolinqtest
+    "${PROJECT_NAME}-test"
     gtest_main
+    gtest
     #gcov
 )
 ENABLE_TESTING ()
-ADD_TEST (BoolinqTest boolinqtest)
+ADD_TEST (BoolinqTest "${PROJECT_NAME}-test")
 
 
 # Test coverage report.
@@ -80,7 +80,7 @@ ADD_CUSTOM_COMMAND (
     COMMAND lcov -q -c -f -b . -d ${PROJECT_BINARY_DIR}/boolinq -o ${Coverage_REPORT}
     COMMAND lcov -e ${Coverage_REPORT} '${PROJECT_SOURCE_DIR}/boolinq/*' -o ${Coverage_REPORT}
     COMMAND genhtml ${Coverage_REPORT} --legend --demangle-cpp -f -q -o ${Coverage_DIR}
-    DEPENDS boolinqtest
+    DEPENDS "${PROJECT_NAME}-test"
 )
 ADD_CUSTOM_TARGET (coverage DEPENDS ${Coverage_REPORT})
 # FIXME: Doesn't work correctly (require explicit call cmake when files appear).
