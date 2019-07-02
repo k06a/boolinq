@@ -1,5 +1,5 @@
 language: none
-sudo: false
+sudo: true
 
 cache:
   apt: true
@@ -79,7 +79,7 @@ script:
   - cd build
   - cmake .. && make
   - ./test/boolinq-test
-  - ./benchmark/boolinq-bench
+  - ./bench/boolinq-bench
   
 after_success:
   - coveralls --root .. --include include --gcov-options '\-lp' --gcov $GCOV --verbose
