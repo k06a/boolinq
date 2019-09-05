@@ -37,3 +37,11 @@ TEST(First, NoneElements)
     EXPECT_EQ(0, from(src).firstOrDefault());
     EXPECT_EQ(0, from(src).firstOrDefault([](int a){return a%2 == 0;}));
 }
+
+TEST(First, NoneElementsWithArg)
+{
+    std::vector<int> src = {};
+
+    EXPECT_EQ(2, from(src).firstOrDefault(2));
+    EXPECT_EQ(3, from(src).firstOrDefault([](int a){return a%2 == 0;}, 3));
+}
