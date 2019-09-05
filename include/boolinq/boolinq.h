@@ -540,7 +540,7 @@ namespace boolinq {
             return Linq<S, T>(*this).next();
         }
 
-        T firstOrDefault(std::function<bool(T)> predicate, T defaultValue = T()) const
+        T firstOrDefault(std::function<bool(T)> predicate, T const& defaultValue = T()) const
         {
             try {
                 return where(predicate).next();
@@ -549,7 +549,7 @@ namespace boolinq {
             return defaultValue;
         }
 
-        T firstOrDefault(T defaultValue = T()) const
+        T firstOrDefault(T const& defaultValue = T()) const
         {
             try {
                 return Linq<S, T>(*this).next();
@@ -578,7 +578,7 @@ namespace boolinq {
             return last([](T /*value*/) { return true; });
         }
 
-        T lastOrDefault(std::function<bool(T)> predicate, T defaultValue = T()) const
+        T lastOrDefault(std::function<bool(T)> predicate, T const& defaultValue = T()) const
         {
             T res = defaultValue;
             where(predicate).for_each([&res](T value) {
@@ -587,7 +587,7 @@ namespace boolinq {
             return res;
         }
 
-        T lastOrDefault(T defaultValue = T()) const
+        T lastOrDefault(T const& defaultValue = T()) const
         {
             return lastOrDefault([](T  /*value*/) { return true; }, defaultValue);
         }
