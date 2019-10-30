@@ -5,6 +5,7 @@
 #include <functional>
 #include <tuple>
 
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <vector>
