@@ -73,3 +73,52 @@ TEST(GroupBy, CountChildrenByAge)
 
     EXPECT_THROW(dst.elementAt(2), LinqEndException);
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+TEST(GroupBy, CountChildrenByName)
+{
+    struct Child
+    {
+        std::string name;
+        int age;
+
+        bool operator == (const Child & rhs) const
+        {
+            return (name == rhs.name) && (age == rhs.age);
+        }
+    };
+
+    Child children[] = {
+        {"Tom", 12},
+        {"Bella", 14},
+        {"Torry", 15},
+        {"Tom", 11},
+        {"Bella", 13},
+    };
+
+    Child ans_1[] = {
+        {"Tom", 12},
+        {"Tom", 11},
+    };
+
+    Child ans_2[] = {
+        {"Bella", 14},
+        {"Bella", 13},
+    };
+
+    Child ans_3[] = {
+        {"Torry", 15},
+    };
+
+    auto dst = from(children).groupBy([](const Child & a){return a.name;});
+
+    EXPECT_EQ("Tom", dst.elementAt(0).first);
+    EXPECT_EQ("Bella", dst.elementAt(1).first);
+    EXPECT_EQ("Torry", dst.elementAt(2).first);
+//    CheckRangeEqArray(dst.elementAt(0).second, ans_1);
+//    CheckRangeEqArray(dst.elementAt(1).second, ans_2);
+//    CheckRangeEqArray(dst.elementAt(2).second, ans_3);
+
+    EXPECT_THROW(dst.elementAt(3), LinqEndException);
+}
