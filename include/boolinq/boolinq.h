@@ -64,7 +64,7 @@ namespace boolinq {
 
         void for_each(std::function<void(T)> apply) const
         {
-            return for_each_i([apply](T value, int index) { return apply(value); });
+            return for_each_i([apply](T value, int) { return apply(value); });
         }
 
         Linq<std::tuple<Linq<S, T>, int>, T> where_i(std::function<bool(T, int)> filter) const
@@ -87,7 +87,7 @@ namespace boolinq {
 
         Linq<std::tuple<Linq<S, T>, int>, T> where(std::function<bool(T)> filter) const
         {
-            return where_i([filter](T value, int index) { return filter(value); });
+            return where_i([filter](T value, int) { return filter(value); });
         }
 
         Linq<std::tuple<Linq<S, T>, int>, T> take(int count) const
