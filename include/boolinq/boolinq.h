@@ -296,13 +296,14 @@ namespace boolinq {
                     Linq<S, T> &linqCopy = std::get<1>(tuple);
                     std::unordered_set<_TKey> &set = std::get<2>(tuple);
 
-                    _TKey key = apply(linq.next());
-                    if (set.insert(key).second) {
-                        return std::make_pair(key, linqCopy.where([apply, key](T v){
-                            return apply(v) == key;
-                        }));
+                    while (true) {
+                        _TKey key = apply(linq.next());
+                        if (set.insert(key).second) {
+                            return std::make_pair(key, linqCopy.where([apply, key](T v){
+                                return apply(v) == key;
+                            }));
+                        }
                     }
-                    throw LinqEndException();
                 }
             );
         }
