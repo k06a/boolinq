@@ -117,7 +117,7 @@ namespace boolinq {
 
         Linq<std::tuple<Linq<S, T>, int>, T> skip(int count) const
         {
-            return where_i([count](T value, int i) { return i >= count; });
+            return where_i([count](T /*value*/, int i) { return i >= count; });
         }
 
         Linq<std::tuple<Linq<S, T>, int, bool>, T> skipWhile_i(std::function<bool(T, int)> predicate) const
@@ -279,7 +279,7 @@ namespace boolinq {
         >
         Linq<std::tuple<Linq<S, T>, _TRet, int, bool>, _TRetVal> selectMany(F apply) const
         {
-            return selectMany_i([apply](T value, int index) { return apply(value); });
+            return selectMany_i([apply](T value, int /*index*/) { return apply(value); });
         }
 
         template<
@@ -679,7 +679,7 @@ namespace boolinq {
                  [](std::tuple<Linq<S, T>, BytesDirection, int> &tuple) {
                      Linq<S, T> &linq = std::get<0>(tuple);
                      BytesDirection &bytesDirection = std::get<1>(tuple);
-                     int &index = std::get<2>(tuple);
+                     // int &index = std::get<2>(tuple);
 
                      TRet value;
                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
@@ -741,7 +741,7 @@ namespace boolinq {
                      Linq<S, T> &linq = std::get<0>(tuple);
                      BytesDirection &bytesDirection = std::get<1>(tuple);
                      BitsDirection &bitsDirection = std::get<2>(tuple);
-                     int &index = std::get<3>(tuple);
+                     // int &index = std::get<3>(tuple);
 
                      TRet value = TRet();
                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
