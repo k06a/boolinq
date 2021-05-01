@@ -456,8 +456,9 @@ namespace boolinq {
             Linq<S, T> linq = *this;
             try {
                 while (true) {
-                    if (predicate(linq.next()))
+                    if (predicate(linq.next())) {
                         return true;
+                    }
                 }
             }
             catch (LinqEndException &) {}
@@ -646,28 +647,28 @@ namespace boolinq {
         Linq<std::tuple<Linq<S, T>, BytesDirection, T, int>, int> bytes(BytesDirection direction = BytesFirstToLast) const
         {
             return Linq<std::tuple<Linq<S, T>, BytesDirection, T, int>, int>(
-                 std::make_tuple(*this, direction, T(), sizeof(T)),
-                 [](std::tuple<Linq<S, T>, BytesDirection, T, int> &tuple) {
-                     Linq<S, T> &linq = std::get<0>(tuple);
-                     BytesDirection &bytesDirection = std::get<1>(tuple);
-                     T &value = std::get<2>(tuple);
-                     int &index = std::get<3>(tuple);
+                std::make_tuple(*this, direction, T(), sizeof(T)),
+                [](std::tuple<Linq<S, T>, BytesDirection, T, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    BytesDirection &bytesDirection = std::get<1>(tuple);
+                    T &value = std::get<2>(tuple);
+                    int &index = std::get<3>(tuple);
 
-                      if (index == sizeof(T)) {
-                          value = linq.next();
-                          index = 0;
-                      }
+                    if (index == sizeof(T)) {
+                        value = linq.next();
+                        index = 0;
+                    }
 
-                      unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
+                    unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                      int byteIndex = index;
-                      if (bytesDirection == BytesLastToFirst) {
-                          byteIndex = sizeof(T) - 1 - byteIndex;
-                      }
+                    int byteIndex = index;
+                    if (bytesDirection == BytesLastToFirst) {
+                        byteIndex = sizeof(T) - 1 - byteIndex;
+                    }
 
-                     index++;
-                     return ptr[byteIndex];
-                 }
+                    index++;
+                    return ptr[byteIndex];
+                }
             );
         }
 
@@ -675,60 +676,60 @@ namespace boolinq {
         Linq<std::tuple<Linq<S, T>, BytesDirection, int>, TRet> unbytes(BytesDirection direction = BytesFirstToLast) const
         {
             return Linq<std::tuple<Linq<S, T>, BytesDirection, int>, TRet>(
-                 std::make_tuple(*this, direction, 0),
-                 [](std::tuple<Linq<S, T>, BytesDirection, int> &tuple) {
-                     Linq<S, T> &linq = std::get<0>(tuple);
-                     BytesDirection &bytesDirection = std::get<1>(tuple);
-                     // int &index = std::get<2>(tuple);
+                std::make_tuple(*this, direction, 0),
+                [](std::tuple<Linq<S, T>, BytesDirection, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    BytesDirection &bytesDirection = std::get<1>(tuple);
+                    // int &index = std::get<2>(tuple);
 
-                     TRet value;
-                     unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
+                    TRet value;
+                    unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                     for (int i = 0; i < sizeof(TRet); i++) {
-                         int byteIndex = i;
-                         if (bytesDirection == BytesLastToFirst) {
-                             byteIndex = sizeof(TRet) - 1 - byteIndex;
-                         }
+                    for (int i = 0; i < sizeof(TRet); i++) {
+                        int byteIndex = i;
+                        if (bytesDirection == BytesLastToFirst) {
+                            byteIndex = sizeof(TRet) - 1 - byteIndex;
+                        }
 
-                         ptr[byteIndex] = linq.next();
-                     }
+                        ptr[byteIndex] = linq.next();
+                    }
 
-                     return value;
-                 }
+                    return value;
+                }
             );
         }
 
         Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int>, int> bits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
             return Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int>, int>(
-                 std::make_tuple(*this, bytesDir, bitsDir, T(), sizeof(T) * CHAR_BIT),
-                 [](std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int> &tuple) {
-                     Linq<S, T> &linq = std::get<0>(tuple);
-                     BytesDirection &bytesDirection = std::get<1>(tuple);
-                     BitsDirection &bitsDirection = std::get<2>(tuple);
-                     T &value = std::get<3>(tuple);
-                     int &index = std::get<4>(tuple);
+                std::make_tuple(*this, bytesDir, bitsDir, T(), sizeof(T) * CHAR_BIT),
+                [](std::tuple<Linq<S, T>, BytesDirection, BitsDirection, T, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    BytesDirection &bytesDirection = std::get<1>(tuple);
+                    BitsDirection &bitsDirection = std::get<2>(tuple);
+                    T &value = std::get<3>(tuple);
+                    int &index = std::get<4>(tuple);
 
-                     if (index == sizeof(T) * CHAR_BIT) {
-                         value = linq.next();
-                         index = 0;
-                     }
+                    if (index == sizeof(T) * CHAR_BIT) {
+                        value = linq.next();
+                        index = 0;
+                    }
 
-                     unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
+                    unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                     int byteIndex = index / CHAR_BIT;
-                     if (bytesDirection == BytesLastToFirst) {
-                         byteIndex = sizeof(T) - 1 - byteIndex;
-                     }
+                    int byteIndex = index / CHAR_BIT;
+                    if (bytesDirection == BytesLastToFirst) {
+                        byteIndex = sizeof(T) - 1 - byteIndex;
+                    }
 
-                     int bitIndex = index % CHAR_BIT;
-                     if (bitsDirection == BitsHighToLow) {
-                         bitIndex = CHAR_BIT - 1 - bitIndex;
-                     }
+                    int bitIndex = index % CHAR_BIT;
+                    if (bitsDirection == BitsHighToLow) {
+                        bitIndex = CHAR_BIT - 1 - bitIndex;
+                    }
 
-                     index++;
-                     return (ptr[byteIndex] >> bitIndex) & 1;
-                 }
+                    index++;
+                    return (ptr[byteIndex] >> bitIndex) & 1;
+                }
             );
         }
 
@@ -736,33 +737,33 @@ namespace boolinq {
         Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int>, TRet> unbits(BitsDirection bitsDir = BitsHighToLow, BytesDirection bytesDir = BytesFirstToLast) const
         {
             return Linq<std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int>, TRet>(
-                 std::make_tuple(*this, bytesDir, bitsDir, 0),
-                 [](std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int> &tuple) {
-                     Linq<S, T> &linq = std::get<0>(tuple);
-                     BytesDirection &bytesDirection = std::get<1>(tuple);
-                     BitsDirection &bitsDirection = std::get<2>(tuple);
-                     // int &index = std::get<3>(tuple);
+                std::make_tuple(*this, bytesDir, bitsDir, 0),
+                [](std::tuple<Linq<S, T>, BytesDirection, BitsDirection, int> &tuple) {
+                    Linq<S, T> &linq = std::get<0>(tuple);
+                    BytesDirection &bytesDirection = std::get<1>(tuple);
+                    BitsDirection &bitsDirection = std::get<2>(tuple);
+                    // int &index = std::get<3>(tuple);
 
-                     TRet value = TRet();
-                     unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
+                    TRet value = TRet();
+                    unsigned char *ptr = reinterpret_cast<unsigned char *>(&value);
 
-                     for (int i = 0; i < sizeof(TRet) * CHAR_BIT; i++) {
-                         int byteIndex = i / CHAR_BIT;
-                         if (bytesDirection == BytesLastToFirst) {
-                             byteIndex = sizeof(TRet) - 1 - byteIndex;
-                         }
+                    for (int i = 0; i < sizeof(TRet) * CHAR_BIT; i++) {
+                        int byteIndex = i / CHAR_BIT;
+                        if (bytesDirection == BytesLastToFirst) {
+                            byteIndex = sizeof(TRet) - 1 - byteIndex;
+                        }
 
-                         int bitIndex = i % CHAR_BIT;
-                         if (bitsDirection == BitsHighToLow) {
-                             bitIndex = CHAR_BIT - 1 - bitIndex;
-                         }
+                        int bitIndex = i % CHAR_BIT;
+                        if (bitsDirection == BitsHighToLow) {
+                            bitIndex = CHAR_BIT - 1 - bitIndex;
+                        }
 
-                         ptr[byteIndex] &= ~(1 << bitIndex);
-                         ptr[byteIndex] |= bool(linq.next()) << bitIndex;
-                     }
+                        ptr[byteIndex] &= ~(1 << bitIndex);
+                        ptr[byteIndex] |= bool(linq.next()) << bitIndex;
+                    }
 
-                     return value;
-                 }
+                    return value;
+                }
             );
         }
     };
