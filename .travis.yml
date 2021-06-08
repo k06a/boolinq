@@ -65,6 +65,7 @@ before_install:
   - pip install --user cpp-coveralls
 
 install:
+  - git submodule update --init --recursive
   - mkdir -p /tmp/tools
   - pushd /tmp/tools
   - if [[ ! -f "cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh" ]]; then
