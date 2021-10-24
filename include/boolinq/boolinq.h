@@ -16,6 +16,17 @@
 
 //
 
+// The result_of was deprecated since C++20, so redefine it using invoke_result
+#if (defined(_MSC_VER) && _MSVC_LANG >= 202002L) || __cplusplus >= 202002L
+namespace std
+{
+	template<typename _Callable, typename ..._Args>
+	using result_of = std::invoke_result<_Callable, _Args...>;
+}
+#endif
+
+//
+
 namespace boolinq {
 
     struct LinqEndException {};
