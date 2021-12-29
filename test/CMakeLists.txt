@@ -2,15 +2,10 @@
 SET (CMAKE_CXX_STANDARD 11)
 SET (CMAKE_CXX_STANDARD_REQUIRED ON)
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
-SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Winit-self -Weffc++ ")
-SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual -Wsign-promo")
-SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls")
-SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
-SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith")
-SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Weffc++ -Woverloaded-virtual -Wsign-promo")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls -Wcast-align")
+SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith -Wold-style-cast")
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-SET (CMAKE_SHARED_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
@@ -71,23 +66,18 @@ TARGET_LINK_LIBRARIES (
 ENABLE_TESTING ()
 ADD_TEST (BoolinqTest "${PROJECT_NAME}-test")
 
-
 # Test coverage report.
 SET (Coverage_REPORT ${PROJECT_BINARY_DIR}/coverage.info)
 SET (Coverage_DIR    ${PROJECT_BINARY_DIR}/coverage)
 ADD_CUSTOM_COMMAND (
     OUTPUT  ${Coverage_REPORT}
-    COMMAND lcov -q -c -f -b . -d ${PROJECT_BINARY_DIR}/boolinq -o ${Coverage_REPORT}
-    COMMAND lcov -e ${Coverage_REPORT} '${PROJECT_SOURCE_DIR}/boolinq/*' -o ${Coverage_REPORT}
+    COMMAND lcov -q -c -f -b . -d ${PROJECT_BINARY_DIR}/ -o ${Coverage_REPORT}
+    COMMAND lcov -e ${Coverage_REPORT} '${PROJECT_SOURCE_DIR}/*' -o ${Coverage_REPORT}
     COMMAND genhtml ${Coverage_REPORT} --legend --demangle-cpp -f -q -o ${Coverage_DIR}
     DEPENDS "${PROJECT_NAME}-test"
 )
 ADD_CUSTOM_TARGET (coverage DEPENDS ${Coverage_REPORT})
-# FIXME: Doesn't work correctly (require explicit call cmake when files appear).
-FILE (GLOB_RECURSE Coverage_GCNO ${PROJECT_BINARY_DIR}/*.gcno)
-FILE (GLOB_RECURSE Coverage_GCDA ${PROJECT_BINARY_DIR}/*.gcda)
 LIST (APPEND Coverage_DATA "${Coverage_REPORT}")
 LIST (APPEND Coverage_DATA "${Coverage_DIR}")
-LIST (APPEND Coverage_DATA "${Coverage_GCNO}")
-LIST (APPEND Coverage_DATA "${Coverage_GCDA}")
+LIST (APPEND Coverage_DATA "${PROJECT_BINARY_DIR}/test/CMakeFiles/boolinq-test.dir")
 SET_DIRECTORY_PROPERTIES (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${Coverage_DATA}")
