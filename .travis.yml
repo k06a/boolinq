@@ -82,4 +82,14 @@ script:
   - ./bench/boolinq-bench
   
 after_success:
-  - coveralls --root .. --include include --gcov-options '\-lp' --gcov $GCOV --verbose
+  - case "$CC" in
+        clang-*)
+          echo "Processing llvm coverage with llvm-cov, bypass gcov in cpp-coveralls and submitting";
+          find test/CMakeFiles/boolinq-test.dir/ -name '*.cpp.o' | xargs llvm-cov gcov -lp ;
+          coveralls --root .. --include include --no-gcov --verbose
+          ;;
+        *)
+          echo "Processing with gcov in cpp-coveralls and submitting";
+          coveralls --root .. --include include --gcov-options '\-lp' --gcov $GCOV --verbose
+          ;;
+    esac
