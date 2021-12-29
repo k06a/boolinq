@@ -12,7 +12,7 @@ SET (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
 SET (CppCheck_REPORT ${PROJECT_BINARY_DIR}/cppcheck.report)
 ADD_CUSTOM_COMMAND (
     OUTPUT  ${CppCheck_REPORT}
-    COMMAND cppcheck ${PROJECT_SOURCE_DIR}/boolinq/boolinq.h --enable=all --force --inconclusive &>cppcheck.report
+    COMMAND cppcheck ${PROJECT_SOURCE_DIR}/imclude/boolinq/boolinq.h --enable=all --force --inconclusive &>cppcheck.report
 )
 ADD_CUSTOM_TARGET  (cppcheck DEPENDS ${CppCheck_REPORT})
 SET_DIRECTORY_PROPERTIES (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CppCheck_REPORT})
