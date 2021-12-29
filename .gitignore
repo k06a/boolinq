@@ -9,3 +9,17 @@ ipch
 nbproject
 .idea
 cmake-build-debug
+CMakeCache.txt
+CMakeFiles/
+DartConfiguration.tcl
+CTestTestfile.cmake
+Makefile
+Testing/
+cmake_install.cmake
+boolinq-bench
+boolinq-test
+/externals/benchmark/*
+/externals/googletest/*
+cppcheck.report
+coverage/
+coverage.info
