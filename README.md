@@ -1,6 +1,6 @@
 # boolinq 3.0
 
-[![CI Status](https://travis-ci.com/k06a/boolinq.svg?branch=master)](https://travis-ci.com/k06a/boolinq)
+[![CI Status](https://travis-ci.com/k06a/boolinq.svg?branch=master)](https://app.travis-ci.com/github/k06a/boolinq)
 [![Coverage Status](https://coveralls.io/repos/github/k06a/boolinq/badge.svg?branch=master)](https://coveralls.io/github/k06a/boolinq?branch=master)
 
 Super tiny C++11 single-file header-only LINQ template library
