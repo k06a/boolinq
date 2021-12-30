@@ -79,6 +79,7 @@ script:
   - cd build
   - cmake .. && make
   - ./test/boolinq-test
+  - ./test/boolinq-test14
   - ./bench/boolinq-bench
   
 after_success:
