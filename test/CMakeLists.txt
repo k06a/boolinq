@@ -57,14 +57,31 @@ ADD_EXECUTABLE (
     "${PROJECT_NAME}-test"
     ${BoolinqTest_SOURCES}
 )
+
 TARGET_LINK_LIBRARIES (
     "${PROJECT_NAME}-test"
     gtest_main
     gtest
     #gcov
 )
+
+#separate target for the complex group by test requiring C++14
+ADD_EXECUTABLE (
+    "${PROJECT_NAME}-test14"
+    ${PROJECT_SOURCE_DIR}/test/GroupByTestComplex.cpp
+)
+
+TARGET_COMPILE_FEATURES("${PROJECT_NAME}-test14" PRIVATE cxx_std_14)
+
+TARGET_LINK_LIBRARIES (
+    "${PROJECT_NAME}-test14"
+    gtest_main
+    gtest
+)
+
 ENABLE_TESTING ()
 ADD_TEST (BoolinqTest "${PROJECT_NAME}-test")
+ADD_TEST (BoolinqTest14 "${PROJECT_NAME}-test14")
 
 # Test coverage report.
 SET (Coverage_REPORT ${PROJECT_BINARY_DIR}/coverage.info)
@@ -74,7 +91,7 @@ ADD_CUSTOM_COMMAND (
     COMMAND lcov -q -c -f -b . -d ${PROJECT_BINARY_DIR}/ -o ${Coverage_REPORT}
     COMMAND lcov -e ${Coverage_REPORT} '${PROJECT_SOURCE_DIR}/*' -o ${Coverage_REPORT}
     COMMAND genhtml ${Coverage_REPORT} --legend --demangle-cpp -f -q -o ${Coverage_DIR}
-    DEPENDS "${PROJECT_NAME}-test"
+    DEPENDS "${PROJECT_NAME}-test" "${PROJECT_NAME}-test14"
 )
 ADD_CUSTOM_TARGET (coverage DEPENDS ${Coverage_REPORT})
 LIST (APPEND Coverage_DATA "${Coverage_REPORT}")
