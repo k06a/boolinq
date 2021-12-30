@@ -9,8 +9,8 @@ cache:
 env:
   global:
     - PATH="$HOME/bin:$PATH"
-    - CMAKE_VERSION_PREFIX=3.5
-    - CMAKE_VERSION_FULL=3.5.2
+    - CMAKE_VERSION_PREFIX=3.22
+    - CMAKE_VERSION_FULL=3.22.1
 
 matrix:
   include:
