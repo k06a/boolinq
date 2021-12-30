@@ -67,11 +67,11 @@ before_install:
 install:
   - mkdir -p /tmp/tools
   - pushd /tmp/tools
-  - if [[ ! -f "cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh" ]]; then
-      curl -SOL "https://cmake.org/files/v$CMAKE_VERSION_PREFIX/cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh";
-      chmod +x "cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh";
+  - if [[ ! -f "cmake-$CMAKE_VERSION_FULL-linux-x86_64.sh" ]]; then
+      curl -SOL "https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION_FULL/cmake-$CMAKE_VERSION_FULL-linux-x86_64.sh";
+      chmod +x "cmake-$CMAKE_VERSION_FULL-linux-x86_64.sh";
     fi
-  - ./"cmake-$CMAKE_VERSION_FULL-Linux-x86_64.sh" --prefix="$HOME" --exclude-subdir --skip-license
+  - ./"cmake-$CMAKE_VERSION_FULL-linux-x86_64.sh" --prefix="$HOME" --exclude-subdir --skip-license
   - popd
 
 script:
