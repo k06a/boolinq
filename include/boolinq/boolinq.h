@@ -16,16 +16,18 @@
 
 namespace boolinq {
 
-    //
+    namespace priv {
+        // The result_of was removed since C++20 by not all but some compilers.
+        // For the sake of compatibility, use own define but in private subspace
+        // to avoid collisions with std in case of using both std and boolinq.
+        template<typename _Callable>
+        struct result_of;
 
-    // The result_of was removed since C++20 by not all but some compilers. For the sake of compatibility, use own define but of course not in std namespace.
-    template<typename _Callable>
-    struct result_of;
-
-    template<typename _Callable, typename... _Args>
-    struct result_of<_Callable(_Args...)> {
-        typedef decltype(std::declval<_Callable>()(std::declval<_Args>()...)) type;
-    };
+        template<typename _Callable, typename... _Args>
+        struct result_of<_Callable(_Args...)> {
+            typedef decltype(std::declval<_Callable>()(std::declval<_Args>()...)) type;
+        };
+    }
 
     //
 
@@ -205,7 +207,7 @@ namespace boolinq {
             );
         }
 
-        template<typename F, typename _TRet = typename result_of<F(T, int)>::type>
+        template<typename F, typename _TRet = typename priv::result_of<F(T, int)>::type>
         Linq<std::tuple<Linq<S, T>, int>, _TRet> select_i(F apply) const
         {
             return Linq<std::tuple<Linq<S, T>, int>, _TRet>(
@@ -219,7 +221,7 @@ namespace boolinq {
             );
         }
 
-        template<typename F, typename _TRet = typename result_of<F(T)>::type>
+        template<typename F, typename _TRet = typename priv::result_of<F(T)>::type>
         Linq<std::tuple<Linq<S, T>, int>, _TRet> select(F apply) const
         {
             return select_i([apply](T value, int /*index*/) { return apply(value); });
@@ -254,7 +256,7 @@ namespace boolinq {
 
         template<
             typename F,
-            typename _TRet = typename result_of<F(T, int)>::type,
+            typename _TRet = typename priv::result_of<F(T, int)>::type,
             typename _TRetVal = typename _TRet::value_type
         >
         Linq<std::tuple<Linq<S, T>, _TRet, int, bool>, _TRetVal> selectMany_i(F apply) const
@@ -285,7 +287,7 @@ namespace boolinq {
 
         template<
             typename F,
-            typename _TRet = typename result_of<F(T)>::type,
+            typename _TRet = typename priv::result_of<F(T)>::type,
             typename _TRetVal = typename _TRet::value_type
         >
         Linq<std::tuple<Linq<S, T>, _TRet, int, bool>, _TRetVal> selectMany(F apply) const
@@ -295,7 +297,7 @@ namespace boolinq {
 
         template<
             typename F,
-            typename _TKey = typename result_of<F(T)>::type,
+            typename _TKey = typename priv::result_of<F(T)>::type,
             typename _TValue = Linq<std::tuple<Linq<S, T>, int>, T> // where(predicate)
         >
         Linq<std::tuple<Linq<S, T>, Linq<S, T>, std::unordered_set<_TKey> >, std::pair<_TKey, _TValue> > groupBy(F apply) const
@@ -319,7 +321,7 @@ namespace boolinq {
             );
         }
 
-        template<typename F, typename _TRet = typename result_of<F(T)>::type>
+        template<typename F, typename _TRet = typename priv::result_of<F(T)>::type>
         Linq<std::tuple<Linq<S, T>, std::unordered_set<_TRet> >, T> distinct(F transform) const
         {
             return Linq<std::tuple<Linq<S, T>, std::unordered_set<_TRet> >, T>(
@@ -412,7 +414,7 @@ namespace boolinq {
             return start;
         }
 
-        template<typename F, typename _TRet = typename result_of<F(T)>::type>
+        template<typename F, typename _TRet = typename priv::result_of<F(T)>::type>
         _TRet sum(F transform) const
         {
             return aggregate<_TRet>(_TRet(), [transform](_TRet accumulator, T value) {
@@ -426,7 +428,7 @@ namespace boolinq {
             return sum([](T value) { return TRet(value); });
         }
 
-        template<typename F, typename _TRet = typename result_of<F(T)>::type>
+        template<typename F, typename _TRet = typename priv::result_of<F(T)>::type>
         _TRet avg(F transform) const
         {
             int count = 0;
