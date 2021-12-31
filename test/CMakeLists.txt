@@ -6,6 +6,7 @@ SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -Winvalid-pch -Winline -Wredundant-decls -Wcast-align")
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith -Wold-style-cast")
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
