@@ -20,8 +20,13 @@
 #if (defined(_MSC_VER) && _MSVC_LANG >= 202002L) || __cplusplus >= 202002L
 namespace std
 {
-	template<typename _Callable, typename ..._Args>
-	using result_of = std::invoke_result<_Callable, _Args...>;
+    template<typename _Callable>
+    struct result_of;
+
+    template<typename _Callable, typename... _Args>
+    struct result_of<_Callable(_Args...)> {
+        typedef std::invoke_result<_Callable, _Args...>::type type;
+    };
 }
 #endif
 
