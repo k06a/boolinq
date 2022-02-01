@@ -9,8 +9,6 @@ SET (TARGET "${PROJECT_NAME}-bench" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-q
 
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
-INCLUDE_DIRECTORIES (${CMAKE_BINARY_DIR}/benchmark-src/include)
-INCLUDE_DIRECTORIES (${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
 
 
 # Benchmarks.
@@ -18,8 +16,35 @@ ADD_EXECUTABLE (
     "${PROJECT_NAME}-bench"
     ${PROJECT_SOURCE_DIR}/bench/SpeedTest.cpp
 )
-TARGET_LINK_LIBRARIES (
-    "${PROJECT_NAME}-bench"
-    benchmark
-    gtest
-)
+
+IF (GTest_FOUND)
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-bench"
+        GTest::gtest
+    )
+ELSE ()
+    TARGET_INCLUDE_DIRECTORIES (
+        "${PROJECT_NAME}-bench" PRIVATE
+        ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
+    )
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-bench"
+        gtest
+    )
+ENDIF ()
+
+IF (benchmark_FOUND)
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-bench"
+        benchmark::benchmark
+    )
+ELSE ()
+    TARGET_INCLUDE_DIRECTORIES (
+        "${PROJECT_NAME}-bench" PRIVATE
+        ${CMAKE_BINARY_DIR}/benchmark-src/include
+    )
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-bench"
+        benchmark
+    )
+ENDIF ()

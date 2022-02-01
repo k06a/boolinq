@@ -10,7 +10,6 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 
 
 INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
-INCLUDE_DIRECTORIES (${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
 
 # Unit tests.
 SET (
@@ -59,12 +58,24 @@ ADD_EXECUTABLE (
     ${BoolinqTest_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES (
-    "${PROJECT_NAME}-test"
-    gtest_main
-    gtest
-    #gcov
-)
+IF (GTest_FOUND)
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-test"
+        GTest::gtest
+        GTest::gtest_main
+    )
+ELSE()
+    TARGET_INCLUDE_DIRECTORIES (
+        "${PROJECT_NAME}-test" PRIVATE
+        ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
+    )
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-test"
+        gtest_main
+        gtest
+        #gcov
+    )
+ENDIF ()
 
 #separate target for the complex group by test requiring C++14
 ADD_EXECUTABLE (
@@ -74,11 +85,23 @@ ADD_EXECUTABLE (
 
 TARGET_COMPILE_FEATURES("${PROJECT_NAME}-test14" PRIVATE cxx_std_14)
 
-TARGET_LINK_LIBRARIES (
-    "${PROJECT_NAME}-test14"
-    gtest_main
-    gtest
-)
+IF (GTest_FOUND)
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-test14"
+        GTest::gtest
+        GTest::gtest_main
+    )
+ELSE()
+    TARGET_INCLUDE_DIRECTORIES (
+        "${PROJECT_NAME}-test14" PRIVATE
+        ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
+    )
+    TARGET_LINK_LIBRARIES (
+        "${PROJECT_NAME}-test14"
+        gtest_main
+        gtest
+    )
+ENDIF ()
 
 ENABLE_TESTING ()
 ADD_TEST (BoolinqTest "${PROJECT_NAME}-test")
