@@ -2,7 +2,7 @@
 
 #include <set>
 
-#include "boolinq.h"
+#include <boolinq/boolinq.h>
 
 using namespace boolinq;
 

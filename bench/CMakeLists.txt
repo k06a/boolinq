@@ -8,13 +8,15 @@ SET (TARGET "${PROJECT_NAME}-bench" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wvla -W
 SET (TARGET "${PROJECT_NAME}-bench" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual -Wpointer-arith -Wold-style-cast")
 
 
-INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
-
-
 # Benchmarks.
 ADD_EXECUTABLE (
     "${PROJECT_NAME}-bench"
     ${PROJECT_SOURCE_DIR}/bench/SpeedTest.cpp
+)
+
+TARGET_LINK_LIBRARIES (
+    "${PROJECT_NAME}-bench"
+    boolinq::boolinq
 )
 
 IF (GTest_FOUND)

@@ -9,8 +9,6 @@ SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 
 
-INCLUDE_DIRECTORIES (${PROJECT_SOURCE_DIR}/include/boolinq)
-
 # Unit tests.
 SET (
     BoolinqTest_SOURCES
@@ -58,6 +56,10 @@ ADD_EXECUTABLE (
     ${BoolinqTest_SOURCES}
 )
 
+TARGET_LINK_LIBRARIES (
+    "${PROJECT_NAME}-test"
+    boolinq::boolinq
+)
 IF (GTest_FOUND)
     TARGET_LINK_LIBRARIES (
         "${PROJECT_NAME}-test"
@@ -85,6 +87,10 @@ ADD_EXECUTABLE (
 
 TARGET_COMPILE_FEATURES("${PROJECT_NAME}-test14" PRIVATE cxx_std_14)
 
+TARGET_LINK_LIBRARIES (
+    "${PROJECT_NAME}-test14"
+    boolinq::boolinq
+)
 IF (GTest_FOUND)
     TARGET_LINK_LIBRARIES (
         "${PROJECT_NAME}-test14"

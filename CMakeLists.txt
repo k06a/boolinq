@@ -1,6 +1,13 @@
 # Common variables.
 CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
+
+IF (DEFINED PROJECT_NAME)
+    set(BOOLINQ_SUBPROJECT ON)
+ENDIF ()
 PROJECT (boolinq VERSION 3.0.5 LANGUAGES CXX)
+
+INCLUDE (CMakePackageConfigHelpers)
+INCLUDE (GNUInstallDirs)
 INCLUDE (Dart)
 
 
@@ -19,6 +26,17 @@ ADD_CUSTOM_COMMAND (
 )
 ADD_CUSTOM_TARGET  (cppcheck DEPENDS ${CppCheck_REPORT})
 SET_DIRECTORY_PROPERTIES (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CppCheck_REPORT})
+
+
+# Initialize CMake target.
+ADD_LIBRARY (boolinq INTERFACE)
+ADD_LIBRARY (boolinq::boolinq ALIAS boolinq)
+
+TARGET_COMPILE_FEATURES (boolinq INTERFACE cxx_std_11)
+TARGET_INCLUDE_DIRECTORIES (boolinq INTERFACE
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+)
 
 
 # Testing.
@@ -46,4 +64,31 @@ IF (BUILD_BENCHMARK)
     ELSE ()
         ADD_SUBDIRECTORY (bench)
     ENDIF ()
+ENDIF ()
+
+
+# Installation.
+IF (NOT BOOLINQ_SUBPROJECT)
+    WRITE_BASIC_PACKAGE_VERSION_FILE (
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY AnyNewerVersion
+    )
+
+    INSTALL (TARGETS boolinq EXPORT boolinqTargets)
+
+    INSTALL (EXPORT boolinqTargets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/boolinq
+        NAMESPACE boolinq::
+        FILE ${PROJECT_NAME}Config.cmake
+    )
+
+    INSTALL (FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/boolinq
+    )
+
+    INSTALL (DIRECTORY include/boolinq
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.h"
+    )
 ENDIF ()
