@@ -108,11 +108,11 @@ namespace boolinq {
 
         }
 
-        template<typename T,
-            typename = std::enable_if < std::is_lvalue_reference<T>::value,bool> = false>
-        void for_each(std::function<void(T const)> apply) const
+        template<typename TT,
+            typename = std::enable_if < std::is_lvalue_reference<TT>::value,bool> = false>
+        void for_each(std::function<void(TT const)> apply) const
         {
-            return for_each_i([apply](T value, int) { return apply(value); });
+            return for_each_i([apply](TT value, int) { return apply(value); });
 
         }
 
