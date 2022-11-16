@@ -5,6 +5,9 @@ on:
 
 jobs:
   boolinq-test:
+    strategy:
+      matrix:
+        cpp_version: [11, 14, 17, 20]
     runs-on: "ubuntu-latest"
     steps:
       - name: Checkout
@@ -15,7 +18,7 @@ jobs:
       - name: Compilation
         run: |
           mkdir build && cd build
-          cmake ..
+          cmake .. -DWITH_CXX_STANDARD=${{ matrix.cpp_version }}
           make
 
       - name: Boolinq-test
