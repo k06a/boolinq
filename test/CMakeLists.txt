@@ -1,5 +1,5 @@
 # Common variables.
-SET (CMAKE_CXX_STANDARD 11)
+SET (CMAKE_CXX_STANDARD ${WITH_CXX_STANDARD})
 SET (CMAKE_CXX_STANDARD_REQUIRED ON)
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wmissing-include-dirs -Wfloat-equal -Wshadow")
 SET (TARGET "${PROJECT_NAME}-test" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion -Weffc++ -Woverloaded-virtual -Wsign-promo")
