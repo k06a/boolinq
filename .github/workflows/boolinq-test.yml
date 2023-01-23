@@ -1,6 +1,8 @@
 name: 'Boolinq Test: All'
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
 
 jobs:
