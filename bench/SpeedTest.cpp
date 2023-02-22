@@ -4,7 +4,7 @@
 #include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
-#include "boolinq.h"
+#include <boolinq/boolinq.h>
 
 
 using namespace boolinq;
