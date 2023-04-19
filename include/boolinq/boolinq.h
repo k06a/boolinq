@@ -32,6 +32,7 @@ namespace boolinq {
     //
 
     struct LinqEndException {};
+    struct LinqNonMutableException {};
 
     enum BytesDirection {
         BytesFirstToLast,
@@ -45,8 +46,11 @@ namespace boolinq {
 
     template<typename S, typename T>
     class Linq {
+
         std::function<T(S &)> nextFunc;
+        std::function<void* (S &)> ref_nextFunc;
         S storage;
+        bool isMutable;
 
     public:
         typedef T value_type;
@@ -55,13 +59,22 @@ namespace boolinq {
         {
         }
 
-        Linq(S storage, std::function<T(S &)> nextFunc) : nextFunc(nextFunc), storage(storage)
+        Linq(S storage, std::function<T(S &)> nextFunc) : nextFunc(nextFunc), ref_nextFunc([](S &) {return nullptr; }), storage(storage), isMutable(false)
+        {
+        }
+        Linq(S storage, std::function<void* (S &)> ref_nextFunc) : storage(storage), nextFunc([ref_nextFunc](S & s) {return *(T*)(ref_nextFunc(s)); }), ref_nextFunc(ref_nextFunc), isMutable(true)
         {
         }
 
         T next()
         {
             return nextFunc(storage);
+        }
+
+        T* ref_next()
+        {
+            if (!isMutable) throw LinqNonMutableException();
+            return (T*)ref_nextFunc(storage);
         }
 
         void for_each_i(std::function<void(T, int)> apply) const
@@ -75,9 +88,32 @@ namespace boolinq {
             catch (LinqEndException &) {}
         }
 
-        void for_each(std::function<void(T)> apply) const
+        void mut_for_each_i(std::function<void(T &, int)> apply) const
+        {
+            Linq<S, T> linq = *this;
+            try {
+                for (int i = 0; ; i++) {
+                    apply(*linq.ref_next(), i);
+                }
+            }
+            catch (LinqEndException&) {}
+        }
+
+        void for_each(std::function<void(T &)> apply) const
+        {
+            if (isMutable)
+                return mut_for_each_i([apply](T & value, int) { return apply(value); });
+            else
+                return for_each_i([apply](T value, int) { return apply(value); });
+
+        }
+
+        template<typename T,
+            typename = std::enable_if < std::is_lvalue_reference<T>::value,bool> = false>
+        void for_each(std::function<void(T const)> apply) const
         {
             return for_each_i([apply](T value, int) { return apply(value); });
+
         }
 
         Linq<std::tuple<Linq<S, T>, int>, T> where_i(std::function<bool(T, int)> filter) const
@@ -860,6 +896,71 @@ namespace boolinq {
         -> decltype(from(container.cbegin(), container.cend()))
     {
         return from(container.cbegin(), container.cend());
+    }
+
+    template<typename T>
+    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> mut_from(const T& begin, const T& end)
+    {
+        return Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type>(
+            std::make_pair(begin, end),
+            [](std::pair<T, T>& pair) {
+            if (pair.first == pair.second) {
+                throw LinqEndException();
+            }
+            return ((void*)&(*(pair.first++)));
+        }
+        );
+    }
+
+    template<typename T>
+    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> mut_from(const T& it, int n)
+    {
+        return mut_from(it, it + n);
+    }
+
+    template<typename T, int N>
+    Linq<std::pair<const T*, const T*>, T> mut_from(T(&array)[N])
+    {
+        return mut_from((const T*)(&array), (const T*)(&array) + N);
+    }
+
+    template<template<class> class TV, typename TT>
+    auto mut_from(const TV<TT>& container)
+        -> decltype(mut_from(container.cbegin(), container.cend()))
+    {
+        return mut_from(container.cbegin(), container.cend());
+    }
+
+    // std::list, std::vector, std::dequeue
+    template<template<class, class> class TV, typename TT, typename TU>
+    auto mut_from(const TV<TT, TU>& container)
+        -> decltype(mut_from(container.cbegin(), container.cend()))
+    {
+        return mut_from(container.cbegin(), container.cend());
+    }
+
+    // std::set
+    template<template<class, class, class> class TV, typename TT, typename TS, typename TU>
+    auto mut_from(const TV<TT, TS, TU>& container)
+        -> decltype(mut_from(container.cbegin(), container.cend()))
+    {
+        return mut_from(container.cbegin(), container.cend());
+    }
+
+    // std::map
+    template<template<class, class, class, class> class TV, typename TK, typename TT, typename TS, typename TU>
+    auto mut_from(const TV<TK, TT, TS, TU>& container)
+        -> decltype(mut_from(container.cbegin(), container.cend()))
+    {
+        return mut_from(container.cbegin(), container.cend());
+    }
+
+    // std::array
+    template<template<class, size_t> class TV, typename TT, size_t TL>
+    auto mut_from(const TV<TT, TL>& container)
+        -> decltype(mut_from(container.cbegin(), container.cend()))
+    {
+        return mut_from(container.cbegin(), container.cend());
     }
 
     template<typename T>
