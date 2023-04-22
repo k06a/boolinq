@@ -5,9 +5,28 @@
 
 #include <gtest/gtest.h>
 
+#include "CommonTests.h"
+
 #include "boolinq.h"
 
 using namespace boolinq;
+
+TEST(Linq, Unique)
+{
+    std::vector<std::unique_ptr<int> > vec = {
+        std::unique_ptr<int>(new int (1)),
+        std::unique_ptr<int>(new int (2)),
+        std::unique_ptr<int>(new int (3))
+    };
+
+    auto rng = from(vec)
+        .select([](const std::unique_ptr<int> &uniquePtr) { return *uniquePtr.get(); })
+        .toStdVector();
+
+    int ans[] = {1,2,3};
+
+    CheckRangeEqArray(rng, ans);
+}
 
 // Where Tests
 

@@ -797,16 +797,18 @@ namespace boolinq {
     // Linq Creators
     ////////////////////////////////////////////////////////////////
 
-    template<typename T>
-    Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type> from(const T & begin, const T & end)
+    template<typename T, typename _TValue = typename std::iterator_traits<T>::value_type>
+    Linq<std::pair<T, T>, _TValue> from(const T & begin, const T & end)
     {
-        return Linq<std::pair<T, T>, typename std::iterator_traits<T>::value_type>(
+        return Linq<std::pair<T, T>, _TValue>(
             std::make_pair(begin, end),
             [](std::pair<T, T> &pair) {
                 if (pair.first == pair.second) {
                     throw LinqEndException();
                 }
-                return *(pair.first++);
+                const _TValue &ret = *pair.first;
+                ++pair.first;
+                return ret;
             }
         );
     }
